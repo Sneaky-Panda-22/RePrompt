@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RePrompt | AI Vision Forensics</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="bg-shapes">
+        <div class="bg-circle bg-circle--1"></div>
+        <div class="bg-circle bg-circle--2"></div>
+        <div class="bg-circle bg-circle--3"></div>
+    </div>
+
+    <nav class="top-nav">
+        <div class="nav-logo">
+            <span class="nav-dot"></span>
+            RePrompt
+        </div>
+        <div class="nav-links">
+            <a href="#app" class="nav-link active" data-section="app">App</a>
+            <a href="#docs" class="nav-link" data-section="docs">Docs</a>
+            <a href="#about" class="nav-link" data-section="about">About</a>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+
+        <!-- APP -->
+        <div id="app" class="page-section page-section--active">
+
+            <header class="hero">
+                <p class="hero-subtitle">AI-Powered Vision Forensics</p>
+                <h1 class="hero-title">RePrompt</h1>
+                <p class="hero-desc">Reverse-engineer any AI-generated image into a detailed, reusable generative
+                    prompt.</p>
+            </header>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">01</span>
+                    <h2 class="section-title">Upload Image</h2>
+                </div>
+                <p class="section-desc">Drop your AI-generated image below. We'll extract its physical DNA and
+                    reverse-engineer the prompt.</p>
+
+                <div class="upload-section reveal-scale" id="upload-zone">
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p class="upload-text">Drag & drop your image or <span class="highlight">browse files</span></p>
+                        <p class="upload-hint">Supports PNG, JPG, WEBP, BMP</p>
+                    </div>
+                    <img id="image-preview" src="" alt="Image Preview">
+                </div>
+            </section>
+
+            <div class="loading-state" id="loading-state">
+                <div class="spinner"></div>
+                <p>Analyzing physics & generating prompt<span class="loading-dots"></span></p>
+            </div>
+
+            <div class="results-section" id="results">
+
+                <section class="section reveal">
+                    <div class="section-header">
+                        <span class="step-indicator">02</span>
+                        <h2 class="section-title">Generated RePrompt</h2>
+                    </div>
+                    <div class="prompt-box reveal-scale">
+                        <p id="reprompt-text">Your reverse-engineered prompt will appear here.</p>
+                        <button class="copy-btn" id="copy-btn">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="section reveal">
+                    <div class="section-header">
+                        <span class="step-indicator">03</span>
+                        <h2 class="section-title">Extracted Physics</h2>
+                    </div>
+                    <p class="section-desc">Physical metadata extracted via OpenCV analysis pipeline.</p>
+                    <div class="stats-grid" id="stats-grid"></div>
+                </section>
+            </div>
+
+        </div>
+
+        <!-- DOCS -->
+        <div id="docs" class="page-section">
+
+            <header class="hero">
+                <p class="hero-subtitle">Documentation</p>
+                <h1 class="hero-title">How It Works</h1>
+                <p class="hero-desc">A deep dive into the RePrompt pipeline — from raw pixels to reverse-engineered
+                    prompts.</p>
+            </header>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">01</span>
+                    <h2 class="section-title">The Pipeline</h2>
+                </div>
+                <p class="section-desc">RePrompt follows a three-stage forensic analysis pipeline.</p>
+
+                <div class="docs-pipeline">
+                    <div class="pipeline-step reveal reveal-delay-1">
+                        <div class="pipeline-step-number">I</div>
+                        <div class="pipeline-step-content">
+                            <h3>Preprocessing</h3>
+                            <p>Your uploaded image is passed through OpenCV's preprocessing module. We extract
+                                foundational metadata — aspect ratio, mean brightness, global contrast, and dominant hue
+                                distributions using histogram analysis in HSV color space.</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-step reveal reveal-delay-2">
+                        <div class="pipeline-step-number">II</div>
+                        <div class="pipeline-step-content">
+                            <h3>Physics Analysis</h3>
+                            <p>The physics engine applies computer vision techniques to classify lighting conditions,
+                                shadow hardness, depth-of-field characteristics, light direction, and contrast ratios.
+                                These measurements form the image's "physical DNA."</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-step reveal reveal-delay-3">
+                        <div class="pipeline-step-number">III</div>
+                        <div class="pipeline-step-content">
+                            <h3>Gemini Vision Synthesis</h3>
+                            <p>The image and its physics metadata are sent to Google Gemini 2.0 Flash — a powerful cloud
+                                vision-language model. Gemini synthesizes a richly detailed generative prompt by
+                                combining what it sees with the verified physical measurements for maximum accuracy.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">02</span>
+                    <h2 class="section-title">Extracted Metrics</h2>
+                </div>
+                <p class="section-desc">Every image produces the following physical measurements.</p>
+
+                <div class="docs-metrics">
+                    <div class="metric-row reveal reveal-delay-1">
+                        <div class="metric-name">Brightness Class</div>
+                        <div class="metric-detail">Categorizes lighting as low-key, balanced, or high-key based on mean
+                            luminance thresholds.</div>
+                    </div>
+                    <div class="metric-row reveal reveal-delay-2">
+                        <div class="metric-name">Depth of Field</div>
+                        <div class="metric-detail">Estimates shallow vs. deep focus using Laplacian variance sharpness
+                            scoring across image regions.</div>
+                    </div>
+                    <div class="metric-row reveal reveal-delay-3">
+                        <div class="metric-name">Shadow Hardness</div>
+                        <div class="metric-detail">Analyzes gradient transitions to determine if shadows are hard-edged
+                            or soft.</div>
+                    </div>
+                    <div class="metric-row reveal reveal-delay-4">
+                        <div class="metric-name">Light Direction</div>
+                        <div class="metric-detail">Computes brightness distribution across quadrants to estimate the
+                            dominant light source direction.</div>
+                    </div>
+                    <div class="metric-row reveal reveal-delay-1">
+                        <div class="metric-name">Contrast Ratio</div>
+                        <div class="metric-detail">Measures the ratio between the brightest and darkest significant
+                            regions in the image.</div>
+                    </div>
+                    <div class="metric-row reveal reveal-delay-2">
+                        <div class="metric-name">Sharpness Score</div>
+                        <div class="metric-detail">Global Laplacian variance providing an absolute sharpness measurement
+                            across the full frame.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">03</span>
+                    <h2 class="section-title">API Reference</h2>
+                </div>
+                <p class="section-desc">RePrompt exposes two REST endpoints for integration.</p>
+
+                <div class="docs-api">
+                    <div class="api-block reveal reveal-delay-1">
+                        <div class="api-method">
+                            <span class="api-badge">POST</span>
+                            <code>/api/reprompt</code>
+                        </div>
+                        <p class="api-desc">Upload an image file to receive a reverse-engineered prompt and physics
+                            metadata.</p>
+                        <div class="api-detail-row">
+                            <span class="api-label">Body</span>
+                            <span class="api-value">multipart/form-data — field: <code>file</code></span>
+                        </div>
+                        <div class="api-detail-row">
+                            <span class="api-label">Returns</span>
+                            <span class="api-value">JSON — <code>{ reprompt, stats }</code></span>
+                        </div>
+                    </div>
+
+                    <div class="api-block reveal reveal-delay-2">
+                        <div class="api-method">
+                            <span class="api-badge">POST</span>
+                            <code>/api/improve</code>
+                        </div>
+                        <p class="api-desc">Send a basic text prompt to receive an enhanced version optimized for image
+                            generation.</p>
+                        <div class="api-detail-row">
+                            <span class="api-label">Body</span>
+                            <span class="api-value">JSON — <code>{ "text": "your prompt" }</code></span>
+                        </div>
+                        <div class="api-detail-row">
+                            <span class="api-label">Returns</span>
+                            <span class="api-value">JSON — <code>{ result }</code></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ABOUT -->
+        <div id="about" class="page-section">
+
+            <header class="hero">
+                <p class="hero-subtitle">The Project</p>
+                <h1 class="hero-title">About</h1>
+                <p class="hero-desc">RePrompt is an open forensic tool for understanding AI-generated imagery at a
+                    physical level.</p>
+            </header>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">01</span>
+                    <h2 class="section-title">Why RePrompt?</h2>
+                </div>
+                <div class="about-content">
+                    <p>AI image generators produce stunning results, but the prompts behind them are often lost, vague,
+                        or impossible to replicate. RePrompt bridges that gap.</p>
+                    <p>By combining <strong>computer vision physics analysis</strong> with <strong>vision-language
+                            AI</strong>, RePrompt doesn't just describe what it sees — it understands <em>how</em> the
+                        image was lit, focused, and composed, then translates that understanding into a prompt you can
+                        actually use.</p>
+                </div>
+            </section>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">02</span>
+                    <h2 class="section-title">Tech Stack</h2>
+                </div>
+
+                <div class="about-stack">
+                    <div class="stack-item reveal reveal-delay-1">
+                        <div class="stack-icon">⚡</div>
+                        <div class="stack-info">
+                            <h4>FastAPI</h4>
+                            <p>High-performance async Python backend serving the analysis pipeline and static frontend.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="stack-item reveal reveal-delay-2">
+                        <div class="stack-icon">👁</div>
+                        <div class="stack-info">
+                            <h4>OpenCV</h4>
+                            <p>Computer vision engine powering the physics analyzer — brightness, shadows, DOF, and
+                                light direction extraction.</p>
+                        </div>
+                    </div>
+                    <div class="stack-item reveal reveal-delay-3">
+                        <div class="stack-icon">🧠</div>
+                        <div class="stack-info">
+                            <h4>Gemini 2.0 Flash</h4>
+                            <p>Google's cloud vision-language model that synthesizes the final reverse-engineered prompt
+                                from image + metadata — no local downloads needed.</p>
+                        </div>
+                    </div>
+                    <div class="stack-item reveal reveal-delay-4">
+                        <div class="stack-icon">🎨</div>
+                        <div class="stack-info">
+                            <h4>Vanilla Frontend</h4>
+                            <p>Pure HTML, CSS & JavaScript — zero frameworks, maximum performance, clean minimal
+                                aesthetic.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section reveal">
+                <div class="section-header">
+                    <span class="step-indicator">03</span>
+                    <h2 class="section-title">Getting Started</h2>
+                </div>
+                <div class="about-content">
+                    <div class="getting-started-steps">
+                        <div class="gs-step reveal reveal-delay-1">
+                            <span class="gs-num">1</span>
+                            <p>Install dependencies — <code>pip install -r requirements.txt</code></p>
+                        </div>
+                        <div class="gs-step reveal reveal-delay-2">
+                            <span class="gs-num">2</span>
+                            <p>Get a free <strong>Gemini API key</strong> from <code>aistudio.google.com</code></p>
+                        </div>
+                        <div class="gs-step reveal reveal-delay-3">
+                            <span class="gs-num">3</span>
+                            <p>Launch the server — <code>python main.py</code></p>
+                        </div>
+                        <div class="gs-step reveal reveal-delay-4">
+                            <span class="gs-num">4</span>
+                            <p>Open <code>http://localhost:8080</code> and upload an image</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 RePrompt</p>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
