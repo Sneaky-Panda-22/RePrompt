@@ -167,4 +167,81 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 1800);
         });
     });
+
+    // === Download PDF Button ===
+    const downloadPdfBtn = document.getElementById("download-pdf-btn");
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener("click", () => {
+            if (!imagePreview.src || !imagePreview.src.startsWith("data:image")) {
+                alert("No image available to generate PDF.");
+                return;
+            }
+            
+            try {
+                // Change button text temporarily
+                const originalText = downloadPdfBtn.textContent;
+                downloadPdfBtn.textContent = "Generating...";
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add Title
+                doc.setFontSize(22);
+                doc.setFont("helvetica", "bold");
+                doc.text("RePrompt Analysis", 20, 20);
+
+                // Use a canvas to safely convert any image format (like webp) to JPEG for jsPDF
+                const canvas = document.createElement("canvas");
+                canvas.width = imagePreview.naturalWidth || 800;
+                canvas.height = imagePreview.naturalHeight || 800;
+                const ctx = canvas.getContext("2d");
+                
+                // Draw a white background first (in case of transparent PNG)
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(imagePreview, 0, 0);
+                
+                const jpegData = canvas.toDataURL("image/jpeg", 0.95);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                
+                // Max dimensions to fit top half
+                const maxWidth = pdfWidth - 40;
+                const maxHeight = 100;
+                
+                // Scale to fit
+                const ratio = Math.min(maxWidth / canvas.width, maxHeight / canvas.height);
+                const finalWidth = canvas.width * ratio;
+                const finalHeight = canvas.height * ratio;
+                
+                // Center image
+                const xOffset = (pdfWidth - finalWidth) / 2;
+                
+                doc.addImage(jpegData, "JPEG", xOffset, 30, finalWidth, finalHeight);
+                
+                // Add Analyzed Prompt text below image
+                let currentY = 30 + finalHeight + 15;
+                
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text("Analyzed Prompt:", 20, currentY);
+                
+                currentY += 10;
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                
+                // Split text to fit width and handle long prompts gracefully
+                const textLines = doc.splitTextToSize(repromptText.textContent, pdfWidth - 40);
+                doc.text(textLines, 20, currentY);
+                
+                doc.save("RePrompt_Analysis.pdf");
+                
+                // Restore text
+                downloadPdfBtn.textContent = originalText;
+            } catch (err) {
+                console.error("PDF generation failed:", err);
+                alert("Failed to generate PDF. Make sure the page has fully loaded.");
+                downloadPdfBtn.textContent = "Download PDF";
+            }
+        });
+    }
 });

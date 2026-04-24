@@ -137,6 +137,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     letter-spacing: -0.02em;
+    flex-shrink: 0;
 }
 
 .nav-dot {
@@ -411,14 +412,18 @@ body {
     padding-right: 4.5rem;
 }
 
-.copy-btn {
+.prompt-actions {
     position: absolute;
-    top: 1.5rem; right: 1.5rem;
+    top: 1.25rem; right: 1.25rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.copy-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: var(--text-primary);
-    color: #fff;
     border: none;
     padding: 0.5rem 1.1rem;
     border-radius: 980px;
@@ -428,6 +433,8 @@ body {
     font-weight: 500;
     letter-spacing: 0.01em;
     transition: all 0.3s var(--ease);
+    background: var(--text-primary);
+    color: #fff;
 }
 
 .copy-btn svg { width: 12px; height: 12px; }
@@ -435,6 +442,34 @@ body {
 .copy-btn:hover {
     background: var(--blue);
     transform: scale(1.04);
+}
+
+/* === Massive Download Button === */
+.download-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3.5rem;
+    padding-bottom: 1rem;
+}
+
+.massive-download-btn {
+    background: var(--text-primary);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    padding: 1.2rem 3.5rem;
+    border: none;
+    border-radius: 980px;
+    cursor: pointer;
+    transition: all 0.4s var(--ease-spring);
+    box-shadow: var(--shadow-card);
+}
+
+.massive-download-btn:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+    background: var(--blue);
 }
 
 /* === Stats Grid === */
@@ -655,8 +690,8 @@ body {
     color: #fff; flex-shrink: 0;
 }
 
-.gs-step p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
-.gs-step code { font-family: 'SF Mono', monospace; font-size: 0.8rem; color: var(--blue); font-weight: 500; }
+.gs-step p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; width: 100%; overflow: hidden; }
+.gs-step code { font-family: 'SF Mono', monospace; font-size: 0.8rem; color: var(--blue); font-weight: 500; overflow-wrap: anywhere; word-break: break-word; }
 .gs-step strong { color: var(--text-primary); font-weight: 600; }
 
 /* === Footer === */
@@ -672,8 +707,8 @@ body {
     .hero-title { font-size: 3rem; }
     .upload-section { padding: 3rem 1.25rem; }
     .prompt-box { padding: 1.5rem; }
-    .prompt-box p { padding-right: 0; padding-bottom: 2.5rem; }
-    .copy-btn { position: static; margin-top: 1rem; }
+    .prompt-box p { padding-right: 0; padding-bottom: 3.5rem; }
+    .prompt-actions { position: static; margin-top: 1rem; flex-wrap: wrap; }
     .stats-grid { grid-template-columns: 1fr 1fr; }
     .metric-row { flex-direction: column; gap: 0.3rem; }
     .metric-name { min-width: unset; }

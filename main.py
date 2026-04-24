@@ -17,7 +17,7 @@ app = FastAPI(title="RePrompt API")
 
 os.makedirs("static", exist_ok=True)
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyAOAjrL1n9DbVs_ceo4AzXOj82fM_d-uFc")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyA7JNAmHKnSiJ4WhP2YsDmbPTjMNh9qPso")
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 # Ordered list of models to try (each has its own separate free-tier quota)
 GEMINI_MODELS = [

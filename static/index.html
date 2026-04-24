@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -79,14 +80,22 @@
                         <h2 class="section-title">Generated RePrompt</h2>
                     </div>
                     <div class="prompt-box reveal-scale">
+                        <div class="prompt-actions">
+                            <button class="copy-btn" id="copy-btn">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
                         <p id="reprompt-text">Your reverse-engineered prompt will appear here.</p>
-                        <button class="copy-btn" id="copy-btn">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                            <span>Copy</span>
+                    </div>
+                    
+                    <div class="download-container reveal">
+                        <button class="massive-download-btn" id="download-pdf-btn">
+                            Download PDF
                         </button>
                     </div>
                 </section>
@@ -314,7 +323,7 @@
                     <div class="getting-started-steps">
                         <div class="gs-step reveal reveal-delay-1">
                             <span class="gs-num">1</span>
-                            <p>Clone the repo — <code>git clone https://github.com/YOUR_USERNAME/RePrompt.git</code></p>
+                            <p>Clone the repo — <code>git clone https://github.com/Sneaky-Panda-22/RePrompt.git</code></p>
                         </div>
                         <div class="gs-step reveal reveal-delay-2">
                             <span class="gs-num">2</span>
