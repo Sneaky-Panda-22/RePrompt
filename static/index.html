@@ -308,35 +308,31 @@
             <section class="section reveal">
                 <div class="section-header">
                     <span class="step-indicator">03</span>
-                    <h2 class="section-title">Getting Started</h2>
+                    <h2 class="section-title">Local Development</h2>
                 </div>
                 <div class="about-content">
                     <div class="getting-started-steps">
                         <div class="gs-step reveal reveal-delay-1">
                             <span class="gs-num">1</span>
-                            <p>Install dependencies — <code>pip install -r requirements.txt</code></p>
+                            <p>Clone the repo — <code>git clone https://github.com/YOUR_USERNAME/RePrompt.git</code></p>
                         </div>
                         <div class="gs-step reveal reveal-delay-2">
                             <span class="gs-num">2</span>
-                            <p>Get a free <strong>Gemini API key</strong> from <code>aistudio.google.com</code></p>
+                            <p>Install dependencies — <code>pip install -r requirements.txt</code></p>
                         </div>
                         <div class="gs-step reveal reveal-delay-3">
                             <span class="gs-num">3</span>
-                            <p>Launch the server — <code>python main.py</code></p>
+                            <p>Set API Key — <code>export GEMINI_API_KEY="your_key"</code></p>
                         </div>
                         <div class="gs-step reveal reveal-delay-4">
                             <span class="gs-num">4</span>
-                            <p>Open <code>http://localhost:8080</code> and upload an image</p>
+                            <p>Launch server — <code>uvicorn main:app --host 0.0.0.0 --port 8080</code></p>
                         </div>
                     </div>
                 </div>
             </section>
 
         </div>
-
-        <footer class="site-footer">
-            <p>&copy; 2026 RePrompt</p>
-        </footer>
 
     </div>
 
