@@ -2,8 +2,6 @@
 
 RePrompt is a professional-grade image forensic tool designed to reverse-engineer AI-generated images. By combining **Computer Vision (OpenCV)** with **Vision-Language Models (Google Gemini)**, it extracts the hidden physical DNA of an image and synthesizes it into a highly detailed, reusable prompt for Midjourney, DALL-E, or Stable Diffusion.
 
-![RePrompt UI Preview](static/screenshot_preview.png)
-
 ## Key Features
 
 - **Forensic Analysis:** Uses OpenCV to measure real-world physics: mean brightness, contrast ratios, shadow hardness, light direction, and depth-of-field variance.
