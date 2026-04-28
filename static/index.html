@@ -29,6 +29,14 @@
             <a href="#app" class="nav-link active" data-section="app">App</a>
             <a href="#docs" class="nav-link" data-section="docs">Docs</a>
             <a href="#about" class="nav-link" data-section="about">About</a>
+            <a href="#history-section" class="nav-link" data-section="history" id="nav-history-btn"
+                style="display: none;">Temp History</a>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
         </div>
     </nav>
 
@@ -68,8 +76,8 @@
             </section>
 
             <div class="loading-state" id="loading-state">
-                <div class="spinner"></div>
-                <p>Analyzing physics & generating prompt<span class="loading-dots"></span></p>
+                <div class="loader"></div>
+                <p id="loading-text">Cooking prompt<span class="loading-dots"></span></p>
             </div>
 
             <div class="results-section" id="results">
@@ -92,10 +100,13 @@
                         </div>
                         <p id="reprompt-text">Your reverse-engineered prompt will appear here.</p>
                     </div>
-                    
+
                     <div class="download-container reveal">
                         <button class="massive-download-btn" id="download-pdf-btn">
                             Download PDF
+                        </button>
+                        <button class="massive-download-btn massive-reset-btn" id="reset-btn">
+                            Reset
                         </button>
                     </div>
                 </section>
@@ -108,8 +119,22 @@
                     <p class="section-desc">Physical metadata extracted via OpenCV analysis pipeline.</p>
                     <div class="stats-grid" id="stats-grid"></div>
                 </section>
+
             </div>
 
+        </div>
+
+        <!-- TEMP HISTORY -->
+        <div id="history" class="page-section">
+            <header class="hero">
+                <p class="hero-subtitle">Local Storage</p>
+                <h1 class="hero-title">Temporary History</h1>
+                <p class="hero-desc">Your previously generated prompts from this session.</p>
+            </header>
+
+            <section class="section history-section reveal" id="history-section" style="padding-top: 0;">
+                <div class="history-grid" id="history-grid"></div>
+            </section>
         </div>
 
         <!-- DOCS -->
@@ -323,7 +348,10 @@
                     <div class="getting-started-steps">
                         <div class="gs-step reveal reveal-delay-1">
                             <span class="gs-num">1</span>
-                            <p>Clone the repo — <code>git clone https://github.com/Sneaky-Panda-22/RePrompt.git</code></p>
+                            <p>Visit Github Repo: <a href="https://github.com/Sneaky-Panda-22/RePrompt" target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="repo-link">https://github.com/Sneaky-Panda-22/RePrompt</a> and Clone the repo
+                                — <code>git clone https://github.com/Sneaky-Panda-22/RePrompt.git</code></p>
                         </div>
                         <div class="gs-step reveal reveal-delay-2">
                             <span class="gs-num">2</span>
@@ -344,6 +372,8 @@
         </div>
 
     </div>
+
+    <div id="toast-container" class="toast-container"></div>
 
     <script src="script.js"></script>
 </body>

@@ -89,12 +89,14 @@ async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> s
             try:
                 return result["candidates"][0]["content"]["parts"][0]["text"]
             except (KeyError, IndexError):
-                return "No response from model."
+                raise HTTPException(status_code=500, detail="Gemini returned an unexpected response format.")
+        elif response.status_code == 429:
+            raise HTTPException(status_code=429, detail="Gemini API is currently overloaded. Please try again in 10 seconds.")
         else:
-            return f"Model error: {response.status_code} - {response.text}"
+            raise HTTPException(status_code=response.status_code, detail="Gemini API request failed. Check API key and quota.")
     except requests.exceptions.RequestException as e:
         print(f"Gemini API error: {e}")
-        return "Could not connect to Gemini API. Check your API key and internet."
+        raise HTTPException(status_code=503, detail="Could not connect to Gemini API. Please check your internet connection.")
 
 class ImproveRequest(BaseModel):
     text: str
