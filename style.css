@@ -1,0 +1,12 @@
+@page { margin: 12mm 15mm; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.3; font-size: 11pt; color: #333; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 10px; font-size: 0.85em; }
+th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; vertical-align: top; }
+th { background-color: #f8f9fa; font-weight: bold; }
+h1 { font-size: 1.6em; margin-top: 10px; margin-bottom: 8px; }
+h2 { font-size: 1.3em; margin-top: 12px; margin-bottom: 6px; }
+h3 { font-size: 1.1em; margin-top: 10px; margin-bottom: 4px; }
+p, ul, li { margin-top: 4px; margin-bottom: 4px; }
+hr { border: 0; border-top: 1px solid #eee; margin: 12px 0; }
+code { background-color: #f4f4f4; padding: 1px 3px; border-radius: 3px; font-family: monospace; font-size: 0.9em; }
+

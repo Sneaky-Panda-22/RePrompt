@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>RePrompt_Updated_Project_Report</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/Users/parthtandon/Desktop/RePrompt/style.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="reprompt">REPROMPT</h1>
+<p><strong>Comprehensive Project Report</strong><br />
+AI-Powered Prompt Reverse-Engineering System<br />
+Web Application · Android App · Generative AI Integration</p>
+<p><strong>🌐 Web App</strong>: FastAPI · OpenCV · Gemini<br />
+<strong>📱 Android App</strong>: Java · HttpURLConnection · Gemini (Updated)<br />
+<strong>✦ GenAI Layer</strong>: Gemini 2.5 · 4-model fallback</p>
+<p><strong>Minor Project — 5-Week Capstone</strong><br />
+B.Tech Computer Science &amp; Engineering · IIIT Surat<br />
+CSE1 · Semester II · Group 2</p>
+<p>Prepared by: * Kshitij Punani (UG25CSE090) * Kripal Rathod (UG25CSE094) * Omi Bhawsar (UG25CSE071) * Parth Tandon (UG25CSE076)</p>
+<hr />
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>RePrompt Studio is a full-stack AI project built as a 5-week college mini-project spanning three technology domains: a Python web application, a native Android application, and a Generative AI integration layer. Together, the system provides an end-to-end prompt engineering workspace — users can reverse-engineer the AI prompt behind any image on the web, and craft or refine prompts on mobile.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Technology Stack</th>
+<th style="text-align: left;">Core Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Web Application</strong></td>
+<td style="text-align: left;">FastAPI · Python · OpenCV · HTML/CSS/JS</td>
+<td style="text-align: left;">Image upload, CV physics analysis, Gemini prompt generation, PDF export</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Android App</strong></td>
+<td style="text-align: left;">Java · HttpURLConnection · SharedPreferences · XML UI</td>
+<td style="text-align: left;">Mobile prompt studio: input, improve, display and copy AI-enhanced prompts</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>GenAI Layer</strong></td>
+<td style="text-align: left;">Google Gemini 2.5 Flash · 4-model fallback · REST API</td>
+<td style="text-align: left;">Vision-language synthesis grounded in verified physics measurements</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Dev Infrastructure</strong></td>
+<td style="text-align: left;">Render · Firebase (planned) · GitHub</td>
+<td style="text-align: left;">Hosting, auth, version control</td>
+</tr>
+</tbody>
+</table>
+<h2 id="problem-statement-motivation">2. Problem Statement &amp; Motivation</h2>
+<p>Generative AI image tools (Midjourney, DALL-E, Stable Diffusion) have exploded in use, but they demand precise, structured prompts to produce high-quality results. Two problems exist in this space:</p>
+<ul>
+<li><strong>Reverse engineering</strong>: Given an AI-generated image, there is no reliable way to recover the prompt that created it. Existing tools simply ask an LLM to guess — and LLMs hallucinate physical properties freely.</li>
+<li><strong>Prompt improvement</strong>: Non-expert users write vague, low-quality prompts. There is no easy mobile interface to iteratively refine them using AI assistance.</li>
+</ul>
+<p>RePrompt addresses both problems. The web application solves reverse engineering by grounding Gemini’s output in objective computer vision measurements — making the recovered prompt factually anchored to the pixel data. The Android application solves prompt improvement by providing a clean, dark-themed mobile studio for iterative AI-assisted prompt crafting.</p>
+<h2 id="system-architecture">3. System Architecture</h2>
+<h3 id="big-picture-overview">3.1 Big-Picture Overview</h3>
+<p>RePrompt is architecturally split into two independent but complementary products that share the same GenAI backend philosophy: inject verifiable, structured context before calling a language model, rather than trusting the LLM to fill in factual details from its own (unreliable) perception.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Layer</th>
+<th style="text-align: left;">Web Product</th>
+<th style="text-align: left;">Android Product</th>
+<th style="text-align: left;">Shared</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Input</strong></td>
+<td style="text-align: left;">Image upload (drag &amp; drop)</td>
+<td style="text-align: left;">Text prompt (EditText)</td>
+<td style="text-align: left;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Processing</strong></td>
+<td style="text-align: left;">OpenCV physics engine</td>
+<td style="text-align: left;">HttpURLConnection GET to backend</td>
+<td style="text-align: left;">Gemini API call</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>AI Model</strong></td>
+<td style="text-align: left;">Gemini 2.5 Flash (vision)</td>
+<td style="text-align: left;">Gemini 1.5 Flash (via Render)</td>
+<td style="text-align: left;">4-model fallback pattern</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Output</strong></td>
+<td style="text-align: left;">Prompt + physics stats + PDF</td>
+<td style="text-align: left;">Improved prompt + clipboard</td>
+<td style="text-align: left;">JSON response</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Auth</strong></td>
+<td style="text-align: left;">Stateless (no auth)</td>
+<td style="text-align: left;">SharedPrefs (Firebase planned)</td>
+<td style="text-align: left;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Hosting</strong></td>
+<td style="text-align: left;">Render (free tier)</td>
+<td style="text-align: left;">Android device</td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="web-application-pipeline">3.2 Web Application Pipeline</h3>
+<p>Every image uploaded to the web app travels through six distinct stages before a prompt is returned. The pipeline is fully modular — each stage has a defined input/output contract and can be tested independently.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Stage</th>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">What Happens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Browser (index.html + script.js)</td>
+<td style="text-align: left;">The user uploads an image via drag-and-drop or file picker. FileReader renders local preview instantly — zero server round-trip. Image POSTed to <code>/api/reprompt</code> as multipart/form-data.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">FastAPI (main.py)</td>
+<td style="text-align: left;">Receives upload → writes secure OS tempfile → calls <code>preprocess()</code> → <code>analyze_physics()</code> → <code>generate_prompt_from_gemini()</code>. Tempfile deleted in finally block regardless of outcome.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Preprocessor</td>
+<td style="text-align: left;">Validates format, letterbox-resizes to 1024×1024 (preserving aspect ratio), applies bilateral denoise, computes grayscale stats, runs HSV colour histogram. Returns PreprocessMetadata with live numpy arrays.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">Physics Engine</td>
+<td style="text-align: left;">Runs 5 CV algorithms: Laplacian variance (DoF), Sobel gradients (shadow hardness), brightness centroid (light direction), Canny edge ratio (composition density), P95/P5 contrast ratio.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">Gemini API</td>
+<td style="text-align: left;">Sends base64 image + physics metadata to Gemini. 4-model fallback: <code>gemini-2.5-flash-lite</code> → <code>gemini-2.0-flash-lite</code> → <code>gemini-2.5-flash</code> → <code>gemini-2.0-flash</code>. On 429, waits 5s and retries before advancing.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">UI</td>
+<td style="text-align: left;">Renders prompt and physics stat cards dynamically. Copy-to-clipboard via <code>navigator.clipboard</code>. PDF export via jsPDF.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="android-application-pipeline">3.3 Android Application Pipeline</h3>
+<p>The Android app (Reprompt Studio) acts as a mobile interface to an AI prompt-improvement backend. The pipeline is optimised for a single interaction: the user types a rough prompt and gets an improved one back, now powered by a robust cloud-based architecture.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Stage</th>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">What Happens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Entry / Branding</strong></td>
+<td style="text-align: left;"><code>SplashActivity.java</code></td>
+<td style="text-align: left;">Displays animated logo for 2.8s using AnimatorSet and ObjectAnimator. Bounce, glow, and dot-loader animations. Checks SharedPrefs login state and routes accordingly.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Authentication</strong></td>
+<td style="text-align: left;"><code>LoginActivity.java</code></td>
+<td style="text-align: left;">Simulated login/signup flow toggling UI visibility for name/password fields. Persists logged_in flag and user name in SharedPreferences.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Prompt Input</strong></td>
+<td style="text-align: left;"><code>activity_main.xml</code></td>
+<td style="text-align: left;">Multi-line EditText for rough prompt. Live character counter. Dark-themed Card layout with amber (#F5A623) accents on a #0B0F1A background.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Network Call</strong></td>
+<td style="text-align: left;"><code>MainActivity.java</code></td>
+<td style="text-align: left;">Initiates a native <code>HttpURLConnection</code> GET request with URL-encoded parameters to <code>https://reprompt-backend-0qmw.onrender.com/improve</code>. Uses a robust 120-second timeout to accommodate AI inference latency.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Loading State</strong></td>
+<td style="text-align: left;">ProgressBar &amp; UI</td>
+<td style="text-align: left;">UI displays a “Backend is thinking…” state with a ProgressBar, preventing frozen-UI perception during the network wait.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Result Display</strong></td>
+<td style="text-align: left;">Markwon &amp; TextView</td>
+<td style="text-align: left;">Improved prompt rendered cleanly using the Markwon library (<code>io.noties.markwon.Markwon</code>) for Markdown formatting. One-tap clipboard copy via ClipboardManager.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="generative-ai-integration">4. Generative AI Integration</h2>
+<h3 id="the-core-innovation-grounded-generation">4.1 The Core Innovation: Grounded Generation</h3>
+<p>Why hybrid CV + LLM? Pure LLM prompting hallucinates measurements. Gemini might say “soft lighting” when the Sobel gradient score objectively shows hard shadows at 25.5. The OpenCV layer measures real pixel physics first — Gemini is then constrained to those verified numbers. The result is dramatically more reproducible and factually accurate.</p>
+<p>The web application implements a two-phase AI approach that differentiates RePrompt from simple LLM image-description tools: * <strong>Phase 1 — Computer Vision (deterministic)</strong>: OpenCV algorithms extract five objective measurements from the raw pixel data. These measurements are invariant — the same image always produces the same numbers. * <strong>Phase 2 — Language Model (constrained)</strong>: Gemini receives the image AND the verified measurements as structured context. The prompt engineering template explicitly tells Gemini to treat the CV numbers as ground truth and build its narrative around them.</p>
+<h3 id="physics-measurements-web-app">4.2 Physics Measurements (Web App)</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Measurement</th>
+<th style="text-align: left;">Algorithm</th>
+<th style="text-align: left;">Output &amp; Thresholds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Brightness Class</strong></td>
+<td style="text-align: left;">Mean pixel value of grayscale</td>
+<td style="text-align: left;">“high-key” (mean &gt; 170) / “mid-key” / “low-key” (mean &lt; 85)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Depth of Field</strong></td>
+<td style="text-align: left;">Laplacian variance — <code>cv2.Laplacian(gray, CV_64F).var()</code></td>
+<td style="text-align: left;">“deep” (&gt;300) / “moderate” / “shallow” (&lt;80). High variance = many sharp edges.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Shadow Hardness</strong></td>
+<td style="text-align: left;">Sobel gradient mean magnitude — <code>sqrt(Sx² + Sy²)</code></td>
+<td style="text-align: left;">“hard” (&gt;12.0) / “soft” / “diffuse” (&lt;5.0). Sharp edges = point light source.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Light Direction</strong></td>
+<td style="text-align: left;">Moment centroid of brightest 10% pixels (<code>cv2.moments</code>)</td>
+<td style="text-align: left;">Compass label: top-left, top-right, left, right, flat. Normalised to [-1, 1].</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Edge Density</strong></td>
+<td style="text-align: left;">Canny edge pixel count / total pixels</td>
+<td style="text-align: left;">0.0–1.0 ratio. High = busy/detailed. Low = minimalist/clean.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Contrast Ratio</strong></td>
+<td style="text-align: left;">P95 luminance / (P5 luminance + 1e-5)</td>
+<td style="text-align: left;">Robust ratio avoiding clipping noise. E.g. 25.5 = high drama.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gemini-model-fallback-strategy">4.3 Gemini Model Fallback Strategy</h3>
+<p>Both products implement a resilient multi-model fallback pattern to maximise uptime under free-tier quota limits:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Priority</th>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">Trigger Condition</th>
+<th style="text-align: left;">Free Quota</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1st (primary)</td>
+<td style="text-align: left;"><code>gemini-2.5-flash-lite</code></td>
+<td style="text-align: left;">Always tried first</td>
+<td style="text-align: left;">Highest — lite models have more headroom</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2nd</td>
+<td style="text-align: left;"><code>gemini-2.0-flash-lite</code></td>
+<td style="text-align: left;">429 rate-limit on model 1 after retry</td>
+<td style="text-align: left;">Independent quota pool</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3rd</td>
+<td style="text-align: left;"><code>gemini-2.5-flash</code></td>
+<td style="text-align: left;">429 on model 2</td>
+<td style="text-align: left;">Independent quota pool</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4th</td>
+<td style="text-align: left;"><code>gemini-2.0-flash</code></td>
+<td style="text-align: left;">429 on model 3</td>
+<td style="text-align: left;">Independent quota pool</td>
+</tr>
+</tbody>
+</table>
+<p>On each 429 response, the system waits 5 seconds and retries once before advancing to the next model. This gives effectively 4× the free-tier headroom compared to a single-model implementation.</p>
+<h3 id="cloud-architecture-transition-updated">4.4 Cloud Architecture Transition (Updated)</h3>
+<p>We have moved away from the initial local ngrok setup for the Android backend. The system now utilizes a persistent, cloud-based Render deployment (<code>https://reprompt-backend-0qmw.onrender.com/improve</code>), ensuring 24/7 availability for the mobile application without URL rotation issues.</p>
+<h2 id="web-application-detailed-breakdown">5. Web Application — Detailed Breakdown</h2>
+<h3 id="backend-main.py">5.1 Backend: main.py</h3>
+<p>Central entry point. Wires together FastAPI, both CV modules, and the Gemini API into one coherent service. Serves both the REST API and static frontend from a single Uvicorn process. The API key is securely loaded from the <code>GEMINI_API_KEY</code> environment variable.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Function / Route</th>
+<th style="text-align: left;">Role</th>
+<th style="text-align: left;">Key Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>_gemini_post(payload)</code></td>
+<td style="text-align: left;">Resilient Gemini caller</td>
+<td style="text-align: left;">Iterates <code>GEMINI_MODELS</code> in order. On 429, waits 5s and retries once before falling to next model.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>generate_prompt_from_gemini()</code></td>
+<td style="text-align: left;">Vision synthesis</td>
+<td style="text-align: left;">Reads tempfile → base64 → structured prompt with CV stats injected → calls <code>_gemini_post()</code> via <code>asyncio.run_in_executor</code>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>POST /api/reprompt</code></td>
+<td style="text-align: left;">Main pipeline</td>
+<td style="text-align: left;">Image upload → <code>preprocess()</code> → <code>analyze_physics()</code> → Gemini → JSON <code>{reprompt, stats}</code>. Tempfile in finally block.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>GET /improve</code></td>
+<td style="text-align: left;">Text enhancer</td>
+<td style="text-align: left;">Takes raw prompt string, enhances via Gemini, returns improved version. Stateless and highly available.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>app.mount("/")</code></td>
+<td style="text-align: left;">Static serving</td>
+<td style="text-align: left;">Mounts <code>static/</code> as frontend. One Uvicorn process handles both API and UI — no separate Nginx.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="image-preprocessor-modulespreprocessors.py">5.2 Image Preprocessor: modules/preprocessors.py</h3>
+<p>Standardises every image to a clean 1024×1024 numpy array. Downstream modules depend on this contract — they assume a fixed-size denoised image with known padding offsets.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Function</th>
+<th style="text-align: left;">Algorithm</th>
+<th style="text-align: left;">Why This Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>validate_image()</code></td>
+<td style="text-align: left;">Extension allowlist + <code>cv2.imread</code> decode</td>
+<td style="text-align: left;">Fails loudly before wasting compute. Rejects unsupported formats early.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>letterbox_resize()</code></td>
+<td style="text-align: left;">Scale longest axis to 1024, black-pad short axis</td>
+<td style="text-align: left;">Preserves true geometry. Stretch distorts the brightness centroid, giving wrong light direction.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>reduce_noise()</code></td>
+<td style="text-align: left;"><code>cv2.bilateralFilter</code> (d=9, σ=75)</td>
+<td style="text-align: left;">Edge-preserving denoise. Gaussian blur corrupts edge measurements used by Sobel and Laplacian.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>analyze_color_histogram()</code></td>
+<td style="text-align: left;">HSV histogram, 36 bins, top-3 peaks</td>
+<td style="text-align: left;">Provides Gemini with verified hue data — LLM colour perception is inconsistent across model versions.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="frontend-staticscript.js">5.3 Frontend: static/script.js</h3>
+<p>All interactivity, API communication, animations and PDF export. Zero framework dependencies — plain ES6 JavaScript. Uses IntersectionObserver for scroll reveals and jsPDF for client-side PDF generation.</p>
+<h2 id="android-application-detailed-breakdown">6. Android Application — Detailed Breakdown</h2>
+<h3 id="app-structure-activity-flow">6.1 App Structure &amp; Activity Flow</h3>
+<p>The Android app (Reprompt Studio) follows a clean 3-activity architecture with a clear responsibility split. All inter-activity state is managed through SharedPreferences and in-memory variables.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Activity</th>
+<th style="text-align: left;">Purpose</th>
+<th style="text-align: left;">Key Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>SplashActivity.java</code></td>
+<td style="text-align: left;">Branding &amp; routing</td>
+<td style="text-align: left;">AnimatorSet + ObjectAnimator for logo bounce, glow, and dot-loader animations over 2.8s. Reads SharedPrefs to route to Login or Main.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>LoginActivity.java</code></td>
+<td style="text-align: left;">User access</td>
+<td style="text-align: left;">Toggle UI visibility for login vs sign-up fields. Persists logged_in boolean and user name in <code>reprompt_prefs</code> SharedPreferences.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>MainActivity.java</code></td>
+<td style="text-align: left;">Prompt studio</td>
+<td style="text-align: left;">Manages full networking lifecycle: <code>HttpURLConnection</code> async call, loading state animations, character counter, result display with Markwon rendering, clipboard copy.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ui-design-system">6.2 UI Design System</h3>
+<p>The app uses a dark, premium aesthetic designed to feel like a professional AI tool rather than a student project.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Design Element</th>
+<th style="text-align: left;">Implementation &amp; Reasoning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Colour palette</strong></td>
+<td style="text-align: left;">#0B0F1A background (near-black navy), #F5A623 amber accents, #FFFFFF primary text. Follows modern AI/SaaS dark-mode conventions.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Card-based layout</strong></td>
+<td style="text-align: left;">RelativeLayout → ScrollView → Cards. Input Card and Result Card are visually distinct containers, matching the input/output mental model.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Loading state</strong></td>
+<td style="text-align: left;">A “Backend is thinking…” label and <code>ProgressBar</code> pulse to indicate live activity, preventing the frozen-UI perception during the 120s LLM timeout window.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Markdown Rendering</strong></td>
+<td style="text-align: left;">The <code>Markwon</code> library dynamically formats markdown elements (bolding, lists) returned by Gemini for maximum legibility.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="networking-layer">6.3 Networking Layer</h3>
+<p>The networking layer has been completely refactored to eliminate third-party dependencies like OkHttp, now utilizing native <code>HttpURLConnection</code> for lightweight and resilient communication. Key characteristics include:</p>
+<ul>
+<li><strong>Native GET Requests</strong>: Communicates directly with the persistent Render backend (<code>https://reprompt-backend-0qmw.onrender.com/improve</code>) using URL-encoded parameters.</li>
+<li><strong>Extended Resilience</strong>: Timeouts have been increased to 120 seconds to robustly handle the realities of AI inference latency and potential cold-starts on the cloud.</li>
+<li><strong>UI Thread Isolation</strong>: Network operations are executed asynchronously, preventing any main thread blocking while the “Backend is thinking…” progress state is active.</li>
+</ul>
+<h2 id="key-design-decisions">7. Key Design Decisions</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decision</th>
+<th style="text-align: left;">Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>FastAPI over Flask</strong></td>
+<td style="text-align: left;">FastAPI is async-native. The pipeline is I/O-bound (waiting for Gemini HTTP). <code>asyncio</code> + <code>run_in_executor</code> offloads the blocking HTTP call to a thread pool, keeping the event loop free for concurrent requests.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Model Verification</strong></td>
+<td style="text-align: left;">A new <code>verify_and_start()</code> function dynamically checks for available Gemini models on the backend, prioritizing <code>gemini-1.5-flash</code> for the best balance of speed and quality.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>API Key Security</strong></td>
+<td style="text-align: left;">The <code>GEMINI_API_KEY</code> has been strictly moved to an environment variable accessed via <code>os.environ.get</code>, adhering to deployment security best practices and preventing credential leaks.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Hybrid CV + LLM</strong></td>
+<td style="text-align: left;">Pure LLM hallucinates physics measurements. OpenCV measures real pixel data first; Gemini is constrained to those verified numbers. This is the core value proposition of RePrompt.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Bilateral filter</strong></td>
+<td style="text-align: left;">Unlike Gaussian blur, bilateral preserves edge sharpness while smoothing flat areas. Critical because Sobel and Laplacian both measure edge properties — blurring them would corrupt results.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Stateless web backend</strong></td>
+<td style="text-align: left;">Analysis tool, not a history service. The single <code>/improve</code> endpoint remains stateless. Tempfiles deleted per-request. Zero storage cost, zero privacy risk. Compatible with Render’s free ephemeral disk.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Vanilla JS frontend</strong></td>
+<td style="text-align: left;">React/Vue adds 200KB+ bundle overhead for a 3-tab SPA. Plain ES6 with IntersectionObserver delivers smooth animations at near-zero cost.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Native HttpURLConnection</strong></td>
+<td style="text-align: left;">Replaced OkHttp with native <code>HttpURLConnection</code> and URL-encoded GET parameters. This reduces the Android app’s dependency footprint while reliably connecting to the persistent Render backend.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Cloud Hosting over ngrok</strong></td>
+<td style="text-align: left;">Transitioning from local ngrok to a persistent cloud backend (Render) eliminates the “ngrok URL rotation” issue, providing a stable, highly available endpoint for the mobile app.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Markdown Rendering</strong></td>
+<td style="text-align: left;">Integrated the Markwon library (<code>io.noties.markwon.Markwon</code>) to handle Markdown formatting in the output TextView, ensuring the AI’s generated prompts are displayed with production-ready professionalism.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="conclusion">8. Conclusion</h2>
+<p>RePrompt Studio demonstrates a principled, full-stack approach to building AI-powered developer tools. Spanning a Python web application, a native Android app, and a Generative AI integration layer, the project covers all three required technology domains for the mini-project specification.</p>
+<p>The core technical innovation — grounding language model generation with verifiable computer vision measurements — gives RePrompt a clear and defensible differentiation from the hundreds of LLM image-wrapper tools in the market. The OpenCV physics engine is not an add-on; it is the mechanism that makes the system’s outputs factually reliable rather than statistically plausible.</p>
+<p>Recent architecture updates have further solidified the platform’s readiness for scale. The shift to a native <code>HttpURLConnection</code> over a persistent Render deployment ensures reliable cloud communication, while UI enhancements like Markwon markdown rendering and dedicated progress states deliver a vastly more professional UX. The system is resilient, secure, and fully aligned with modern deployment paradigms.</p>
+</body>
+</html>
