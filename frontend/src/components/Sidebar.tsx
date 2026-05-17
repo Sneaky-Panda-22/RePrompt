@@ -1,4 +1,4 @@
-import { Terminal, PenTool, Calendar, BookOpen, Sun, Moon, Sparkles, FileCode2, Info } from "lucide-react";
+import { Terminal, PenTool, Calendar, BookOpen, Sun, Moon, Sparkles, FileCode2, Info, X } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface SidebarProps {
@@ -6,6 +6,8 @@ interface SidebarProps {
   setActiveSection: (section: string) => void;
   darkMode: boolean;
   setDarkMode: (dark: boolean) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export default function Sidebar({
@@ -13,6 +15,8 @@ export default function Sidebar({
   setActiveSection,
   darkMode,
   setDarkMode,
+  isOpen = false,
+  onClose,
 }: SidebarProps) {
   const menuItems = [
     { id: "app", label: "Forensic App", icon: Terminal },
@@ -24,9 +28,11 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 flex flex-col h-screen flex-shrink-0 transition-colors duration-300">
+    <aside className={`fixed inset-y-0 left-0 z-50 w-64 md:static md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col h-screen border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex-shrink-0 ${
+      isOpen ? "translate-x-0" : "-translate-x-full"
+    }`}>
       {/* Brand Logo */}
-      <div className="h-16 flex items-center gap-2.5 px-6 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="h-16 flex items-center gap-2.5 px-6 border-b border-zinc-200 dark:border-zinc-800 relative">
         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
           <Sparkles className="w-4.5 h-4.5 text-white" />
         </div>
@@ -38,6 +44,15 @@ export default function Sidebar({
             FORENSICS v2.0
           </span>
         </div>
+        {/* Mobile Close Button */}
+        {onClose && (
+          <button 
+            onClick={onClose} 
+            className="md:hidden p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-150 dark:hover:bg-zinc-900 absolute right-4 top-1/2 transform -translate-y-1/2 border border-zinc-200 dark:border-zinc-800"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Navigation List */}
@@ -48,7 +63,10 @@ export default function Sidebar({
           return (
             <button
               key={item.id}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => {
+                setActiveSection(item.id);
+                if (onClose) onClose();
+              }}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 shadow-md shadow-zinc-900/5 dark:shadow-none"

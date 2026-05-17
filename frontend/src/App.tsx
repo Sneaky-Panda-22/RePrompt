@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Menu } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import ForensicsApp from "./components/ForensicsApp";
 import PracticeMode from "./components/PracticeMode";
@@ -17,6 +18,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<string>("app");
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Apply dark mode theme class
   useEffect(() => {
@@ -70,38 +72,58 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-zinc-950 font-sans antialiased text-zinc-900 dark:text-zinc-50 transition-colors duration-300">
+      {/* Sidebar Backdrop Overlay on Mobile */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 dark:bg-black/60 z-40 md:hidden backdrop-blur-xs transition-opacity duration-300"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <Sidebar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         darkMode={darkMode}
         setDarkMode={handleSetDarkMode}
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Workspace Frame */}
       <main className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-50/50 dark:bg-zinc-950/20">
         {/* Top Control Header */}
-        <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-8 bg-white dark:bg-zinc-950/60 backdrop-blur-md z-10 flex-shrink-0 transition-colors duration-300">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-              WORKSPACE
-            </span>
-            <span className="text-xs text-zinc-300 dark:text-zinc-700">/</span>
-            <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider capitalize">
-              {activeSection}
-            </span>
+        <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 md:px-8 bg-white dark:bg-zinc-950/60 backdrop-blur-md z-10 flex-shrink-0 transition-colors duration-300">
+          <div className="flex items-center gap-3">
+            {/* Hamburger Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="md:hidden p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors"
+            >
+              <Menu className="w-4.5 h-4.5" />
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] md:text-xs font-mono font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                WORKSPACE
+              </span>
+              <span className="text-xs text-zinc-300 dark:text-zinc-700">/</span>
+              <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider capitalize">
+                {activeSection === "app" ? "Forensics App" : activeSection === "practice" ? "Practice Sandbox" : activeSection === "daily" ? "Daily Challenge" : activeSection === "learn" ? "Learn Academy" : activeSection === "docs" ? "API Docs" : "About"}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-bold font-mono text-zinc-400 dark:text-zinc-500">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[9px] md:text-[10px] font-bold font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
               API INSTANCE CONNECTED
             </span>
           </div>
         </header>
 
         {/* Dynamic View Panel */}
-        <div className="flex-1 overflow-y-auto px-8 py-8">
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8">
           <div className="max-w-6xl mx-auto h-full">
             {renderSection()}
           </div>
