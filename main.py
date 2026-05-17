@@ -3,11 +3,14 @@ import tempfile
 import base64
 import requests
 import asyncio
-from fastapi import FastAPI, UploadFile, File, HTTPException
+import json
+import hashlib
+from datetime import date
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Any
+from typing import Any, Optional
 from pathlib import Path
 
 from modules.preprocessors import preprocess
@@ -101,6 +104,34 @@ async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> s
 class ImproveRequest(BaseModel):
     text: str
 
+class AnatomyRequest(BaseModel):
+    prompt: str
+
+class DailySubmitRequest(BaseModel):
+    challenge_id: str
+    user_prompt: str
+
+# ── Daily Challenge Data ──────────────────────────────────────────────────────
+DAILY_CHALLENGES = [
+    {"image_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80", "category": "Portrait", "difficulty": 2},
+    {"image_url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", "category": "Landscape", "difficulty": 1},
+    {"image_url": "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80", "category": "Architecture", "difficulty": 2},
+    {"image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80", "category": "Food Photography", "difficulty": 1},
+    {"image_url": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=800&q=80", "category": "Wildlife", "difficulty": 3},
+    {"image_url": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&q=80", "category": "Abstract", "difficulty": 3},
+    {"image_url": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80", "category": "Cityscape", "difficulty": 2},
+    {"image_url": "https://images.unsplash.com/photo-1518173946687-a53f45400867?w=800&q=80", "category": "Nature Macro", "difficulty": 2},
+    {"image_url": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800&q=80", "category": "Moody Landscape", "difficulty": 2},
+    {"image_url": "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&q=80", "category": "Night Photography", "difficulty": 3},
+    {"image_url": "https://images.unsplash.com/photo-1495567720989-cebdbdd97913?w=800&q=80", "category": "Minimalist", "difficulty": 1},
+    {"image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80", "category": "Portrait Close-up", "difficulty": 2},
+    {"image_url": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80", "category": "Forest", "difficulty": 1},
+    {"image_url": "https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", "category": "Product Shot", "difficulty": 2},
+]
+
+# Cache for daily challenge analysis (avoid re-processing same image)
+_daily_cache = {}
+
 @app.post("/api/improve")
 async def improve_text(request: ImproveRequest):
     prompt_template = (
@@ -170,6 +201,177 @@ async def create_reprompt(file: UploadFile = File(...)):
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+
+
+# ── Learning Feature Endpoints ────────────────────────────────────────────────
+
+@app.post("/api/anatomy")
+async def analyze_anatomy(request: AnatomyRequest):
+    """Parse a prompt into color-coded categorized segments."""
+    anatomy_prompt = (
+        "Parse the following AI image generation prompt into categorized segments. "
+        "Each segment should be a meaningful phrase from the prompt.\n\n"
+        f'Prompt: "{request.prompt}"\n\n'
+        "Categorize each segment into one of these categories:\n"
+        "- subject: Description of the main subject/scene\n"
+        "- lighting: Lighting conditions, light quality, direction\n"
+        "- composition: Camera angle, framing, perspective\n"
+        "- style: Art style, medium, artistic technique\n"
+        "- mood: Atmosphere, emotion, feeling\n"
+        "- technical: Camera settings, lens, depth of field, resolution\n\n"
+        "Return ONLY a JSON array (no markdown, no backticks):\n"
+        '[{"text": "exact phrase from prompt", "category": "subject", '
+        '"tooltip": "Brief explanation of why this element matters in prompts"}]'
+    )
+    payload = {
+        "contents": [{"parts": [{"text": anatomy_prompt}]}],
+        "generationConfig": {"temperature": 0.1, "topP": 0.8, "maxOutputTokens": 1500}
+    }
+    try:
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(None, lambda: _gemini_post(payload))
+        if response.status_code == 200:
+            result = response.json()
+            raw = result["candidates"][0]["content"]["parts"][0]["text"]
+            raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            segments = json.loads(raw)
+            return JSONResponse(content={"segments": segments})
+        else:
+            raise HTTPException(status_code=response.status_code, detail="Anatomy analysis failed.")
+    except json.JSONDecodeError:
+        return JSONResponse(content={"segments": [{"text": request.prompt, "category": "subject", "tooltip": "Full prompt"}]})
+    except Exception as e:
+        print(f"Anatomy error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def _run_evaluation(image_path: str, user_prompt: str):
+    """Shared logic: run physics analysis + Gemini scoring on an image."""
+    meta = preprocess(image_path)
+    physics = analyze_physics(meta)
+    stats = {
+        "brightness_class": physics.brightness_class,
+        "mean_brightness": physics.mean_brightness,
+        "dof_class": physics.dof_class,
+        "sharpness_score": physics.sharpness_score,
+        "shadow_hardness": physics.shadow_hardness,
+        "shadow_score": physics.shadow_score,
+        "light_direction": physics.light_direction,
+        "contrast_ratio": physics.contrast_ratio,
+    }
+
+    with open(image_path, "rb") as f:
+        img_b64 = base64.b64encode(f.read()).decode()
+    ext = Path(image_path).suffix.lower()
+    mime_map = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.bmp': 'image/bmp'}
+    mime_type = mime_map.get(ext, 'image/jpeg')
+
+    eval_prompt = (
+        "You are an expert prompt engineering instructor scoring a student's attempt.\n\n"
+        f"Physical measurements of this image:\n"
+        f"- Brightness: {stats['brightness_class']} (Mean: {stats['mean_brightness']})\n"
+        f"- Depth of Field: {stats['dof_class']}\n"
+        f"- Shadows: {stats['shadow_hardness']}\n"
+        f"- Light Direction: {stats['light_direction']}\n"
+        f"- Contrast Ratio: {stats['contrast_ratio']}\n\n"
+        f'Student\'s prompt attempt: "{user_prompt}"\n\n'
+        "Score the student 1-10 and analyze their prompt. Return ONLY valid JSON (no markdown, no backticks):\n"
+        '{"score": 7, "feedback": "Overall feedback", '
+        '"ideal_prompt": "The ideal prompt for this image", '
+        '"breakdown": ['
+        '{"element": "Subject Description", "status": "covered", "detail": "..."},'
+        '{"element": "Lighting", "status": "missing", "detail": "..."},'
+        '{"element": "Composition", "status": "partial", "detail": "..."},'
+        '{"element": "Style/Medium", "status": "covered", "detail": "..."},'
+        '{"element": "Mood/Atmosphere", "status": "missing", "detail": "..."},'
+        '{"element": "Technical Details", "status": "wrong", "detail": "..."},'
+        '{"element": "Shadow Description", "status": "missing", "detail": "..."},'
+        '{"element": "Color Palette", "status": "missing", "detail": "..."}]}\n'
+        "Use status values: covered, missing, partial, wrong. Be encouraging but honest."
+    )
+    payload = {
+        "contents": [{"parts": [
+            {"text": eval_prompt},
+            {"inline_data": {"mime_type": mime_type, "data": img_b64}}
+        ]}],
+        "generationConfig": {"temperature": 0.15, "topP": 0.85, "maxOutputTokens": 2000}
+    }
+    loop = asyncio.get_event_loop()
+    response = await loop.run_in_executor(None, lambda: _gemini_post(payload))
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Evaluation failed.")
+    raw = response.json()["candidates"][0]["content"]["parts"][0]["text"]
+    raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    evaluation = json.loads(raw)
+    evaluation["stats"] = stats
+    return evaluation
+
+
+@app.post("/api/evaluate")
+async def evaluate_prompt(file: UploadFile = File(...), user_prompt: str = Form(...)):
+    """Score a user's prompt attempt against an uploaded image."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=Path(file.filename).suffix) as tmp:
+        content = await file.read()
+        tmp.write(content)
+        temp_path = tmp.name
+    try:
+        result = await _run_evaluation(temp_path, user_prompt)
+        return JSONResponse(content=result)
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=500, detail="Failed to parse AI evaluation response.")
+    except Exception as e:
+        print(f"Evaluate error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
+@app.get("/api/daily-challenge")
+async def get_daily_challenge():
+    """Return today's daily challenge."""
+    today = date.today()
+    day_index = today.timetuple().tm_yday % len(DAILY_CHALLENGES)
+    challenge = DAILY_CHALLENGES[day_index]
+    return JSONResponse(content={
+        "id": today.isoformat(),
+        "image_url": challenge["image_url"],
+        "category": challenge["category"],
+        "difficulty": challenge["difficulty"],
+    })
+
+
+@app.post("/api/daily-evaluate")
+async def evaluate_daily(request: DailySubmitRequest):
+    """Evaluate a user's prompt for the daily challenge."""
+    today = date.today()
+    day_index = today.timetuple().tm_yday % len(DAILY_CHALLENGES)
+    challenge = DAILY_CHALLENGES[day_index]
+    image_url = challenge["image_url"]
+
+    # Download the challenge image
+    try:
+        img_resp = requests.get(image_url, timeout=15)
+        img_resp.raise_for_status()
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Failed to download challenge image: {e}")
+
+    ext = ".jpg"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
+        tmp.write(img_resp.content)
+        temp_path = tmp.name
+    try:
+        result = await _run_evaluation(temp_path, request.user_prompt)
+        return JSONResponse(content=result)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Failed to parse AI evaluation response.")
+    except Exception as e:
+        print(f"Daily evaluate error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
