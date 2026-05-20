@@ -11,8 +11,10 @@ The system features a premium, responsive React-based dashboard supporting dynam
 ### 1. Forensic App Workspace
 - **Image Auditing:** Measures objective properties like Laplacian Variance (Sharpness), Sobel Gradients (Shadows), global contrast, light direction, and aspect ratio.
 - **Prompt Anatomy:** Parses prompt text into interactive color-coded segments (`subject`, `lighting`, `camera`, `style`, `mood`) with hover tooltips.
-- **Local History Registry:** Persists the last 5 forensic reports in your browser's local storage.
-- **PDF Report Generation:** Compiles the scanned image, physics metadata, and prompt blueprint into an instantly downloadable PDF document.
+- **Suggested Negative Prompts:** Automatically generates high-fidelity negative prompts suggesting tags and styles to avoid.
+- **Local History Registry:** Persists forensic reports (including positive prompt, negative prompt, and complete physics metrics) in your browser's local storage.
+- **Anatomy & Physics Restoration:** Restores full physics parameter values and interactive prompt anatomy segmentation when loaded back from the local history timeline.
+- **PDF Report Generation:** Compiles the scanned image, physics metadata, negative prompt parameters, and prompt blueprint into an instantly downloadable PDF document.
 
 ### 2. Practice Sandbox
 - **Dual Training Modes:** Supporting *Write Your Own* (write a description from scratch) and *Fix My Prompt* (improve a draft prompt against a target image).

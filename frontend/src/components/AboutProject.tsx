@@ -22,22 +22,18 @@ export default function AboutProject({ showToast }: AboutProjectProps) {
     {
       title: "FastAPI",
       desc: "High-performance async Python backend orchestration, serving API pipelines.",
-      icon: "⚡",
     },
     {
       title: "OpenCV",
       desc: "Computer vision engine calculating real-time brightness, shadows, contrast, and depth-of-field metrics.",
-      icon: "👁",
     },
     {
       title: "Gemini Models",
       desc: "Google's powerful vision-language model family transforming pixel physics into highly accurate text blueprints.",
-      icon: "🧠",
     },
     {
       title: "React & Tailwind CSS v4",
       desc: "Clean, professional, responsive split-pane SaaS dashboard utilizing shadcn/ui headless components.",
-      icon: "🎨",
     },
   ];
 
@@ -112,14 +108,11 @@ export default function AboutProject({ showToast }: AboutProjectProps) {
                   key={idx}
                   className="p-4 rounded-xl border border-zinc-150 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/5 flex items-start gap-3.5"
                 >
-                  <span className="text-xl bg-white dark:bg-zinc-950 w-9 h-9 rounded-lg border border-zinc-200/50 dark:border-zinc-800 flex items-center justify-center shadow-sm">
-                    {item.icon}
-                  </span>
                   <div>
                     <h5 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">
                       {item.title}
                     </h5>
-                    <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1 leading-normal">
+                    <p className="text-[11px] text-zinc-450 dark:text-zinc-500 mt-1 leading-normal">
                       {item.desc}
                     </p>
                   </div>

@@ -167,7 +167,7 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
   return (
     <div className="space-y-8 animate-fade-in p-1">
       {/* Header Info */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
             Prompt Practice Sandbox
@@ -181,9 +181,11 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
         <div className="flex gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg">
           <Button
             size="sm"
-            variant={activeTab === "write" ? "default" : "ghost"}
+            variant="ghost"
             className={`h-8 px-4 text-xs font-semibold rounded-md ${
-              activeTab === "write" ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white" : ""
+              activeTab === "write"
+                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+                : "text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("write")}
           >
@@ -191,9 +193,11 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
           </Button>
           <Button
             size="sm"
-            variant={activeTab === "diff" ? "default" : "ghost"}
+            variant="ghost"
             className={`h-8 px-4 text-xs font-semibold rounded-md ${
-              activeTab === "diff" ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white" : ""
+              activeTab === "diff"
+                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+                : "text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("diff")}
           >
@@ -314,7 +318,7 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
               <div className="space-y-6 animate-slide-up">
                 {/* Score Card */}
                 <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 shadow-sm">
-                  <CardHeader className="pb-3 flex flex-row items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
+                  <CardHeader className="pb-3 flex flex-col sm:flex-row justify-between sm:items-center border-b border-zinc-100 dark:border-zinc-800 gap-3">
                     <div>
                       <CardTitle className="text-base font-semibold">Evaluation Results</CardTitle>
                       <CardDescription>Physics-alignment index score based on extracted metadata.</CardDescription>
@@ -510,7 +514,7 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
               <div className="space-y-6 animate-slide-up">
                 {/* Diff Result Card */}
                 <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 shadow-sm">
-                  <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 flex flex-row justify-between items-center">
+                  <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                     <div>
                       <CardTitle className="text-base font-semibold">Compositional Refinement</CardTitle>
                       <CardDescription>Side-by-side prompt diff audit based on target image physics.</CardDescription>

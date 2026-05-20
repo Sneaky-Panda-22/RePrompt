@@ -30,6 +30,8 @@ interface HistoryItem {
   img: string;
   prompt: string;
   negative_prompt?: string;
+  stats?: AnalysisStats;
+  anatomy?: Array<{ text: string; segment_type: string; tooltip: string }>;
 }
 
 export default function ForensicsApp({ showToast }: { showToast: (msg: string, type: "success" | "error") => void }) {
@@ -42,6 +44,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyNegativeSuccess, setCopyNegativeSuccess] = useState(false);
+  const [activeAnatomyIdx, setActiveAnatomyIdx] = useState<number | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -58,9 +61,16 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
     }
   }, []);
 
-  const saveToHistory = (imgBase64: string, promptText: string, negativePrompt?: string) => {
-    const updated = [
-      { id: Date.now(), img: imgBase64, prompt: promptText, negative_prompt: negativePrompt },
+  const saveToHistory = (imgBase64: string, responseData: AnalysisResponse) => {
+    const updated: HistoryItem[] = [
+      {
+        id: Date.now(),
+        img: imgBase64,
+        prompt: responseData.prompt,
+        negative_prompt: responseData.negative_prompt,
+        stats: responseData.stats,
+        anatomy: responseData.anatomy,
+      },
       ...history,
     ].slice(0, 5); // Keep last 5 entries
     setHistory(updated);
@@ -214,7 +224,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
 
       setAnalysisData(formattedData);
       if (image) {
-        saveToHistory(image, formattedData.prompt, formattedData.negative_prompt);
+        saveToHistory(image, formattedData);
       }
       showToast("Analysis complete!", "success");
     } catch (err: any) {
@@ -282,11 +292,21 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
 
+        const getVal = (key1: string, key2?: string) => {
+          const val = (analysisData.stats as any)[key1] ?? (key2 ? (analysisData.stats as any)[key2] : undefined);
+          return val;
+        };
+
+        const brightnessVal = getVal("mean_brightness_global", "mean_brightness");
+        const contrastVal = getVal("global_contrast", "contrast_ratio");
+        const dofVal = getVal("sharpness_score", "dof_class");
+        const shadowVal = getVal("shadow_hardness", "shadow_score");
+
         const stats = [
-          `Brightness: ${analysisData.stats.brightness?.toFixed(2) ?? "N/A"}%`,
-          `Shadow Hardness: ${analysisData.stats.shadow_hardness?.toFixed(2) ?? "N/A"}`,
-          `Depth of Field index: ${analysisData.stats.depth_of_field?.toFixed(2) ?? "N/A"}`,
-          `Contrast index: ${analysisData.stats.contrast?.toFixed(2) ?? "N/A"}`,
+          `Brightness: ${typeof brightnessVal === "number" ? brightnessVal.toFixed(2) + "%" : (brightnessVal ?? "N/A")}`,
+          `Shadow Hardness: ${typeof shadowVal === "number" ? shadowVal.toFixed(2) : (shadowVal ?? "N/A")}`,
+          `Depth of Field: ${typeof dofVal === "number" ? dofVal.toFixed(2) : (dofVal ?? "N/A")}`,
+          `Contrast index: ${typeof contrastVal === "number" ? contrastVal.toFixed(2) : (contrastVal ?? "N/A")}`,
         ];
 
         stats.forEach((stat) => {
@@ -366,51 +386,54 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
       {/* Main Split Layout Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Side: Upload Control Panel */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 lg:sticky lg:top-6 space-y-6 self-start">
           <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold">Image Source</CardTitle>
               <CardDescription>Drag and drop or search for a local master photograph.</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Drag Drop Area */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={image ? undefined : triggerUpload}
-                className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
-                  image
-                    ? "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/10 cursor-default"
-                    : isDragging
-                    ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10"
-                    : "border-zinc-300 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/5"
-                }`}
-              >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-
-                {image ? (
-                  <div className="w-full relative group">
-                    <img
-                      ref={imgRef}
-                      src={image}
-                      alt="Source Audit Master"
-                      className="w-full max-h-64 object-contain rounded-lg shadow-sm border border-zinc-200/50 dark:border-zinc-800/50"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-lg transition-all duration-200">
-                      <Button size="sm" variant="secondary" onClick={triggerUpload} className="h-8 text-xs gap-1.5">
-                        <Upload className="w-3.5 h-3.5" />
-                        Replace Image
+              {/* Image / Drag Drop Area */}
+              {image ? (
+                <div className="relative group rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/10 shadow-sm transition-all duration-300">
+                  <img
+                    ref={imgRef}
+                    src={image}
+                    alt="Source Audit Master"
+                    className="w-full max-h-72 object-cover transition-transform duration-500 group-hover:scale-[1.01]"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2.5 transition-all duration-200">
+                    <Button size="sm" variant="secondary" onClick={triggerUpload} className="h-8.5 text-xs gap-1.5 font-semibold">
+                      <Upload className="w-3.5 h-3.5" />
+                      Replace
+                    </Button>
+                    {analysisData && (
+                      <Button size="sm" variant="destructive" onClick={resetAll} className="h-8.5 text-xs gap-1.5 font-semibold bg-red-600 hover:bg-red-700 text-white border-0">
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        Reset
                       </Button>
-                    </div>
+                    )}
                   </div>
-                ) : (
+                </div>
+              ) : (
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={triggerUpload}
+                  className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300 ${
+                    isDragging
+                      ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10"
+                      : "border-zinc-300 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/5"
+                  }`}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
                   <div className="space-y-4 py-4 flex flex-col items-center">
                     <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 dark:text-zinc-400">
                       <Upload className="w-5.5 h-5.5" />
@@ -421,8 +444,8 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                     </div>
                     <span className="text-xs text-zinc-400 dark:text-zinc-500">Supports PNG, JPG, WEBP</span>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Analyze Button */}
               {image && !analysisData && (
@@ -446,6 +469,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
               )}
             </CardContent>
           </Card>
+
         </div>
 
         {/* Right Side: Results Terminal / Visualizer */}
@@ -479,7 +503,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
             <div className="space-y-6 animate-slide-up">
               {/* Tabs for Prompts */}
               <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
-                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80 flex flex-row items-center justify-between">
+                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <CardTitle className="text-base font-semibold">Extracted Prompt Blueprint</CardTitle>
                     <CardDescription>Synthesized natural language representation of the master image.</CardDescription>
@@ -487,19 +511,26 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                   <div className="flex gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg">
                     <Button
                       size="xs"
-                      variant={activeTab === "raw" ? "default" : "ghost"}
+                      variant="ghost"
                       className={`h-7 px-3 text-xs font-semibold rounded-md ${
-                        activeTab === "raw" ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-850 dark:text-white" : ""
+                        activeTab === "raw"
+                          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+                          : "text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                       }`}
-                      onClick={() => setActiveTab("raw")}
+                      onClick={() => {
+                        setActiveTab("raw");
+                        setActiveAnatomyIdx(null);
+                      }}
                     >
                       Raw View
                     </Button>
                     <Button
                       size="xs"
-                      variant={activeTab === "anatomy" ? "default" : "ghost"}
+                      variant="ghost"
                       className={`h-7 px-3 text-xs font-semibold rounded-md ${
-                        activeTab === "anatomy" ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-850 dark:text-white" : ""
+                        activeTab === "anatomy"
+                          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+                          : "text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                       }`}
                       onClick={() => setActiveTab("anatomy")}
                     >
@@ -555,33 +586,74 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                     )}
 
                     {activeTab === "anatomy" && (
-                      <div className="flex flex-wrap gap-1 leading-relaxed text-sm select-all">
-                        {analysisData.anatomy ? (
-                          analysisData.anatomy.map((seg, idx) => (
-                            <span
-                              key={idx}
-                              className={`px-1.5 py-0.5 rounded text-xs font-medium cursor-help transition-all duration-200 border relative group ${
-                                seg.segment_type === "subject"
-                                  ? "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-400"
-                                  : seg.segment_type === "lighting"
-                                  ? "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400"
-                                  : seg.segment_type === "camera"
-                                  ? "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-400"
-                                  : seg.segment_type === "style"
-                                  ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400"
-                                  : "bg-zinc-500/10 text-zinc-700 border-zinc-500/20 dark:text-zinc-400"
-                              }`}
-                            >
-                              {seg.text}
-                              {/* Hover Tooltip */}
-                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-zinc-900 text-white text-[10px] p-2 rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30 font-sans leading-normal">
-                                <strong className="block uppercase text-indigo-400 text-[9px] mb-0.5">{seg.segment_type}</strong>
-                                {seg.tooltip}
+                      <div className="space-y-4">
+                        <div className="flex flex-wrap gap-1.5 leading-relaxed text-sm select-all">
+                          {analysisData.anatomy ? (
+                            analysisData.anatomy.map((seg, idx) => (
+                              <span
+                                key={idx}
+                                onClick={() => setActiveAnatomyIdx(activeAnatomyIdx === idx ? null : idx)}
+                                className={`px-1.5 py-0.5 rounded text-xs font-medium cursor-help transition-all duration-200 border relative group ${
+                                  activeAnatomyIdx === idx 
+                                    ? "ring-2 ring-indigo-500/50 scale-[1.02] " 
+                                    : "hover:scale-[1.01]"
+                                } ${
+                                  seg.segment_type === "subject"
+                                    ? "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-400"
+                                    : seg.segment_type === "lighting"
+                                    ? "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400"
+                                    : seg.segment_type === "camera"
+                                    ? "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-400"
+                                    : seg.segment_type === "style"
+                                    ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400"
+                                    : "bg-zinc-500/10 text-zinc-700 border-zinc-500/20 dark:text-zinc-400"
+                                }`}
+                              >
+                                {seg.text}
+                                {/* Hover/Tap Tooltip */}
+                                <span className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-zinc-900 text-white text-[10px] p-2 rounded shadow-xl transition-opacity pointer-events-none z-30 font-sans leading-normal ${
+                                  activeAnatomyIdx === idx ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                }`}>
+                                  <strong className="block uppercase text-indigo-400 text-[9px] mb-0.5">{seg.segment_type}</strong>
+                                  {seg.tooltip}
+                                </span>
                               </span>
-                            </span>
-                          ))
-                        ) : (
-                          <p className="text-zinc-400 text-xs italic">Prompt Anatomy segment analysis is unavailable.</p>
+                            ))
+                          ) : (
+                            <p className="text-zinc-400 text-xs italic">Prompt Anatomy segment analysis is unavailable.</p>
+                          )}
+                        </div>
+
+                        {/* Interactive mobile explanation details box */}
+                        {activeAnatomyIdx !== null && analysisData.anatomy && analysisData.anatomy[activeAnatomyIdx] && (
+                          <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800 text-xs animate-slide-up flex items-start justify-between gap-3">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1.5">
+                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                                  analysisData.anatomy[activeAnatomyIdx].segment_type === "subject" ? "bg-blue-500/15 text-blue-700 dark:text-blue-400" :
+                                  analysisData.anatomy[activeAnatomyIdx].segment_type === "lighting" ? "bg-amber-500/15 text-amber-700 dark:text-amber-400" :
+                                  analysisData.anatomy[activeAnatomyIdx].segment_type === "camera" ? "bg-purple-500/15 text-purple-700 dark:text-purple-400" :
+                                  analysisData.anatomy[activeAnatomyIdx].segment_type === "style" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" :
+                                  "bg-zinc-500/15 text-zinc-700 dark:text-zinc-400"
+                                }`}>
+                                  {analysisData.anatomy[activeAnatomyIdx].segment_type}
+                                </span>
+                                <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-550 font-mono">
+                                  Segment Detail
+                                </span>
+                              </div>
+                              <p className="text-zinc-650 dark:text-zinc-300 leading-relaxed">
+                                <strong className="font-semibold text-zinc-850 dark:text-zinc-100">"{analysisData.anatomy[activeAnatomyIdx].text}": </strong>
+                                {analysisData.anatomy[activeAnatomyIdx].tooltip}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setActiveAnatomyIdx(null)}
+                              className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-350 cursor-pointer p-0.5 hover:bg-indigo-500/10 rounded transition-all"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
@@ -600,36 +672,43 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Statistics Grid */}
-              <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
-                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
-                  <CardTitle className="text-base font-semibold">Audited Physics Parameters</CardTitle>
-                  <CardDescription>Direct pixel metrics calculated via computer vision.</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-5">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {Object.entries(analysisData.stats).map(([key, val]) => {
-                      if (val === undefined || val === null) return null;
-                      const isPercent = key === "brightness";
-                      return (
-                        <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
-                          <span className="text-[10px] block font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-                            {getStatLabel(key as keyof AnalysisStats)}
-                          </span>
-                          <span className="text-lg font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block">
-                            {typeof val === "number" ? (isPercent ? `${val.toFixed(1)}%` : val.toFixed(2)) : String(val)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           )}
         </div>
       </div>
+
+      {!isLoading && analysisData && (
+        <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm animate-slide-up">
+          <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
+            <CardTitle className="text-base font-semibold">Audited Physics Parameters</CardTitle>
+            <CardDescription>Direct pixel metrics calculated via computer vision.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {Object.entries(analysisData.stats).length > 0 ? (
+                Object.entries(analysisData.stats).map(([key, val]) => {
+                  if (val === undefined || val === null) return null;
+                  const isPercent = key === "brightness" || key === "mean_brightness_global" || key === "mean_brightness";
+                  return (
+                    <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30 animate-fade-in">
+                      <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+                        {getStatLabel(key as keyof AnalysisStats)}
+                      </span>
+                      <span className="text-lg font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block">
+                        {typeof val === "number" ? (isPercent ? `${val.toFixed(1)}%` : val.toFixed(2)) : String(val)}
+                      </span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="col-span-full py-6 text-center text-zinc-450 dark:text-zinc-500 text-xs italic">
+                  Physics metrics are unavailable for this legacy history record. Run a new scan to view real-time metrics.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* History Grid (Only if has items) */}
       {history.length > 0 && (
@@ -653,7 +732,12 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                       className="h-7 text-[10px] gap-1 font-semibold"
                       onClick={() => {
                         setImage(item.img);
-                        setAnalysisData({ prompt: item.prompt, negative_prompt: item.negative_prompt, stats: {} });
+                        setAnalysisData({
+                          prompt: item.prompt,
+                          negative_prompt: item.negative_prompt,
+                          stats: item.stats || {},
+                          anatomy: item.anatomy,
+                        });
                         showToast("Loaded from history!", "success");
                       }}
                     >
