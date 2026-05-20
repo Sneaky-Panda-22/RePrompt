@@ -56,7 +56,7 @@ def _gemini_post(payload: dict) -> requests.Response:
         return resp  # Non-429 error, return as-is
     return resp  # All models exhausted, return last response
 
-async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> str:
+async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> tuple[str, str]:
     with open(image_path, "rb") as f:
         img_b64 = base64.b64encode(f.read()).decode()
     
@@ -73,7 +73,13 @@ async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> s
         f"- Shadows: {physics_stats['shadow_hardness']}\n"
         f"- Lighting Direction: {physics_stats['light_direction']}\n"
         f"- Contrast Ratio: {physics_stats['contrast_ratio']}\n\n"
-        "Output ONLY the final descriptive generative prompt text. Start immediately with the prompt."
+        "Also generate a highly tailored, custom Negative Prompt specifying elements, styles, anomalies, and qualities to avoid "
+        "based on the analyzed properties and composition of the image. The negative prompt must be short and concise (under 15 comma-separated words/phrases).\n\n"
+        "Format your output exactly as follows with the markers:\n"
+        "---POSITIVE PROMPT---\n"
+        "[Insert the descriptive positive prompt text here]\n"
+        "---NEGATIVE PROMPT---\n"
+        "[Insert a short, comma-separated list of negative prompt keywords/phrases to avoid here]"
     )
     
     payload = {
@@ -90,7 +96,19 @@ async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> s
         if response.status_code == 200:
             result = response.json()
             try:
-                return result["candidates"][0]["content"]["parts"][0]["text"]
+                text = result["candidates"][0]["content"]["parts"][0]["text"]
+                pos_prompt = ""
+                neg_prompt = ""
+                if "---POSITIVE PROMPT---" in text and "---NEGATIVE PROMPT---" in text:
+                    parts = text.split("---NEGATIVE PROMPT---")
+                    pos_part = parts[0].replace("---POSITIVE PROMPT---", "").strip()
+                    neg_part = parts[1].strip()
+                    pos_prompt = pos_part
+                    neg_prompt = neg_part
+                else:
+                    pos_prompt = text.strip()
+                    neg_prompt = "low quality, blurry, low resolution, artifacts, distorted"
+                return pos_prompt, neg_prompt
             except (KeyError, IndexError):
                 raise HTTPException(status_code=500, detail="Gemini returned an unexpected response format.")
         elif response.status_code == 429:
@@ -138,12 +156,17 @@ async def improve_text(request: ImproveRequest):
         "You are an expert AI prompt engineer. Rewrite and vastly improve the following basic image generation prompt "
         "by adding descriptive details, lighting, camera angles, and art style, while maintaining the core subject.\n\n"
         f"Original Prompt: {request.text}\n\n"
-        "Output ONLY the improved prompt text."
+        "Also generate a highly tailored, custom Negative Prompt listing terms, qualities, and concepts to avoid for this style.\n\n"
+        "Format your output exactly as follows with the markers:\n"
+        "---POSITIVE PROMPT---\n"
+        "[Insert the improved prompt text here]\n"
+        "---NEGATIVE PROMPT---\n"
+        "[Insert the negative prompt terms here]"
     )
     
     payload = {
         "contents": [{"parts": [{"text": prompt_template}]}],
-        "generationConfig": {"temperature": 0.5, "topP": 0.9, "maxOutputTokens": 500}
+        "generationConfig": {"temperature": 0.5, "topP": 0.9, "maxOutputTokens": 800}
     }
     
     try:
@@ -152,15 +175,26 @@ async def improve_text(request: ImproveRequest):
         if response.status_code == 200:
             result = response.json()
             try:
-                improved = result["candidates"][0]["content"]["parts"][0]["text"]
+                text = result["candidates"][0]["content"]["parts"][0]["text"]
+                pos_prompt = ""
+                neg_prompt = ""
+                if "---POSITIVE PROMPT---" in text and "---NEGATIVE PROMPT---" in text:
+                    parts = text.split("---NEGATIVE PROMPT---")
+                    pos_part = parts[0].replace("---POSITIVE PROMPT---", "").strip()
+                    neg_part = parts[1].strip()
+                    pos_prompt = pos_part
+                    neg_prompt = neg_part
+                else:
+                    pos_prompt = text.strip()
+                    neg_prompt = "low quality, blurry, distorted, low resolution, artifacts"
+                return JSONResponse(content={"result": pos_prompt, "negative_prompt": neg_prompt})
             except (KeyError, IndexError):
-                improved = "No response from model."
-            return JSONResponse(content={"result": improved.strip()})
+                return JSONResponse(content={"result": "No response from model.", "negative_prompt": ""})
         else:
-            return JSONResponse(content={"result": f"Model error: {response.text}"}, status_code=500)
+            return JSONResponse(content={"result": f"Model error: {response.text}", "negative_prompt": ""}, status_code=500)
     except Exception as e:
         print(f"Error improving text: {e}")
-        return JSONResponse(content={"result": "Backend failed to process text."}, status_code=500)
+        return JSONResponse(content={"result": "Backend failed to process text.", "negative_prompt": ""}, status_code=500)
 
 @app.post("/api/reprompt")
 async def create_reprompt(file: UploadFile = File(...)):
@@ -191,9 +225,9 @@ async def create_reprompt(file: UploadFile = File(...)):
             "contrast_ratio": physics.contrast_ratio,
         }
         
-        reprompt_text = await generate_prompt_from_gemini(temp_path, stats)
+        reprompt_text, negative_prompt = await generate_prompt_from_gemini(temp_path, stats)
         
-        return JSONResponse(content={"reprompt": reprompt_text, "stats": stats})
+        return JSONResponse(content={"reprompt": reprompt_text, "negative_prompt": negative_prompt, "stats": stats})
         
     except Exception as e:
         print(f"Error processing image: {e}")
@@ -278,6 +312,7 @@ async def _run_evaluation(image_path: str, user_prompt: str):
         "Score the student 1-10 and analyze their prompt. Return ONLY valid JSON (no markdown, no backticks):\n"
         '{"score": 7, "feedback": "Overall feedback", '
         '"ideal_prompt": "The ideal prompt for this image", '
+        '"ideal_negative_prompt": "blurry, low quality, artifacts, distorted, out of focus", '
         '"breakdown": ['
         '{"element": "Subject Description", "status": "covered", "detail": "..."},'
         '{"element": "Lighting", "status": "missing", "detail": "..."},'

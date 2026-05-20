@@ -18,6 +18,7 @@ interface EvaluationResponse {
   score: number;
   feedback: string;
   ideal_prompt: string;
+  ideal_negative_prompt?: string;
   breakdown: BreakdownItem[];
 }
 
@@ -364,6 +365,31 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
                         {writeResult.ideal_prompt}
                       </p>
                     </div>
+
+                    {writeResult.ideal_negative_prompt && (
+                      <div className="space-y-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] block font-semibold text-red-500/70 dark:text-red-400/80 uppercase tracking-wider">
+                            Suggested Negative Prompt
+                          </span>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            className="h-6 gap-1 text-[10px] font-semibold text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                            onClick={() => {
+                              navigator.clipboard.writeText(writeResult.ideal_negative_prompt || "");
+                              showToast("Negative prompt copied!", "success");
+                            }}
+                          >
+                            <Copy className="w-3 h-3" />
+                            Copy
+                          </Button>
+                        </div>
+                        <p className="p-3 bg-red-500/5 dark:bg-red-950/10 rounded-lg text-xs font-mono text-zinc-500 dark:text-zinc-400 border border-red-500/10 dark:border-red-500/20">
+                          {writeResult.ideal_negative_prompt}
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -540,6 +566,31 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
                         </p>
                       </div>
                     </div>
+
+                    {diffResult.ideal_negative_prompt && (
+                      <div className="space-y-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] block font-semibold text-red-500/70 dark:text-red-400/80 uppercase tracking-wider">
+                            Suggested Negative Prompt
+                          </span>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            className="h-6 gap-1 text-[10px] font-semibold text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                            onClick={() => {
+                              navigator.clipboard.writeText(diffResult.ideal_negative_prompt || "");
+                              showToast("Negative prompt copied!", "success");
+                            }}
+                          >
+                            <Copy className="w-3 h-3" />
+                            Copy
+                          </Button>
+                        </div>
+                        <p className="p-3 bg-red-500/5 dark:bg-red-950/10 rounded-lg text-xs font-mono text-zinc-500 dark:text-zinc-400 border border-red-500/10 dark:border-red-500/20">
+                          {diffResult.ideal_negative_prompt}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Param Alignment List */}
                     <div className="space-y-2 pt-2">

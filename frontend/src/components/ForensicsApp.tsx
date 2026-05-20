@@ -21,6 +21,7 @@ interface AnalysisStats {
 interface AnalysisResponse {
   stats: AnalysisStats;
   prompt: string;
+  negative_prompt?: string;
   anatomy?: Array<{ text: string; segment_type: string; tooltip: string }>;
 }
 
@@ -28,6 +29,7 @@ interface HistoryItem {
   id: number;
   img: string;
   prompt: string;
+  negative_prompt?: string;
 }
 
 export default function ForensicsApp({ showToast }: { showToast: (msg: string, type: "success" | "error") => void }) {
@@ -39,6 +41,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   const [activeTab, setActiveTab] = useState<"raw" | "anatomy">("raw");
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [copyNegativeSuccess, setCopyNegativeSuccess] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -55,9 +58,9 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
     }
   }, []);
 
-  const saveToHistory = (imgBase64: string, promptText: string) => {
+  const saveToHistory = (imgBase64: string, promptText: string, negativePrompt?: string) => {
     const updated = [
-      { id: Date.now(), img: imgBase64, prompt: promptText },
+      { id: Date.now(), img: imgBase64, prompt: promptText, negative_prompt: negativePrompt },
       ...history,
     ].slice(0, 5); // Keep last 5 entries
     setHistory(updated);
@@ -205,12 +208,13 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
       const formattedData: AnalysisResponse = {
         stats: data.stats,
         prompt: extractedPrompt,
+        negative_prompt: data.negative_prompt,
         anatomy: anatomyData.length > 0 ? anatomyData : undefined,
       };
 
       setAnalysisData(formattedData);
       if (image) {
-        saveToHistory(image, formattedData.prompt);
+        saveToHistory(image, formattedData.prompt, formattedData.negative_prompt);
       }
       showToast("Analysis complete!", "success");
     } catch (err: any) {
@@ -227,6 +231,15 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
       setCopySuccess(true);
       showToast("Prompt copied to clipboard!", "success");
       setTimeout(() => setCopySuccess(false), 2000);
+    });
+  };
+
+  const copyNegativeToClipboard = () => {
+    if (!analysisData || !analysisData.negative_prompt) return;
+    navigator.clipboard.writeText(analysisData.negative_prompt).then(() => {
+      setCopyNegativeSuccess(true);
+      showToast("Negative prompt copied to clipboard!", "success");
+      setTimeout(() => setCopyNegativeSuccess(false), 2000);
     });
   };
 
@@ -291,6 +304,18 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
         doc.setFont("helvetica", "normal");
         const lines = doc.splitTextToSize(analysisData.prompt, pdfWidth - 40);
         doc.text(lines, 20, currentY);
+        currentY += (lines.length * 5) + 10;
+
+        if (analysisData.negative_prompt) {
+          doc.setFontSize(14);
+          doc.setFont("helvetica", "bold");
+          doc.text("Suggested Negative Prompt:", 20, currentY);
+          currentY += 8;
+          doc.setFontSize(11);
+          doc.setFont("helvetica", "normal");
+          const negLines = doc.splitTextToSize(analysisData.negative_prompt, pdfWidth - 40);
+          doc.text(negLines, 20, currentY);
+        }
 
         doc.save("RePrompt_Forensic_Report.pdf");
         showToast("PDF report downloaded!", "success");
@@ -484,12 +509,52 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                 </CardHeader>
                 <CardContent className="pt-5 space-y-5">
                   {/* Prompt Text Container */}
-                  <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50">
-                    {activeTab === "raw" ? (
-                      <p className="text-sm font-mono text-zinc-700 dark:text-zinc-300 leading-relaxed break-words whitespace-pre-wrap select-all">
-                        {analysisData.prompt}
-                      </p>
-                    ) : (
+                  <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 relative">
+                    {activeTab === "raw" && (
+                      <div className="space-y-4">
+                        {/* Positive Prompt Block */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">
+                              Prompt
+                            </span>
+                            <button
+                              onClick={copyToClipboard}
+                              className="p-1 rounded text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-all"
+                              title="Copy Positive Prompt"
+                            >
+                              {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                          <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed break-words whitespace-pre-wrap select-all">
+                            {analysisData.prompt}
+                          </p>
+                        </div>
+
+                        {/* Negative Prompt Block */}
+                        {analysisData.negative_prompt && (
+                          <div className="space-y-1 pt-3 border-t border-zinc-200/30 dark:border-zinc-800/30">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] font-mono font-bold text-red-500 dark:text-red-400 uppercase tracking-widest">
+                                Negative Prompt
+                              </span>
+                              <button
+                                onClick={copyNegativeToClipboard}
+                                className="p-1 rounded text-zinc-400 hover:text-red-500 dark:hover:text-red-450 hover:bg-red-500/10 transition-all"
+                                title="Copy Negative Prompt"
+                              >
+                                {copyNegativeSuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                              </button>
+                            </div>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed break-words whitespace-pre-wrap select-all">
+                              {analysisData.negative_prompt}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {activeTab === "anatomy" && (
                       <div className="flex flex-wrap gap-1 leading-relaxed text-sm select-all">
                         {analysisData.anatomy ? (
                           analysisData.anatomy.map((seg, idx) => (
@@ -588,7 +653,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                       className="h-7 text-[10px] gap-1 font-semibold"
                       onClick={() => {
                         setImage(item.img);
-                        setAnalysisData({ prompt: item.prompt, stats: {} });
+                        setAnalysisData({ prompt: item.prompt, negative_prompt: item.negative_prompt, stats: {} });
                         showToast("Loaded from history!", "success");
                       }}
                     >

@@ -1,78 +1,130 @@
-# RePrompt — AI Vision Forensics & Prompt Engineering
+# RePrompt — AI Vision Forensics & Prompt Engineering Dashboard
 
-RePrompt is a professional-grade image forensic tool designed to reverse-engineer AI-generated images. By combining **Computer Vision (OpenCV)** with **Vision-Language Models (Google Gemini)**, it extracts the hidden physical DNA of an image and synthesizes it into a highly detailed, reusable prompt for Midjourney, DALL-E, or Stable Diffusion.
+RePrompt is an industry-ready, professional image forensics and prompt reverse-engineering workspace. By pairing **Computer Vision (OpenCV)** with **Vision-Language Models (Google Gemini)**, it parses the hidden physical properties of an image and generates highly descriptive, optimization-ready prompt blueprints for Midjourney, DALL-E 3, or Stable Diffusion.
 
-## Key Features
-
-- **Forensic Analysis:** Uses OpenCV to measure real-world physics: mean brightness, contrast ratios, shadow hardness, light direction, and depth-of-field variance.
-- **Hybrid Intelligence:** Grounds Gemini 2.0/2.5 Flash in factual pixel data to prevent AI hallucinations and ensure maximum prompt accuracy.
-- **Adaptive Interface:** Premium Apple-inspired glassmorphism design with a persistent **Dark Mode** toggle.
-- **Temporary History:** A dedicated "Temporary History" page that saves your last 5 generations locally in your browser so you never lose a good prompt.
-- **Client-Side Optimization:** Automatically compresses and optimizes images before upload to ensure lightning-fast processing even on slow connections.
-- **PDF Export:** One-click forensic reports containing your prompt and all extracted physics metadata.
-- **Creative UI:** Features a custom futuristic CSS loader, glassmorphic toast notifications, and smooth scroll animations.
+The system features a premium, responsive React-based dashboard supporting dynamic Light and Dark modes.
 
 ---
 
-## Tech Stack
+## 🚀 Key Workspaces & Features
 
-- **Backend:** FastAPI (Python)
-- **Forensics:** OpenCV, NumPy
-- **Intelligence:** Google Gemini 2.0/2.5 Flash API
-- **Frontend:** Vanilla HTML5, CSS3 (Custom Variables), JavaScript (ES6+)
-- **Animations:** Intersection Observer API & CSS Keyframes
+### 1. Forensic App Workspace
+- **Image Auditing:** Measures objective properties like Laplacian Variance (Sharpness), Sobel Gradients (Shadows), global contrast, light direction, and aspect ratio.
+- **Prompt Anatomy:** Parses prompt text into interactive color-coded segments (`subject`, `lighting`, `camera`, `style`, `mood`) with hover tooltips.
+- **Local History Registry:** Persists the last 5 forensic reports in your browser's local storage.
+- **PDF Report Generation:** Compiles the scanned image, physics metadata, and prompt blueprint into an instantly downloadable PDF document.
+
+### 2. Practice Sandbox
+- **Dual Training Modes:** Supporting *Write Your Own* (write a description from scratch) and *Fix My Prompt* (improve a draft prompt against a target image).
+- **Comparative Parameter Checklist:** Matches the user's text against the extracted image metadata to check for missing, partial, or conflicting parameters.
+
+### 3. Daily Match Challenge
+- **Gamified Blueprints:** Compete daily to matching target images. Includes streak counters, detailed category evaluation cards, and local scoreboards.
+
+### 4. Learn Academy
+- **Interactive prompt engineering syllabus:** 5 progressive modules covering *Fundamentals*, *Subject & Style*, *Light & Shadow*, *Composition & Camera*, and *Model Mastery*.
+- **Quiz Engines:** Real-time knowledge checkpoints built into each lesson with immediate validation and explanations.
+
+### 5. Developer Hub & About Page
+- **API Playground:** Documentation for direct integration into outer scripts or workflows.
+- **Local Launcher Guide:** Quick command snippets for running the server on local configurations.
 
 ---
 
-## Getting Started
+## 🛠️ Technology Stack
 
-### 1. Clone the repository
+- **Backend Architecture:** FastAPI (Python), OpenCV, NumPy
+- **Generative AI Fallback Chain:** Google Gemini API (cascading fallback: `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite`, `gemini-2.5-flash`, `gemini-2.0-flash`)
+- **Frontend Dashboard:** React, TypeScript, Tailwind CSS v4, Lucide React, jsPDF
+- **Layout & Responsiveness:** Flexbox/Grid-driven sliding sidebar navigation drawer with active overlay backdrops for mobile viewport compatibility.
+
+---
+
+## 📦 Project Directory Layout
+
+```text
+RePrompt/
+├── frontend/               # React + Vite source code
+│   ├── src/
+│   │   ├── components/     # ForensicApp, LearnCourse, DailyChallenge, Sidebar, etc.
+│   │   ├── App.tsx         # Dashboard main shell & toast routing
+│   │   └── index.css       # Tailwind v4 class configuration
+│   └── vite.config.ts      # Directs production builds to ../static/
+├── static/                 # Served by FastAPI (Vite build outputs here)
+├── modules/                # Core Python processing engines
+│   ├── physics_analyzer.py # Computer vision (OpenCV) filters
+│   └── preprocessors.py    # Image normalization methods
+├── main.py                 # FastAPI endpoints & fallback router
+├── launch.py               # Local server configuration utility (ignored by Git)
+└── requirements.txt        # Backend dependencies
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/Sneaky-Panda-22/RePrompt.git
 cd RePrompt
 ```
 
-### 2. Install dependencies
+### 2. Install Python Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Set up your API Key
-RePrompt uses environment variables to keep your secrets safe. **Do not hardcode your API key.**
+### 3. Run the Development Server
+RePrompt provides a launcher script `launch.py` to securely store your credentials without risk of leaking them to git:
 
-**On macOS/Linux:**
+Create `launch.py` in the root folder:
+```python
+import os
+import uvicorn
+
+# Inject Gemini API credentials (safely ignored by Git via .gitignore)
+os.environ["GEMINI_API_KEY"] = "your_gemini_api_key_here"
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=False)
+```
+
+Launch the server:
 ```bash
-export GEMINI_API_KEY="your_actual_api_key_here"
+python launch.py
 ```
+Open [http://localhost:8080](http://localhost:8080) to access the workspace.
 
-**On Windows (Command Prompt):**
-```cmd
-set GEMINI_API_KEY=your_actual_api_key_here
-```
-
-### 4. Run the application
+### 4. Customizing or Building the Frontend (Optional)
+If you make changes to the React files inside the `frontend/` directory, rebuild the project:
 ```bash
-python main.py
+cd frontend
+npm install
+npm run build
 ```
-Open `http://localhost:8080` in your browser.
+Vite compiles and replaces the static assets in the root `/static/` folder automatically.
 
 ---
 
-## Architecture & Pipeline
+## 🔌 API Endpoints Reference
 
-RePrompt follows a rigorous three-stage analysis pipeline:
+RePrompt exposes REST endpoints for modular integrations:
 
-1.  **Preprocessing:** Standardizes the image, performs noise reduction via Bilateral Filtering, and analyzes HSV color distributions.
-2.  **Physics Extraction:** Measures objective properties like Laplacian Variance (Sharpness) and Sobel Gradients (Shadows).
-3.  **Prompt Synthesis:** Injects these measurements into a high-level system prompt for Gemini, which returns the final reverse-engineered text.
+| Method | Endpoint | Request Payload | Return Model |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/reprompt` | `multipart/form-data` (file) | `{ reprompt: string, stats: dict }` |
+| **POST** | `/api/improve` | `application/json` (`{ text: string }`) | `{ result: string }` |
+| **POST** | `/api/anatomy` | `application/json` (`{ prompt: string }`) | `{ segments: list }` |
+| **POST** | `/api/evaluate` | `multipart/form-data` (file, prompt) | `{ score: int, matches: list, explanation: string }` |
 
 ---
 
-## Privacy & Security
+## 🔒 Security & Privacy
 
-RePrompt is **stateless by design**. Images are processed in a secure temporary buffer and are **immediately deleted** from the server after analysis. No user images are ever stored permanently on the server. History is stored locally in *your* browser's `localStorage`.
+- **Stateless Analysis:** Scanned photographs are processed entirely in memory buffers or volatile temp files, and are **immediately discarded** from the server post-response.
+- **Client-side Persistence:** All workspace session history and streaking scores are saved locally inside the user's browser context (`localStorage`).
+- **Safety First:** The private key loader script `launch.py` is ignored in the root [`.gitignore`](.gitignore) pattern, ensuring your private AI developer tokens are never leaked to public version control.
 
 ---
 
 Developed with ❤️ by [Parth Tandon](https://github.com/Sneaky-Panda-22)
-"# RePrompt" 

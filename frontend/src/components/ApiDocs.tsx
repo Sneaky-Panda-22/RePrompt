@@ -20,6 +20,7 @@ export default function ApiDocs({ showToast }: ApiDocsProps) {
 
   const sampleRepromptResponse = `{
   "reprompt": "A highly detailed portrait of a cyberpunk girl under amber neon lights...",
+  "negative_prompt": "blurry, out of focus, low quality, cartoon, high-key lighting, bright sun",
   "stats": {
     "aspect_ratio": 1.77,
     "mean_brightness_global": 42.5,
@@ -34,7 +35,8 @@ export default function ApiDocs({ showToast }: ApiDocsProps) {
 }`;
 
   const sampleImproveResponse = `{
-  "result": "A gorgeous oil painting with visible brushstrokes of a classic lighthouse..."
+  "result": "A gorgeous oil painting with visible brushstrokes of a classic lighthouse...",
+  "negative_prompt": "photo, photorealistic, blurry, smooth textures, digital render"
 }`;
 
   return (
