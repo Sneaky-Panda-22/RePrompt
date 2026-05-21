@@ -345,19 +345,19 @@ export default function LearnCourse({ showToast }: LearnCourseProps) {
   return (
     <div className="space-y-8 animate-fade-in p-1">
       {/* Header Info */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 pb-5 border-b border-zinc-200 dark:border-zinc-800">
         <div>
-          <h1 className="text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
-            <BookOpen className="w-8 h-8 text-indigo-600" />
+          <h1 className="text-2xl md:text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
+            <BookOpen className="w-7 h-7 md:w-8 md:h-8 text-indigo-600" />
             Learn Academy
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl">
             Master professional prompt engineering through structured modules, interactive lessons, and quick quizzes.
           </p>
         </div>
 
         {/* Global Progress Circle widget */}
-        <div className="flex items-center gap-3.5 px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/50 dark:border-zinc-800/30">
+        <div className="flex items-center gap-3.5 px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/50 dark:border-zinc-800/30 self-start md:self-auto flex-shrink-0">
           <div className="w-10 h-10 rounded-full border-4 border-indigo-600/10 border-t-indigo-600 flex items-center justify-center font-bold text-xs text-zinc-900 dark:text-white">
             {courseStats.percent}%
           </div>

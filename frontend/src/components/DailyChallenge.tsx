@@ -192,18 +192,18 @@ export default function DailyChallenge({ showToast }: DailyChallengeProps) {
   return (
     <div className="space-y-8 animate-fade-in p-1">
       {/* Header Info */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 pb-5 border-b border-zinc-200 dark:border-zinc-800">
         <div>
-          <h1 className="text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
             Daily Matching Challenge
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl">
             Study the daily photograph, analyze its composition, and write a matching prompt.
           </p>
         </div>
 
         {/* Streak Indicator Widget */}
-        <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30">
+        <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 self-start md:self-auto flex-shrink-0">
           <Flame className="w-5 h-5 text-amber-500 fill-amber-500 animate-pulse" />
           <div>
             <span className="text-xs font-bold text-amber-700 dark:text-amber-400 block tracking-tight -mb-0.5">

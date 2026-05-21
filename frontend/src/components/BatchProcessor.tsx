@@ -148,21 +148,13 @@ export default function BatchProcessor({ showToast }: BatchProcessorProps) {
             >
               Clear Queue
             </Button>
-            {zipBlob ? (
+            {zipBlob && (
               <Button
                 onClick={downloadDataset}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-outfit text-xs flex items-center gap-1.5 shadow-md"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download Zip Bundle
-              </Button>
-            ) : (
-              <Button
-                onClick={processBatch}
-                className="font-outfit text-xs flex items-center gap-1.5 shadow-md"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Process {queue.length} Images
               </Button>
             )}
           </div>
@@ -276,13 +268,13 @@ export default function BatchProcessor({ showToast }: BatchProcessorProps) {
           )}
 
           {queue.length > 0 && !processing && !zipBlob && (
-            <div className="mt-5 border-t border-zinc-100 dark:border-zinc-800 pt-4 flex justify-end">
+            <div className="mt-5 border-t border-zinc-100 dark:border-zinc-800 pt-4 flex justify-center">
               <Button
                 onClick={processBatch}
                 className="font-outfit text-xs flex items-center gap-1.5 shadow-md"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                Process Batch Queue
+                Process Batch
               </Button>
             </div>
           )}

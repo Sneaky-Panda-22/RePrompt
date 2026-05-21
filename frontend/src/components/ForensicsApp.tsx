@@ -484,17 +484,17 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   return (
     <div className="space-y-8 animate-fade-in p-1">
       {/* Header Info */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 pb-5 border-b border-zinc-200 dark:border-zinc-800">
         <div>
-          <h1 className="text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
             Forensic Prompt Extraction
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl">
             Extract physics data, lighting styles, color schemas, and camera angles to reconstruct prompts.
           </p>
         </div>
         {analysisData && (
-          <Button variant="outline" className="flex items-center gap-2 text-xs font-semibold h-9" onClick={resetAll}>
+          <Button variant="outline" className="flex items-center gap-2 text-xs font-semibold h-9 self-start md:self-auto flex-shrink-0" onClick={resetAll}>
             <RotateCcw className="w-3.5 h-3.5" />
             Reset Analyzer
           </Button>
