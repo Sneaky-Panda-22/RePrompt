@@ -1,8 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { Upload, Copy, FileDown, RotateCcw, Eye, Activity, Image as ImageIcon, Check, Trash2 } from "lucide-react";
+import { Upload, Copy, FileDown, RotateCcw, Eye, Activity, Image as ImageIcon, Check, Trash2, Edit, GitBranch, GitCommit, HelpCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { jsPDF } from "jspdf";
+
+interface ExifData {
+  make?: string;
+  model?: string;
+  lens?: string;
+  focal_length?: number | string;
+  aperture?: number | string;
+  iso?: number;
+  exposure_time?: string;
+}
 
 interface AnalysisStats {
   brightness?: number;
@@ -16,6 +26,8 @@ interface AnalysisStats {
   aspect_ratio?: number;
   width?: number;
   height?: number;
+  exif?: ExifData;
+  [key: string]: any;
 }
 
 interface AnalysisResponse {
@@ -25,6 +37,13 @@ interface AnalysisResponse {
   anatomy?: Array<{ text: string; segment_type: string; tooltip: string }>;
 }
 
+interface PromptRevision {
+  rev: number;
+  prompt: string;
+  msg: string;
+  timestamp: number;
+}
+
 interface HistoryItem {
   id: number;
   img: string;
@@ -32,6 +51,7 @@ interface HistoryItem {
   negative_prompt?: string;
   stats?: AnalysisStats;
   anatomy?: Array<{ text: string; segment_type: string; tooltip: string }>;
+  revisions?: PromptRevision[];
 }
 
 export default function ForensicsApp({ showToast }: { showToast: (msg: string, type: "success" | "error") => void }) {
@@ -45,6 +65,93 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyNegativeSuccess, setCopyNegativeSuccess] = useState(false);
   const [activeAnatomyIdx, setActiveAnatomyIdx] = useState<number | null>(null);
+  const [activeHistoryId, setActiveHistoryId] = useState<number | null>(null);
+  const [revisionCommitMsg, setRevisionCommitMsg] = useState("");
+  const [isEditingPrompt, setIsEditingPrompt] = useState(false);
+  const [editedPromptText, setEditedPromptText] = useState("");
+  const [diffSelectRevA, setDiffSelectRevA] = useState<number | null>(null);
+  const [diffSelectRevB, setDiffSelectRevB] = useState<number | null>(null);
+
+  interface DiffPart {
+    type: "added" | "removed" | "normal";
+    value: string;
+  }
+
+  const diffWords = (oldStr: string, newStr: string): DiffPart[] => {
+    const oldWords = oldStr.split(/(\s+)/).filter(x => x.length > 0);
+    const newWords = newStr.split(/(\s+)/).filter(x => x.length > 0);
+    
+    const dp: number[][] = Array(oldWords.length + 1).fill(0).map(() => Array(newWords.length + 1).fill(0));
+    
+    for (let i = 1; i <= oldWords.length; i++) {
+      for (let j = 1; j <= newWords.length; j++) {
+        if (oldWords[i - 1] === newWords[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1] + 1;
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        }
+      }
+    }
+    
+    const result: DiffPart[] = [];
+    let i = oldWords.length;
+    let j = newWords.length;
+    
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && oldWords[i - 1] === newWords[j - 1]) {
+        result.unshift({ type: "normal", value: oldWords[i - 1] });
+        i--;
+        j--;
+      } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+        result.unshift({ type: "added", value: newWords[j - 1] });
+        j--;
+      } else {
+        result.unshift({ type: "removed", value: oldWords[i - 1] });
+        i--;
+      }
+    }
+    return result;
+  };
+
+  const commitRevision = () => {
+    if (!activeHistoryId) return;
+    if (!editedPromptText.trim()) {
+      showToast("Prompt cannot be empty.", "error");
+      return;
+    }
+    const currentItem = history.find(h => h.id === activeHistoryId);
+    if (!currentItem) return;
+
+    const revs = currentItem.revisions || [];
+    const nextRevNum = revs.length > 0 ? Math.max(...revs.map(r => r.rev)) + 1 : 1;
+    const newRev: PromptRevision = {
+      rev: nextRevNum,
+      prompt: editedPromptText,
+      msg: revisionCommitMsg.trim() || `Revision #${nextRevNum}`,
+      timestamp: Date.now(),
+    };
+
+    const updatedRevisions = [...revs, newRev];
+    
+    const updatedHistory = history.map(item => {
+      if (item.id === activeHistoryId) {
+        return {
+          ...item,
+          prompt: editedPromptText,
+          revisions: updatedRevisions
+        };
+      }
+      return item;
+    });
+
+    setHistory(updatedHistory);
+    localStorage.setItem("reprompt_history", JSON.stringify(updatedHistory));
+    
+    setAnalysisData(prev => prev ? { ...prev, prompt: editedPromptText } : null);
+    setIsEditingPrompt(false);
+    setRevisionCommitMsg("");
+    showToast(`Saved revision #${nextRevNum}!`, "success");
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -62,19 +169,29 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   }, []);
 
   const saveToHistory = (imgBase64: string, responseData: AnalysisResponse) => {
+    const id = Date.now();
+    const newRevision: PromptRevision = {
+      rev: 1,
+      prompt: responseData.prompt,
+      msg: "Initial Forensic Reverse-Engineering",
+      timestamp: id,
+    };
+
     const updated: HistoryItem[] = [
       {
-        id: Date.now(),
+        id,
         img: imgBase64,
         prompt: responseData.prompt,
         negative_prompt: responseData.negative_prompt,
         stats: responseData.stats,
         anatomy: responseData.anatomy,
+        revisions: [newRevision],
       },
       ...history,
     ].slice(0, 5); // Keep last 5 entries
     setHistory(updated);
     localStorage.setItem("reprompt_history", JSON.stringify(updated));
+    return id;
   };
 
   const deleteFromHistory = (id: number) => {
@@ -224,7 +341,8 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
 
       setAnalysisData(formattedData);
       if (image) {
-        saveToHistory(image, formattedData);
+        const id = saveToHistory(image, formattedData);
+        setActiveHistoryId(id);
       }
       showToast("Analysis complete!", "success");
     } catch (err: any) {
@@ -543,44 +661,106 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                   <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 relative">
                     {activeTab === "raw" && (
                       <div className="space-y-4">
-                        {/* Positive Prompt Block */}
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">
-                              Prompt
-                            </span>
-                            <button
-                              onClick={copyToClipboard}
-                              className="p-1 rounded text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-all"
-                              title="Copy Positive Prompt"
-                            >
-                              {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                            </button>
-                          </div>
-                          <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed break-words whitespace-pre-wrap select-all">
-                            {analysisData.prompt}
-                          </p>
-                        </div>
-
-                        {/* Negative Prompt Block */}
-                        {analysisData.negative_prompt && (
-                          <div className="space-y-1 pt-3 border-t border-zinc-200/30 dark:border-zinc-800/30">
+                        {isEditingPrompt ? (
+                          <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                              <span className="text-[10px] font-mono font-bold text-red-500 dark:text-red-400 uppercase tracking-widest">
-                                Negative Prompt
+                              <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest">
+                                Edit Prompt Revision
                               </span>
-                              <button
-                                onClick={copyNegativeToClipboard}
-                                className="p-1 rounded text-zinc-400 hover:text-red-500 dark:hover:text-red-450 hover:bg-red-500/10 transition-all"
-                                title="Copy Negative Prompt"
-                              >
-                                {copyNegativeSuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                              </button>
                             </div>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed break-words whitespace-pre-wrap select-all">
-                              {analysisData.negative_prompt}
-                            </p>
+                            <textarea
+                              value={editedPromptText}
+                              onChange={(e) => setEditedPromptText(e.target.value)}
+                              className="w-full min-h-[100px] p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                              placeholder="Positive Prompt"
+                            />
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest block">
+                                Commit Message
+                              </label>
+                              <input
+                                type="text"
+                                value={revisionCommitMsg}
+                                onChange={(e) => setRevisionCommitMsg(e.target.value)}
+                                className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                placeholder="e.g. Tuned cinematic lighting, added film grain"
+                              />
+                            </div>
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                onClick={() => setIsEditingPrompt(false)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                size="xs"
+                                onClick={commitRevision}
+                                className="bg-indigo-650 hover:bg-indigo-750 text-white animate-fade-in"
+                              >
+                                <GitCommit className="w-3.5 h-3.5 mr-1" />
+                                Save Commit
+                              </Button>
+                            </div>
                           </div>
+                        ) : (
+                          <>
+                            {/* Positive Prompt Block */}
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">
+                                  Prompt
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  {activeHistoryId && (
+                                    <button
+                                      onClick={() => {
+                                        setEditedPromptText(analysisData.prompt);
+                                        setIsEditingPrompt(true);
+                                        setRevisionCommitMsg("");
+                                      }}
+                                      className="p-1 rounded text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-all"
+                                      title="Edit Prompt Revision"
+                                    >
+                                      <Edit className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={copyToClipboard}
+                                    className="p-1 rounded text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-all"
+                                    title="Copy Positive Prompt"
+                                  >
+                                    {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed break-words whitespace-pre-wrap select-all">
+                                {analysisData.prompt}
+                              </p>
+                            </div>
+
+                            {/* Negative Prompt Block */}
+                            {analysisData.negative_prompt && (
+                              <div className="space-y-1 pt-3 border-t border-zinc-200/30 dark:border-zinc-800/30">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[10px] font-mono font-bold text-red-500 dark:text-red-400 uppercase tracking-widest">
+                                    Negative Prompt
+                                  </span>
+                                  <button
+                                    onClick={copyNegativeToClipboard}
+                                    className="p-1 rounded text-zinc-400 hover:text-red-500 dark:hover:text-red-450 hover:bg-red-500/10 transition-all"
+                                    title="Copy Negative Prompt"
+                                  >
+                                    {copyNegativeSuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                                  </button>
+                                </div>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed break-words whitespace-pre-wrap select-all">
+                                  {analysisData.negative_prompt}
+                                </p>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
@@ -672,42 +852,262 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Prompt Git Registry Card */}
+              {(() => {
+                const currentItem = history.find(h => h.id === activeHistoryId);
+                const revs = currentItem?.revisions || [];
+                return activeHistoryId && revs.length > 0 ? (
+                  <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
+                    <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="text-sm font-semibold flex items-center gap-1.5 text-zinc-955 dark:text-zinc-50">
+                            <GitBranch className="w-4 h-4 text-indigo-500 animate-pulse" />
+                            Prompt Version Control
+                          </CardTitle>
+                          <CardDescription>Track manual overrides and auto-generated iterations in browser storage.</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-6">
+                      {/* Revision timeline / list */}
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest block">
+                          Revision Registry
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {revs.map((rev) => {
+                            const isActive = analysisData.prompt === rev.prompt;
+                            return (
+                              <div
+                                key={rev.rev}
+                                onClick={() => {
+                                  setAnalysisData(prev => prev ? { ...prev, prompt: rev.prompt } : null);
+                                  setIsEditingPrompt(false);
+                                }}
+                                className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 text-left relative flex flex-col justify-between ${
+                                  isActive
+                                    ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10 shadow-sm"
+                                    : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/5"
+                                }`}
+                              >
+                                <div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-mono font-bold text-indigo-650 dark:text-indigo-400">
+                                      REV #{rev.rev}
+                                    </span>
+                                    {isActive && (
+                                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-indigo-500 text-white dark:bg-indigo-600 animate-fade-in">
+                                        Active
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs font-semibold text-zinc-850 dark:text-zinc-200 mt-1.5 line-clamp-1">
+                                    {rev.msg}
+                                  </p>
+                                </div>
+                                <span className="text-[9px] text-zinc-400 dark:text-zinc-550 font-mono mt-3">
+                                  {new Date(rev.timestamp).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Git Diff Comparison Tool */}
+                      {revs.length >= 2 && (
+                        <div className="pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 space-y-4">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest block">
+                                Visual Diff Inspector
+                              </span>
+                              <p className="text-[10px] text-zinc-400 dark:text-zinc-550 mt-0.5 font-medium">Compare any two revisions word-by-word.</p>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <select
+                                value={diffSelectRevA ?? revs[0]?.rev ?? ""}
+                                onChange={(e) => setDiffSelectRevA(Number(e.target.value))}
+                                className="p-1.5 rounded bg-zinc-150 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200"
+                              >
+                                {revs.map((rev) => (
+                                  <option key={rev.rev} value={rev.rev}>
+                                    Rev {rev.rev}
+                                  </option>
+                                ))}
+                              </select>
+                              <span className="text-xs text-zinc-400 font-medium">vs</span>
+                              <select
+                                value={diffSelectRevB ?? revs[revs.length - 1]?.rev ?? ""}
+                                onChange={(e) => setDiffSelectRevB(Number(e.target.value))}
+                                className="p-1.5 rounded bg-zinc-150 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200"
+                              >
+                                {revs.map((rev) => (
+                                  <option key={rev.rev} value={rev.rev}>
+                                    Rev {rev.rev}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Render diff words */}
+                          {(() => {
+                            const revA = revs.find(r => r.rev === (diffSelectRevA ?? revs[0]?.rev));
+                            const revB = revs.find(r => r.rev === (diffSelectRevB ?? revs[revs.length - 1]?.rev));
+                            if (!revA || !revB) return null;
+                            
+                            const diffs = diffWords(revA.prompt, revB.prompt);
+                            return (
+                              <div className="p-3.5 rounded-lg bg-zinc-900 text-zinc-100 dark:bg-zinc-950 font-mono text-xs leading-relaxed border border-zinc-850 dark:border-zinc-900 whitespace-pre-wrap select-text">
+                                {diffs.map((part, index) => {
+                                  if (part.type === "added") {
+                                    return (
+                                      <span key={index} className="bg-emerald-500/25 text-emerald-300 px-1 py-0.5 rounded border border-emerald-500/20 font-bold mx-0.5 inline-block">
+                                        {part.value}
+                                      </span>
+                                    );
+                                  }
+                                  if (part.type === "removed") {
+                                    return (
+                                      <span key={index} className="bg-red-500/25 text-red-300 line-through px-1 py-0.5 rounded border border-red-500/20 font-bold mx-0.5 inline-block">
+                                        {part.value}
+                                      </span>
+                                    );
+                                  }
+                                  return <span key={index}>{part.value}</span>;
+                                })}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ) : null;
+              })()}
             </div>
           )}
         </div>
       </div>
 
       {!isLoading && analysisData && (
-        <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm animate-slide-up">
-          <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
-            <CardTitle className="text-base font-semibold">Audited Physics Parameters</CardTitle>
-            <CardDescription>Direct pixel metrics calculated via computer vision.</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-5">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {Object.entries(analysisData.stats).length > 0 ? (
-                Object.entries(analysisData.stats).map(([key, val]) => {
-                  if (val === undefined || val === null) return null;
-                  const isPercent = key === "brightness" || key === "mean_brightness_global" || key === "mean_brightness";
-                  return (
-                    <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30 animate-fade-in">
-                      <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
-                        {getStatLabel(key as keyof AnalysisStats)}
-                      </span>
-                      <span className="text-lg font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block">
-                        {typeof val === "number" ? (isPercent ? `${val.toFixed(1)}%` : val.toFixed(2)) : String(val)}
-                      </span>
+        <div className="space-y-6">
+          {/* EXIF Camera Specifications Card */}
+          {(() => {
+            const exif = analysisData.stats.exif;
+            const hasExif = exif && Object.values(exif).some(v => v !== undefined && v !== null && v !== "");
+            return (
+              <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm animate-slide-up">
+                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
+                  <CardTitle className="text-base font-semibold">EXIF Camera Specifications</CardTitle>
+                  <CardDescription>Optics and camera settings extracted from the image file.</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-5">
+                  {hasExif && exif ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {exif.make && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Camera Maker</span>
+                          <span className="text-sm font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.make}</span>
+                        </div>
+                      )}
+                      {exif.model && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Camera Model</span>
+                          <span className="text-sm font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.model}</span>
+                        </div>
+                      )}
+                      {exif.lens && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Lens Model</span>
+                          <span className="text-sm font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.lens}</span>
+                        </div>
+                      )}
+                      {exif.focal_length && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-555 uppercase tracking-wider">Focal Length</span>
+                          <span className="text-sm font-mono font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">
+                            {typeof exif.focal_length === 'number' 
+                              ? `${exif.focal_length}mm` 
+                              : String(exif.focal_length).endsWith('mm') 
+                                ? exif.focal_length 
+                                : `${exif.focal_length}mm`}
+                          </span>
+                        </div>
+                      )}
+                      {exif.aperture && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Aperture</span>
+                          <span className="text-sm font-mono font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">
+                            {String(exif.aperture).startsWith('f/') 
+                              ? exif.aperture 
+                              : `f/${exif.aperture}`}
+                          </span>
+                        </div>
+                      )}
+                      {exif.exposure_time && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Exposure Time</span>
+                          <span className="text-sm font-mono font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">
+                            {exif.exposure_time}s
+                          </span>
+                        </div>
+                      )}
+                      {exif.iso && (
+                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
+                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">ISO Speed</span>
+                          <span className="text-sm font-mono font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.iso}</span>
+                        </div>
+                      )}
                     </div>
-                  );
-                })
-              ) : (
-                <div className="col-span-full py-6 text-center text-zinc-450 dark:text-zinc-500 text-xs italic">
-                  Physics metrics are unavailable for this legacy history record. Run a new scan to view real-time metrics.
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                  ) : (
+                    <div className="flex items-center gap-2 p-3 bg-zinc-50/55 dark:bg-zinc-900/30 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-800 text-zinc-500 dark:text-zinc-450 text-xs font-semibold">
+                      <HelpCircle className="w-4 h-4 text-zinc-400" />
+                      <span>No EXIF Metadata embedded (estimates derived from CV physics)</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })()}
+
+          {/* Audited Physics Parameters Card */}
+          <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm animate-slide-up">
+            <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
+              <CardTitle className="text-base font-semibold">Audited Physics Parameters</CardTitle>
+              <CardDescription>Direct pixel metrics calculated via computer vision.</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {Object.entries(analysisData.stats).length > 0 ? (
+                  Object.entries(analysisData.stats).map(([key, val]) => {
+                    if (val === undefined || val === null) return null;
+                    if (key === "exif" || key === "dominant_hues" || typeof val === "object" || Array.isArray(val)) return null;
+                    const isPercent = key === "brightness" || key === "mean_brightness_global" || key === "mean_brightness";
+                    return (
+                      <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30 animate-fade-in">
+                        <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">
+                          {getStatLabel(key as keyof AnalysisStats)}
+                        </span>
+                        <span className="text-lg font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block">
+                          {typeof val === "number" ? (isPercent ? `${val.toFixed(1)}%` : val.toFixed(2)) : String(val)}
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full py-6 text-center text-zinc-450 dark:text-zinc-550 text-xs italic">
+                    Physics metrics are unavailable for this legacy history record. Run a new scan to view real-time metrics.
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* History Grid (Only if has items) */}
@@ -738,6 +1138,8 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                           stats: item.stats || {},
                           anatomy: item.anatomy,
                         });
+                        setActiveHistoryId(item.id);
+                        setIsEditingPrompt(false);
                         showToast("Loaded from history!", "success");
                       }}
                     >

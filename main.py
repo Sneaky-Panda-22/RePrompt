@@ -64,6 +64,26 @@ async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> t
     mime_map = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.bmp': 'image/bmp'}
     mime_type = mime_map.get(ext, 'image/jpeg')
     
+    exif = physics_stats.get("exif", {})
+    exif_instruct = ""
+    if exif:
+        exif_instruct = (
+            "Additionally, the image file contains these exact photographic EXIF parameters that you should replicate in the prompt:\n"
+        )
+        if "make" in exif or "model" in exif:
+            exif_instruct += f"- Camera: {exif.get('make', '')} {exif.get('model', '')}\n"
+        if "lens" in exif:
+            exif_instruct += f"- Lens: {exif.get('lens')}\n"
+        if "focal_length" in exif:
+            exif_instruct += f"- Focal Length: {exif.get('focal_length')}mm\n"
+        if "aperture" in exif:
+            exif_instruct += f"- Aperture: f/{exif.get('aperture')}\n"
+        if "iso" in exif:
+            exif_instruct += f"- ISO: {exif.get('iso')}\n"
+        if "exposure_time" in exif:
+            exif_instruct += f"- Exposure Time: {exif.get('exposure_time')}s\n"
+        exif_instruct += "Integrate these technical details naturally to mimic the source photograph's camera optics.\n\n"
+
     llm_prompt = (
         "You are an elite AI image prompt engineer. Extract an exhaustively detailed prompt from the provided image for Midjourney v6 or Stable Diffusion.\n"
         "Detect every nuance, art style, lighting effect, and character detail. Format as flowing descriptive paragraphs.\n\n"
@@ -73,6 +93,7 @@ async def generate_prompt_from_gemini(image_path: str, physics_stats: dict) -> t
         f"- Shadows: {physics_stats['shadow_hardness']}\n"
         f"- Lighting Direction: {physics_stats['light_direction']}\n"
         f"- Contrast Ratio: {physics_stats['contrast_ratio']}\n\n"
+        f"{exif_instruct}"
         "Also generate a highly tailored, custom Negative Prompt specifying elements, styles, anomalies, and qualities to avoid "
         "based on the analyzed properties and composition of the image. The negative prompt must be short and concise (under 15 comma-separated words/phrases).\n\n"
         "Format your output exactly as follows with the markers:\n"
@@ -223,6 +244,7 @@ async def create_reprompt(file: UploadFile = File(...)):
             "shadow_score": physics.shadow_score,
             "light_direction": physics.light_direction,
             "contrast_ratio": physics.contrast_ratio,
+            "exif": meta.exif or {},
         }
         
         reprompt_text, negative_prompt = await generate_prompt_from_gemini(temp_path, stats)
@@ -292,6 +314,7 @@ async def _run_evaluation(image_path: str, user_prompt: str):
         "shadow_score": physics.shadow_score,
         "light_direction": physics.light_direction,
         "contrast_ratio": physics.contrast_ratio,
+        "exif": meta.exif or {},
     }
 
     with open(image_path, "rb") as f:
@@ -406,6 +429,260 @@ async def evaluate_daily(request: DailySubmitRequest):
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+
+def compute_image_similarity_metrics(target_meta, target_physics, gen_meta, gen_physics):
+    import cv2
+    # Color histogram comparison
+    hsv_target = cv2.cvtColor(target_meta._image_bgr, cv2.COLOR_BGR2HSV)
+    hsv_gen = cv2.cvtColor(gen_meta._image_bgr, cv2.COLOR_BGR2HSV)
+    
+    hist_target = cv2.calcHist([hsv_target], [0, 1], None, [180, 256], [0, 180, 0, 256])
+    hist_gen = cv2.calcHist([hsv_gen], [0, 1], None, [180, 256], [0, 180, 0, 256])
+    
+    cv2.normalize(hist_target, hist_target, 0, 1, cv2.NORM_MINMAX)
+    cv2.normalize(hist_gen, hist_gen, 0, 1, cv2.NORM_MINMAX)
+    
+    color_corr = cv2.compareHist(hist_target, hist_gen, cv2.HISTCMP_CORREL)
+    color_score = max(0.0, float(color_corr))
+    
+    # Brightness difference
+    b_diff = abs(target_physics.mean_brightness - gen_physics.mean_brightness)
+    brightness_similarity = max(0.0, 1.0 - (b_diff / 255.0))
+    
+    # Contrast difference
+    c_diff = abs(target_physics.contrast_ratio - gen_physics.contrast_ratio)
+    # Norm difference (let's say 20.0 contrast diff is significant)
+    contrast_similarity = max(0.0, 1.0 - (c_diff / 20.0))
+    
+    # Edge density similarity
+    e_diff = abs(target_physics.edge_density - gen_physics.edge_density)
+    # Let's say 0.2 edge density diff is significant
+    edge_similarity = max(0.0, 1.0 - (e_diff / 0.2))
+    
+    # Average physical similarity
+    avg_phys_score = (color_score + brightness_similarity + contrast_similarity + edge_similarity) / 4.0
+    return {
+        "color_match": round(color_score * 100, 1),
+        "brightness_match": round(brightness_similarity * 100, 1),
+        "contrast_match": round(contrast_similarity * 100, 1),
+        "edge_match": round(edge_similarity * 100, 1),
+        "physical_similarity_score": round(avg_phys_score * 100, 1)
+    }
+
+
+@app.post("/api/evaluate-similarity")
+async def evaluate_similarity(target: UploadFile = File(...), generated: UploadFile = File(...)):
+    """Evaluate style/physics alignment between a target image and user-generated output image."""
+    if not target.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp')) or \
+       not generated.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp')):
+        raise HTTPException(status_code=400, detail="Unsupported file type.")
+        
+    with tempfile.NamedTemporaryFile(delete=False, suffix=Path(target.filename).suffix) as tmp_target, \
+         tempfile.NamedTemporaryFile(delete=False, suffix=Path(generated.filename).suffix) as tmp_gen:
+        
+        tmp_target.write(await target.read())
+        tmp_gen.write(await generated.read())
+        target_path = tmp_target.name
+        gen_path = tmp_gen.name
+        
+    try:
+        # Preprocess and analyze both images
+        t_meta = preprocess(target_path)
+        t_phys = analyze_physics(t_meta)
+        
+        g_meta = preprocess(gen_path)
+        g_phys = analyze_physics(g_meta)
+        
+        # Calculate CV metrics
+        cv_metrics = compute_image_similarity_metrics(t_meta, t_phys, g_meta, g_phys)
+        
+        # Read files to B64
+        with open(target_path, "rb") as f:
+            t_b64 = base64.b64encode(f.read()).decode()
+        with open(gen_path, "rb") as f:
+            g_b64 = base64.b64encode(f.read()).decode()
+            
+        ext_t = Path(target_path).suffix.lower()
+        ext_g = Path(gen_path).suffix.lower()
+        mime_map = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.bmp': 'image/bmp'}
+        mime_t = mime_map.get(ext_t, 'image/jpeg')
+        mime_g = mime_map.get(ext_g, 'image/jpeg')
+        
+        llm_prompt = (
+            "You are an expert prompt alignment audit AI. Compare the Target Image (first image) with the Generated Image (second image).\n"
+            "Analyze the gap in composition, style, color, lighting, details, and accuracy.\n\n"
+            "We have calculated these physical computer vision comparisons:\n"
+            f"- Color Histogram Correlation Match: {cv_metrics['color_match']}%\n"
+            f"- Brightness Match: {cv_metrics['brightness_match']}%\n"
+            f"- Contrast Match: {cv_metrics['contrast_match']}%\n"
+            f"- Edge Density / Detail Match: {cv_metrics['edge_match']}%\n"
+            f"- Aggregate OpenCV Physical Match Score: {cv_metrics['physical_similarity_score']}%\n\n"
+            "Based on the visual comparison and these metrics, return a JSON response (no markdown, no backticks) with this structure:\n"
+            "{\n"
+            "  \"similarity_score\": 85,\n"
+            "  \"critique\": \"Write a professional critique of the differences...\",\n"
+            "  \"adjustments\": {\n"
+            "    \"add\": [\"list of descriptive terms to ADD to the positive prompt to align it with target\"],\n"
+            "    \"remove\": [\"list of terms or styles to REMOVE from prompt or add to negative prompt\"]\n"
+            "  }\n"
+            "}\n"
+            "Ensure the final similarity_score is a balanced average of the physical match score and your semantic/stylistic assessment (0-100)."
+        )
+        
+        payload = {
+            "contents": [{"parts": [
+                {"text": llm_prompt},
+                {"inline_data": {"mime_type": mime_t, "data": t_b64}},
+                {"inline_data": {"mime_type": mime_g, "data": g_b64}}
+            ]}],
+            "generationConfig": {"temperature": 0.15, "topP": 0.85, "maxOutputTokens": 1000}
+        }
+        
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(None, lambda: _gemini_post(payload))
+        if response.status_code == 200:
+            result = response.json()
+            raw = result["candidates"][0]["content"]["parts"][0]["text"]
+            raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            evaluation = json.loads(raw)
+            evaluation["cv_metrics"] = cv_metrics
+            return JSONResponse(content=evaluation)
+        else:
+            raise HTTPException(status_code=response.status_code, detail="AI alignment evaluation failed.")
+            
+    except Exception as e:
+        print(f"Similarity evaluator error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        for path in [target_path, gen_path]:
+            if os.path.exists(path):
+                os.remove(path)
+
+
+@app.post("/api/reprompt/batch")
+async def create_reprompt_batch(files: list[UploadFile] = File(...)):
+    """Analyze a batch of images and generate custom prompts. Returns a ZIP file with CSV and individual JSON logs."""
+    import io
+    import zipfile
+    import csv
+    
+    results = []
+    temp_files = []
+    
+    for file in files:
+        if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp')):
+            continue
+        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(file.filename).suffix) as tmp:
+            content = await file.read()
+            tmp.write(content)
+            temp_files.append((file.filename, tmp.name))
+            
+    if not temp_files:
+        raise HTTPException(status_code=400, detail="No valid images uploaded.")
+        
+    try:
+        # Process helper
+        async def process_one(filename, path):
+            try:
+                meta = preprocess(path)
+                physics = analyze_physics(meta)
+                stats = {
+                    "aspect_ratio": meta.aspect_ratio,
+                    "mean_brightness_global": meta.mean_brightness,
+                    "global_contrast": meta.global_contrast,
+                    "dominant_hues": meta.dominant_hues,
+                    "brightness_class": physics.brightness_class,
+                    "mean_brightness": physics.mean_brightness,
+                    "dof_class": physics.dof_class,
+                    "sharpness_score": physics.sharpness_score,
+                    "shadow_hardness": physics.shadow_hardness,
+                    "shadow_score": physics.shadow_score,
+                    "light_direction": physics.light_direction,
+                    "contrast_ratio": physics.contrast_ratio,
+                    "exif": meta.exif or {}
+                }
+                pos_prompt, neg_prompt = await generate_prompt_from_gemini(path, stats)
+                return {
+                    "filename": filename,
+                    "success": True,
+                    "reprompt": pos_prompt,
+                    "negative_prompt": neg_prompt,
+                    "stats": stats
+                }
+            except Exception as e:
+                print(f"Error processing {filename} in batch: {e}")
+                return {
+                    "filename": filename,
+                    "success": False,
+                    "error": str(e)
+                }
+        
+        # Concurrency limit to avoid Gemini quota issues
+        sem = asyncio.Semaphore(3)
+        async def worker(filename, path):
+            async with sem:
+                return await process_one(filename, path)
+                
+        tasks = [worker(fname, path) for fname, path in temp_files]
+        batch_results = await asyncio.gather(*tasks)
+        
+        # Create ZIP
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+            # Add JSON reports
+            for res in batch_results:
+                if res["success"]:
+                    json_data = json.dumps(res, indent=2)
+                    base_name = Path(res["filename"]).stem
+                    zip_file.writestr(f"reports/{base_name}_report.json", json_data)
+                    
+            # Add metadata_dataset.csv
+            csv_buffer = io.StringIO()
+            writer = csv.writer(csv_buffer)
+            writer.writerow([
+                "Filename", "Aspect Ratio", "Dominant Hues", "Brightness Class", 
+                "Mean Brightness", "Depth of Field", "Contrast Ratio", "Shadow Hardness",
+                "Light Direction", "Positive Prompt", "Negative Prompt", "Camera", "Lens", "Focal Length", "Aperture", "ISO"
+            ])
+            
+            for res in batch_results:
+                if res["success"]:
+                    st = res["stats"]
+                    ex = st.get("exif", {})
+                    writer.writerow([
+                        res["filename"],
+                        st["aspect_ratio"],
+                        ", ".join(map(str, st["dominant_hues"])),
+                        st["brightness_class"],
+                        st["mean_brightness"],
+                        st["dof_class"],
+                        st["contrast_ratio"],
+                        st["shadow_hardness"],
+                        st["light_direction"],
+                        res["reprompt"],
+                        res["negative_prompt"],
+                        f"{ex.get('make','')} {ex.get('model','')}".strip(),
+                        ex.get("lens", ""),
+                        ex.get("focal_length", ""),
+                        ex.get("aperture", ""),
+                        ex.get("iso", "")
+                    ])
+                    
+            zip_file.writestr("metadata_dataset.csv", csv_buffer.getvalue())
+            
+        zip_buffer.seek(0)
+        
+        from fastapi.responses import StreamingResponse
+        return StreamingResponse(
+            io.BytesIO(zip_buffer.getvalue()),
+            media_type="application/zip",
+            headers={"Content-Disposition": "attachment; filename=reprompt_dataset.zip"}
+        )
+        
+    finally:
+        for fname, path in temp_files:
+            if os.path.exists(path):
+                os.remove(path)
 
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")

@@ -20,6 +20,17 @@ interface EvaluationResponse {
   ideal_prompt: string;
   ideal_negative_prompt?: string;
   breakdown: BreakdownItem[];
+  stats?: {
+    exif?: {
+      make?: string;
+      model?: string;
+      lens?: string;
+      focal_length?: number | string;
+      aperture?: number | string;
+      iso?: number;
+      exposure_time?: string;
+    };
+  };
 }
 
 export default function PracticeMode({ showToast }: PracticeModeProps) {
@@ -396,6 +407,54 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
                     )}
                   </CardContent>
                 </Card>
+
+                {writeResult.stats?.exif && (
+                  <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm mt-6">
+                    <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80 flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle className="text-sm font-semibold">Target EXIF Specifications</CardTitle>
+                        <CardDescription>Optics embedded in target image file.</CardDescription>
+                      </div>
+                      {(!writeResult.stats.exif || Object.keys(writeResult.stats.exif).length === 0) && (
+                        <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                          No EXIF Metadata (dynamic estimates used)
+                        </span>
+                      )}
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      {writeResult.stats.exif && Object.keys(writeResult.stats.exif).length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                          {writeResult.stats.exif.make && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">MAKE</span>
+                              <span className="font-semibold text-zinc-850 dark:text-zinc-200">{writeResult.stats.exif.make}</span>
+                            </div>
+                          )}
+                          {writeResult.stats.exif.model && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">MODEL</span>
+                              <span className="font-semibold text-zinc-850 dark:text-zinc-200">{writeResult.stats.exif.model}</span>
+                            </div>
+                          )}
+                          {writeResult.stats.exif.focal_length && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">FOCAL</span>
+                              <span className="font-semibold font-mono text-zinc-850 dark:text-zinc-200">{writeResult.stats.exif.focal_length}mm</span>
+                            </div>
+                          )}
+                          {writeResult.stats.exif.aperture && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">APERTURE</span>
+                              <span className="font-semibold font-mono text-zinc-850 dark:text-zinc-200">f/{writeResult.stats.exif.aperture}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-zinc-400 text-xs italic">No camera settings detected. Ground truth estimates derived from image computer vision analysis.</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
           </div>
@@ -605,6 +664,54 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
                     </div>
                   </CardContent>
                 </Card>
+
+                {diffResult.stats?.exif && (
+                  <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm mt-6">
+                    <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80 flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle className="text-sm font-semibold">Target EXIF Specifications</CardTitle>
+                        <CardDescription>Optics embedded in target image file.</CardDescription>
+                      </div>
+                      {(!diffResult.stats.exif || Object.keys(diffResult.stats.exif).length === 0) && (
+                        <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                          No EXIF Metadata (dynamic estimates used)
+                        </span>
+                      )}
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      {diffResult.stats.exif && Object.keys(diffResult.stats.exif).length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                          {diffResult.stats.exif.make && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">MAKE</span>
+                              <span className="font-semibold text-zinc-850 dark:text-zinc-200">{diffResult.stats.exif.make}</span>
+                            </div>
+                          )}
+                          {diffResult.stats.exif.model && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">MODEL</span>
+                              <span className="font-semibold text-zinc-850 dark:text-zinc-200">{diffResult.stats.exif.model}</span>
+                            </div>
+                          )}
+                          {diffResult.stats.exif.focal_length && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">FOCAL</span>
+                              <span className="font-semibold font-mono text-zinc-850 dark:text-zinc-200">{diffResult.stats.exif.focal_length}mm</span>
+                            </div>
+                          )}
+                          {diffResult.stats.exif.aperture && (
+                            <div className="p-2 bg-zinc-50 dark:bg-zinc-900/30 rounded border border-zinc-200/50 dark:border-zinc-800/30">
+                              <span className="text-[9px] block text-zinc-400 font-medium font-mono">APERTURE</span>
+                              <span className="font-semibold font-mono text-zinc-850 dark:text-zinc-200">f/{diffResult.stats.exif.aperture}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-zinc-400 text-xs italic">No camera settings detected. Ground truth estimates derived from image computer vision analysis.</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
           </div>

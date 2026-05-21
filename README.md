@@ -106,6 +106,22 @@ npm run build
 ```
 Vite compiles and replaces the static assets in the root `/static/` folder automatically.
 
+### 5. Pushing Updates to GitHub
+To commit and push your changes back to the GitHub repository, run:
+```bash
+# Verify modified and untracked files
+git status
+
+# Stage all updates (including built static assets)
+git add .
+
+# Commit with a descriptive message
+git commit -m "Upgrade RePrompt to commercial workstation: add Similarity Lab, Batch Mode, EXIF parser, Prompt Git, and UI/UX refinements"
+
+# Push changes to your branch/main repository
+git push origin main
+```
+
 ---
 
 ## 🔌 API Endpoints Reference

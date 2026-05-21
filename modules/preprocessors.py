@@ -48,6 +48,9 @@ class PreprocessMetadata:
     # Histogram peaks (top 3 hue bins, 0–360)
     dominant_hues: list[float]
 
+    # EXIF Camera metadata
+    exif: Optional[dict] = None
+
     # For downstream: the actual processed image (not serialized to JSON)
     _image_bgr: Optional[np.ndarray] = None
     _image_rgb: Optional[np.ndarray] = None
@@ -185,6 +188,86 @@ def analyze_color_histogram(img_bgr: np.ndarray) -> tuple[ColorStats, list[float
     return stats, dominant_hues
 
 
+def extract_exif(image_path: str | Path) -> dict:
+    """
+    Extract standard EXIF camera specifications (Make, Model, Lens, FocalLength, Aperture, ISO, ExposureTime)
+    from an image using PIL.
+    """
+    from PIL import Image
+    from PIL.ExifTags import TAGS
+    try:
+        with Image.open(image_path) as img:
+            exif = img.getexif()
+            if not exif:
+                return {}
+            
+            raw_exif = {}
+            # Base EXIF
+            for tag_id, val in exif.items():
+                name = TAGS.get(tag_id, tag_id)
+                if isinstance(name, str):
+                    raw_exif[name] = val
+                    
+            # Inner EXIF IFD (sub-exif block)
+            for ifd_id in [0x8769, 0xa405]:
+                try:
+                    ifd = exif.get_ifd(ifd_id)
+                    for tag_id, val in ifd.items():
+                        name = TAGS.get(tag_id, tag_id)
+                        if isinstance(name, str):
+                            raw_exif[name] = val
+                except Exception:
+                    pass
+            
+            # Format to serializable fields
+            res = {}
+            if "Make" in raw_exif:
+                res["make"] = str(raw_exif["Make"]).strip()
+            if "Model" in raw_exif:
+                res["model"] = str(raw_exif["Model"]).strip()
+            if "LensModel" in raw_exif:
+                res["lens"] = str(raw_exif["LensModel"]).strip()
+            
+            # Focal Length
+            if "FocalLength" in raw_exif:
+                fl = raw_exif["FocalLength"]
+                try:
+                    res["focal_length"] = float(fl)
+                except Exception:
+                    res["focal_length"] = str(fl)
+                    
+            # Aperture (FNumber)
+            if "FNumber" in raw_exif:
+                fn = raw_exif["FNumber"]
+                try:
+                    res["aperture"] = float(fn)
+                except Exception:
+                    res["aperture"] = str(fn)
+                    
+            # ISO
+            if "ISOSpeedRatings" in raw_exif:
+                res["iso"] = int(raw_exif["ISOSpeedRatings"])
+                
+            # Exposure Time
+            if "ExposureTime" in raw_exif:
+                et = raw_exif["ExposureTime"]
+                try:
+                    if hasattr(et, "numerator") and hasattr(et, "denominator"):
+                        if et.denominator == 1:
+                            res["exposure_time"] = f"{et.numerator}"
+                        else:
+                            res["exposure_time"] = f"{et.numerator}/{et.denominator}"
+                    else:
+                        res["exposure_time"] = str(et)
+                except Exception:
+                    res["exposure_time"] = str(et)
+                    
+            return res
+    except Exception as e:
+        print(f"[EXIF Parser] Error: {e}")
+        return {}
+
+
 # ── Public API ─────────────────────────────────────────────────────────────────
 
 def preprocess(image_path: str | Path) -> PreprocessMetadata:
@@ -198,7 +281,8 @@ def preprocess(image_path: str | Path) -> PreprocessMetadata:
         4. Bilateral noise reduction
         5. Grayscale + brightness stats
         6. Color histogram analysis
-        7. Return PreprocessMetadata (includes image arrays for downstream)
+        7. Extract EXIF camera metadata
+        8. Return PreprocessMetadata (includes image arrays for downstream)
 
     Args:
         image_path: path to the input image
@@ -228,7 +312,10 @@ def preprocess(image_path: str | Path) -> PreprocessMetadata:
     # 6. Color histogram
     color_stats, dominant_hues = analyze_color_histogram(img_denoised)
 
-    # 7. Build metadata
+    # 7. EXIF metadata
+    exif_data = extract_exif(p)
+
+    # 8. Build metadata
     return PreprocessMetadata(
         original_path=str(p.resolve()),
         original_width=orig_w,
@@ -244,6 +331,7 @@ def preprocess(image_path: str | Path) -> PreprocessMetadata:
         global_contrast=round(global_contrast, 2),
         color=color_stats,
         dominant_hues=dominant_hues,
+        exif=exif_data,
 
         # Attach images for downstream modules (not serialized)
         _image_bgr=img_denoised,

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import ForensicsApp from "./components/ForensicsApp";
+import SimilarityLab from "./components/SimilarityLab";
+import BatchProcessor from "./components/BatchProcessor";
 import PracticeMode from "./components/PracticeMode";
 import DailyChallenge from "./components/DailyChallenge";
 import LearnCourse from "./components/LearnCourse";
@@ -55,6 +57,10 @@ export default function App() {
     switch (activeSection) {
       case "app":
         return <ForensicsApp showToast={showToast} />;
+      case "similarity":
+        return <SimilarityLab showToast={showToast} />;
+      case "batch":
+        return <BatchProcessor showToast={showToast} />;
       case "practice":
         return <PracticeMode showToast={showToast} />;
       case "daily":
@@ -109,7 +115,7 @@ export default function App() {
               </span>
               <span className="text-xs text-zinc-300 dark:text-zinc-700">/</span>
               <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider capitalize">
-                {activeSection === "app" ? "Forensics App" : activeSection === "practice" ? "Practice Sandbox" : activeSection === "daily" ? "Daily Challenge" : activeSection === "learn" ? "Learn Academy" : activeSection === "docs" ? "API Docs" : "About"}
+                {activeSection === "app" ? "Forensics App" : activeSection === "similarity" ? "Similarity Lab" : activeSection === "batch" ? "Batch Mode" : activeSection === "practice" ? "Practice Sandbox" : activeSection === "daily" ? "Daily Challenge" : activeSection === "learn" ? "Learn Academy" : activeSection === "docs" ? "API Docs" : "About"}
               </span>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { Terminal, PenTool, Calendar, BookOpen, Sun, Moon, Sparkles, FileCode2, Info, X } from "lucide-react";
+import { Terminal, PenTool, Calendar, BookOpen, Sun, Moon, Sparkles, FileCode2, Info, X, RefreshCw, Layers } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface SidebarProps {
@@ -20,6 +20,8 @@ export default function Sidebar({
 }: SidebarProps) {
   const menuItems = [
     { id: "app", label: "Forensic App", icon: Terminal },
+    { id: "similarity", label: "Similarity Lab", icon: RefreshCw },
+    { id: "batch", label: "Batch Mode", icon: Layers },
     { id: "practice", label: "Practice Mode", icon: PenTool },
     { id: "daily", label: "Daily Challenge", icon: Calendar },
     { id: "learn", label: "Learn Academy", icon: BookOpen },
@@ -40,7 +42,7 @@ export default function Sidebar({
             RePrompt
           </span>
           <span className="text-[10px] block font-mono font-medium text-zinc-400 -mt-1">
-            FORENSICS
+            PROMPT DECODER
           </span>
         </div>
         {/* Mobile Close Button */}
