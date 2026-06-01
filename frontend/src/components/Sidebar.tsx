@@ -1,5 +1,5 @@
-import { Terminal, PenTool, Calendar, BookOpen, Sun, Moon, Sparkles, FileCode2, Info, X, RefreshCw, Layers } from "lucide-react";
-import { Button } from "./ui/button";
+import { Terminal, PenTool, Calendar, BookOpen, Sparkles, FileCode2, Info, X, RefreshCw, Layers } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 interface SidebarProps {
   activeSection: string;
@@ -30,8 +30,7 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 w-64 md:static md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col h-screen border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex-shrink-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}>
+    <aside className={`fixed inset-y-0 left-0 z-50 w-64 md:static transition-transform duration-300 ease-in-out flex flex-col h-dvh border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex-shrink-0 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
       {/* Brand Logo */}
       <div className="h-16 flex items-center gap-2.5 px-6 border-b border-zinc-200 dark:border-zinc-800 relative">
         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -84,24 +83,8 @@ export default function Sidebar({
       </nav>
 
       {/* Bottom Footer Actions */}
-      <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
-        <Button
-          variant="outline"
-          className="w-full flex items-center justify-center gap-2 text-xs font-medium border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 h-9"
-          onClick={() => setDarkMode(!darkMode)}
-        >
-          {darkMode ? (
-            <>
-              <Sun className="w-3.5 h-3.5 text-amber-500" />
-              Light Theme
-            </>
-          ) : (
-            <>
-              <Moon className="w-3.5 h-3.5 text-indigo-500" />
-              Dark Theme
-            </>
-          )}
-        </Button>
+      <div className="p-4 pb-safe border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
         <div className="text-[10px] text-center text-zinc-400 font-mono">
           SECURE CONNECTION ACTIVE
         </div>

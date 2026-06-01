@@ -210,59 +210,18 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
     setIsDragging(false);
   };
 
-  const compressImage = (selectedFile: File, callback: (compressed: File, dataUrl: string) => void) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-        const maxDimension = 1600;
-
-        if (width > height && width > maxDimension) {
-          height *= maxDimension / width;
-          width = maxDimension;
-        } else if (height > maxDimension) {
-          width *= maxDimension / height;
-          height = maxDimension;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                const compressedFile = new File([blob], selectedFile.name, {
-                  type: "image/jpeg",
-                  lastModified: Date.now(),
-                });
-                callback(compressedFile, canvas.toDataURL("image/jpeg", 0.75));
-              }
-            },
-            "image/jpeg",
-            0.75
-          );
-        }
-      };
-      img.src = e.target?.result as string;
-    };
-    reader.readAsDataURL(selectedFile);
-  };
-
   const processFile = (selectedFile: File) => {
     if (!selectedFile.type.startsWith("image/")) {
       showToast("Please upload an image file", "error");
       return;
     }
 
-    compressImage(selectedFile, (compressed, dataUrl) => {
-      setFile(compressed);
-      setImage(dataUrl);
-    });
+    setFile(selectedFile);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -767,13 +726,14 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
 
                     {activeTab === "anatomy" && (
                       <div className="space-y-4">
-                        <div className="flex flex-wrap gap-1.5 leading-relaxed text-sm select-all">
+                        <div className="flex flex-wrap gap-1.5 leading-relaxed text-sm select-none">
                           {analysisData.anatomy ? (
                             analysisData.anatomy.map((seg, idx) => (
                               <span
                                 key={idx}
                                 onClick={() => setActiveAnatomyIdx(activeAnatomyIdx === idx ? null : idx)}
-                                className={`px-1.5 py-0.5 rounded text-xs font-medium cursor-help transition-all duration-200 border relative group ${
+                                onMouseDown={(e) => e.preventDefault()}
+                                className={`px-1.5 py-0.5 rounded text-xs font-medium cursor-pointer transition-all duration-200 border relative group select-none touch-none ${
                                   activeAnatomyIdx === idx 
                                     ? "ring-2 ring-indigo-500/50 scale-[1.02] " 
                                     : "hover:scale-[1.01]"
@@ -1089,11 +1049,11 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                     if (key === "exif" || key === "dominant_hues" || typeof val === "object" || Array.isArray(val)) return null;
                     const isPercent = key === "brightness" || key === "mean_brightness_global" || key === "mean_brightness";
                     return (
-                      <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30 animate-fade-in">
-                        <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">
+                      <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30 animate-fade-in overflow-hidden">
+                        <span className="text-[9px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wide truncate leading-tight" title={getStatLabel(key as keyof AnalysisStats)}>
                           {getStatLabel(key as keyof AnalysisStats)}
                         </span>
-                        <span className="text-lg font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block">
+                        <span className="text-base font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block truncate">
                           {typeof val === "number" ? (isPercent ? `${val.toFixed(1)}%` : val.toFixed(2)) : String(val)}
                         </span>
                       </div>

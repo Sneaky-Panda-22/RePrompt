@@ -83,10 +83,29 @@
 }
 
 @layer base {
+  :root {
+    /* iOS safe area support */
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+  }
+
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    /* Prevent elastic over-scroll on iOS from showing white gaps */
+    overscroll-behavior: none;
   }
+}
+
+/* Safe-area padding utilities */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.min-h-dvh {
+  min-height: 100dvh;
+}
+.h-dvh {
+  height: 100dvh;
 }

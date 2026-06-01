@@ -21,6 +21,7 @@ export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isThemeTransitioning, setIsThemeTransitioning] = useState<boolean>(false);
 
   // Apply dark mode theme class
   useEffect(() => {
@@ -35,14 +36,18 @@ export default function App() {
   }, []);
 
   const handleSetDarkMode = (dark: boolean) => {
-    setDarkMode(dark);
-    if (dark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+    setIsThemeTransitioning(true);
+    setTimeout(() => {
+      setDarkMode(dark);
+      if (dark) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+      setTimeout(() => setIsThemeTransitioning(false), 350);
+    }, 80);
   };
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -77,7 +82,15 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-zinc-950 font-sans antialiased text-zinc-900 dark:text-zinc-50 transition-colors duration-300">
+    <div className="flex h-dvh w-screen overflow-hidden bg-white dark:bg-zinc-950 font-sans antialiased text-zinc-900 dark:text-zinc-50 transition-colors duration-300">
+      {/* Theme transition flash overlay */}
+      <div
+        className={`fixed inset-0 z-[9999] pointer-events-none transition-opacity duration-300 ease-in-out
+          ${darkMode ? "bg-zinc-950" : "bg-white"}
+          ${isThemeTransitioning ? "opacity-40" : "opacity-0"}
+        `}
+      />
+
       {/* Sidebar Backdrop Overlay on Mobile */}
       {isMobileMenuOpen && (
         <div 
