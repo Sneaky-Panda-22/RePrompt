@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import ForensicsApp from "./components/ForensicsApp";
@@ -9,6 +9,16 @@ import DailyChallenge from "./components/DailyChallenge";
 import LearnCourse from "./components/LearnCourse";
 import ApiDocs from "./components/ApiDocs";
 import AboutProject from "./components/AboutProject";
+import {
+  AmbientLattice,
+  ScrollProgress,
+  PageTransition,
+  SlideIn,
+  motionTokens,
+  easeOutSoft,
+} from "@/lib/motion";
+import { ShaderCurtain } from "./components/ShaderCurtain";
+import { motion } from "motion/react";
 
 interface Toast {
   id: number;
@@ -16,12 +26,36 @@ interface Toast {
   type: "success" | "error";
 }
 
+const sectionTitle: Record<string, string> = {
+  app: "Forensics App",
+  similarity: "Similarity Lab",
+  batch: "Batch Mode",
+  practice: "Practice Sandbox",
+  daily: "Daily Challenge",
+  learn: "Learn Academy",
+  docs: "API Docs",
+  about: "About",
+};
+
+const sectionEyebrow: Record<string, string> = {
+  app: "01 — Prompt Extraction",
+  similarity: "02 — Target Alignment",
+  batch: "03 — Multi-Asset Sweep",
+  practice: "04 — Workshop",
+  daily: "05 — Daily Brief",
+  learn: "06 — Academy",
+  docs: "07 — Developer Hub",
+  about: "08 — Project Notes",
+};
+
 export default function App() {
   const [activeSection, setActiveSection] = useState<string>("app");
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isThemeTransitioning, setIsThemeTransitioning] = useState<boolean>(false);
+  const [, setHeroMounted] = useState<boolean>(false);
+  const workspaceRef = useRef<HTMLDivElement | null>(null);
 
   // Apply dark mode theme class
   useEffect(() => {
@@ -33,6 +67,8 @@ export default function App() {
       setDarkMode(false);
       document.documentElement.classList.remove("dark");
     }
+    const t = setTimeout(() => setHeroMounted(true), 380);
+    return () => clearTimeout(t);
   }, []);
 
   const handleSetDarkMode = (dark: boolean) => {
@@ -81,104 +117,154 @@ export default function App() {
     }
   };
 
+  const activeTitle = sectionTitle[activeSection] ?? "Forensics App";
+  const activeEyebrow = sectionEyebrow[activeSection] ?? "01 — Prompt Extraction";
+
   return (
-    <div className="flex h-dvh w-screen overflow-hidden bg-white dark:bg-zinc-950 font-sans antialiased text-zinc-900 dark:text-zinc-50 transition-colors duration-300">
+    <AmbientLattice>
+      {/* Premium layered background */}
+      <ScrollProgress target={workspaceRef} />
+
       {/* Theme transition flash overlay */}
       <div
-        className={`fixed inset-0 z-[9999] pointer-events-none transition-opacity duration-300 ease-in-out
-          ${darkMode ? "bg-zinc-950" : "bg-white"}
-          ${isThemeTransitioning ? "opacity-40" : "opacity-0"}
-        `}
+        className={`fixed inset-0 z-[200] pointer-events-none transition-opacity duration-300 ease-in-out ${
+          darkMode ? "bg-zinc-950" : "bg-[#F8F6F1]"
+        } ${isThemeTransitioning ? "opacity-50" : "opacity-0"}`}
       />
 
-      {/* Sidebar Backdrop Overlay on Mobile */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/40 dark:bg-black/60 z-40 md:hidden backdrop-blur-xs transition-opacity duration-300"
-          onClick={() => setIsMobileMenuOpen(false)}
+      <div className="flex h-dvh w-screen overflow-hidden bg-transparent font-sans antialiased text-foreground transition-colors duration-300">
+        {/* Sidebar Backdrop Overlay on Mobile */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-40 md:hidden bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* Sidebar Navigation */}
+        <Sidebar
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          darkMode={darkMode}
+          setDarkMode={handleSetDarkMode}
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
         />
-      )}
 
-      {/* Sidebar Navigation */}
-      <Sidebar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        darkMode={darkMode}
-        setDarkMode={handleSetDarkMode}
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-      />
+        {/* Main Workspace Frame */}
+        <main className="flex-1 flex flex-col h-full overflow-hidden">
+          {/* Top Control Header */}
+          <header className="relative h-20 flex items-center justify-between px-5 md:px-10 z-10 flex-shrink-0">
+            <div className="flex items-center gap-4 min-w-0">
+              {/* Hamburger Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label="Open navigation"
+                className="md:hidden h-10 w-10 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground border border-border transition-colors cursor-pointer"
+              >
+                <Menu className="w-4 h-4" />
+          </button>
 
-      {/* Main Workspace Frame */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-50/50 dark:bg-zinc-950/20">
-        {/* Top Control Header */}
-        <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 md:px-8 bg-white dark:bg-zinc-950/60 backdrop-blur-md z-10 flex-shrink-0 transition-colors duration-300">
-          <div className="flex items-center gap-3">
-            {/* Hamburger Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors"
-            >
-              <Menu className="w-4.5 h-4.5" />
-            </button>
+              {/* Editorial breadcrumb */}
+              <div className="flex items-baseline gap-3 min-w-0">
+                <span className="label-mono text-muted-foreground whitespace-nowrap hidden sm:inline">
+                  {activeEyebrow}
+            </span>
+                <span className="hidden sm:inline-block w-px h-3 bg-border" />
+                <motion.h1
+                  key={activeTitle}
+                  initial={{ opacity: 0, y: 4, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: motionTokens.micro * 1.6, ease: easeOutSoft }}
+                  className="font-display text-[1.55rem] md:text-2xl leading-none font-medium tracking-tight text-foreground truncate"
+                >
+                  {activeTitle}
+          </motion.h1>
+        </div>
+      </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] md:text-xs font-mono font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                WORKSPACE
-              </span>
-              <span className="text-xs text-zinc-300 dark:text-zinc-700">/</span>
-              <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider capitalize">
-                {activeSection === "app" ? "Forensics App" : activeSection === "similarity" ? "Similarity Lab" : activeSection === "batch" ? "Batch Mode" : activeSection === "practice" ? "Practice Sandbox" : activeSection === "daily" ? "Daily Challenge" : activeSection === "learn" ? "Learn Academy" : activeSection === "docs" ? "API Docs" : "About"}
-              </span>
+            {/* Right-side status pill */}
+            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+              <div className="hidden md:flex items-center gap-2 px-3 h-8 rounded-full bg-card/70 border border-border">
+                <div className="relative w-1.5 h-1.5 rounded-full bg-emerald-500">
+                  <span className="absolute inset-0 rounded-full bg-emerald-500/60 animate-ping" />
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[9px] md:text-[10px] font-bold font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
-              API INSTANCE CONNECTED
+                <span className="label-mono text-muted-foreground">
+                  API · Online
             </span>
           </div>
-        </header>
-
-        {/* Dynamic View Panel */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8">
-          <div className="max-w-6xl mx-auto h-full">
-            {renderSection()}
+              <div className="flex md:hidden items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 breathing" />
           </div>
         </div>
-      </main>
+      </header>
 
-      {/* Unified Toasts Portal Container */}
-      <div className="fixed bottom-6 right-6 z-50 space-y-3.5 max-w-sm w-full">
-        {toasts.map((t) => (
+          {/* Hairline below header */}
+          <div className="rule-gradient mx-5 md:mx-10" />
+
+          {/* Dynamic View Panel */}
           <div
-            key={t.id}
-            className={`p-4 rounded-xl shadow-xl border flex items-center justify-between animate-slide-in-right ${
-              t.type === "success"
-                ? "bg-white dark:bg-zinc-900 border-emerald-500/30 text-zinc-900 dark:text-zinc-50"
-                : "bg-white dark:bg-zinc-900 border-red-500/30 text-zinc-900 dark:text-zinc-50"
-            }`}
+            ref={workspaceRef}
+            className="flex-1 overflow-y-auto px-5 md:px-10 py-8 md:py-10"
           >
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-2.5 h-2.5 rounded-full ${
-                  t.type === "success" ? "bg-emerald-500" : "bg-red-500"
-                }`}
-              />
-              <span className="text-xs font-semibold leading-relaxed">
-                {t.message}
-              </span>
-            </div>
-            <button
-              onClick={() => setToasts((prev) => prev.filter((toast) => toast.id !== t.id))}
-              className="text-[10px] font-bold text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors ml-4 uppercase font-mono"
-            >
-              Close
-            </button>
-          </div>
-        ))}
+            <div className="max-w-6xl mx-auto h-full">
+              <PageTransition routeKey={activeSection}>
+                {renderSection()}
+          </PageTransition>
+        </div>
       </div>
+    </main>
+
+        {/* Unified Toasts Portal Container */}
+        <div className="fixed bottom-6 right-6 z-50 space-y-3 max-w-sm w-[calc(100%-3rem)] sm:w-full pointer-events-none">
+          {toasts.map((t) => (
+            <SlideIn key={t.id} show direction="right">
+              <div
+                className={`pointer-events-auto p-4 rounded-xl shadow-xl border flex items-center justify-between transition-premium ${
+                  t.type === "success"
+                    ? "bg-card border-emerald-500/30 text-foreground"
+                    : "bg-card border-red-500/30 text-foreground"
+                }`}
+                style={{
+                  boxShadow:
+                    "0 1px 1px hsl(30 8% 7% / 0.04), 0 12px 32px -16px hsl(30 8% 7% / 0.22)",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      t.type === "success" ? "bg-emerald-500" : "bg-red-500"
+                    }`}
+                  />
+                  <span className="text-xs font-semibold leading-relaxed">
+                    {t.message}
+          </span>
+        </div>
+                <button
+                  onClick={() => setToasts((prev) => prev.filter((toast) => toast.id !== t.id))}
+                  className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors ml-4 label-mono cursor-pointer"
+                >
+                  Close
+        </button>
+      </div>
+    </SlideIn>
+          ))}
     </div>
+  </div>
+
+      {/* One-time shader curtain reveal so the workspace never visibly paints */}
+      <ShaderCurtain
+        delay={2500}
+        duration={1800}
+        mark={
+          <span className="font-display-sans tracking-tight flex flex-col md:flex-row items-center md:items-baseline gap-2 md:gap-4 text-center">
+            <span className="wordmark-on-dark text-4xl md:text-6xl">RePrompt</span>
+            <span className="kicker-on-dark text-xl md:text-3xl">
+              decoding images, line by line
+        </span>
+         </span>
+        }
+      />
+</AmbientLattice>
   );
 }

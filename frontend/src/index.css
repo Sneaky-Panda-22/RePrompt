@@ -1,7 +1,21 @@
 @import "tailwindcss";
+@import "@fontsource-variable/fraunces/index.css";
+@import "@fontsource-variable/geist/index.css";
+@import "@fontsource-variable/geist-mono/index.css";
+/* Premium additions — italic serif (editorial accent) and a more characterful
+   display sans for badges, eyebrows, and the wordmark gradient. */
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "@fontsource-variable/bricolage-grotesque/index.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* =====================================================================
+   Design tokens — editorial premium palette
+   light: warm cream + ink  ·  dark: ink + cool bone
+   Resolved through hsl(var(--token)) to stay compatible with hundreds
+   of existing utility classes in older workspaces.
+   ===================================================================== */
 @theme {
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -30,55 +44,75 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
+  /* Display serif for hero & section titles */
+  --font-display: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  --font-sans: "Geist Variable", Geist, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+  /* Editorial italic — for accents, signature flourishes, call-outs.
+     Instrument Serif's italic is the rarified *moment* font, used sparingly
+     on mascots and signature phrases. */
+  --font-italic: "Instrument Serif", "Fraunces Variable", ui-serif, Georgia, serif;
+  /* Display sans — used for the wordmark, badge eyebrows, and any
+     statements that need more shape than Geist (TOC, hero kicker). */
+  --font-display-sans: "Bricolage Grotesque Variable", "Bricolage Grotesque",
+    "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* Spacing rhythm — slightly more generous than default */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  /* Motion language — used by inline styles & motion primitives */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* cream / warm paper */
+    --background: 39 35% 96%;
+    --foreground: 30 8% 7%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 30 8% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --popover-foreground: 30 8% 7%;
+    --primary: 30 8% 7%;
+    --primary-foreground: 39 35% 96%;
+    --secondary: 40 25% 92%;
+    --secondary-foreground: 30 8% 7%;
+    --muted: 40 25% 92%;
+    --muted-foreground: 33 5% 40%;
+    --accent: 34 56% 49%;            /* warm amber */
+    --accent-foreground: 30 8% 7%;
+    --destructive: 0 70% 47%;
+    --destructive-foreground: 39 35% 96%;
+    --border: 40 25% 89%;
+    --input: 40 25% 89%;
+    --ring: 34 56% 49%;
+    --radius: 0.75rem;
   }
- 
+
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    /* ink / midnight */
+    --background: 33 6% 5%;
+    --foreground: 36 38% 97%;
+    --card: 33 6% 7%;
+    --card-foreground: 36 38% 97%;
+    --popover: 33 6% 7%;
+    --popover-foreground: 36 38% 97%;
+    --primary: 36 38% 97%;
+    --primary-foreground: 33 6% 5%;
+    --secondary: 33 6% 12%;
+    --secondary-foreground: 36 38% 97%;
+    --muted: 33 6% 12%;
+    --muted-foreground: 40 7% 57%;
+    --accent: 34 73% 66%;           /* bone amber */
+    --accent-foreground: 33 6% 5%;
+    --destructive: 0 70% 56%;
+    --destructive-foreground: 33 6% 5%;
+    --border: 33 6% 14%;
+    --input: 33 6% 14%;
+    --ring: 34 73% 66%;
   }
 }
 
@@ -92,14 +126,53 @@
   * {
     @apply border-border;
   }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "ss02", "cv11";
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
     /* Prevent elastic over-scroll on iOS from showing white gaps */
     overscroll-behavior: none;
   }
+
+  /* Editorial display headings — h1 & h2 default to the serif */
+  h1, h2 {
+    font-family: var(--font-display);
+    font-feature-settings: "ss01", "ss02";
+    letter-spacing: -0.02em;
+  }
+
+  /* Selection — keep tasteful */
+  ::selection {
+    background: hsl(var(--accent) / 0.25);
+    color: hsl(var(--foreground));
+  }
+
+  /* Focus ring — must be visible everywhere */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring) / 0.55);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Tabular numbers for forensic metrics */
+  .num,
+  code,
+  kbd,
+  pre {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-/* Safe-area padding utilities */
+/* =====================================================================
+   Safe-area utilities
+   ===================================================================== */
 .pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
@@ -108,4 +181,803 @@
 }
 .h-dvh {
   height: 100dvh;
+}
+
+/* =====================================================================
+   Display / label utilities
+   ===================================================================== */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-italic {
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-weight: 400;
+  /* Open the italic slightly — italic serifs always read tighter.
+     Negative tracking fights the slant over-stroke. */
+  letter-spacing: -0.005em;
+}
+
+.font-display-sans {
+  font-family: var(--font-display-sans);
+  /* Bricolage's optical-size goes extra-display above 96px, so the
+     variable axis should be available for large statements. */
+  font-optical-sizing: auto;
+}
+
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+/* =====================================================================
+   Surface primitives — used by new cards & sidebars
+   ===================================================================== */
+.surface-card {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  /* Soft ambient shadow that reads "expensive" */
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.025),
+    0 8px 32px -20px hsl(var(--foreground) / 0.18);
+}
+
+.surface-elevated {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.7);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.03),
+    0 24px 48px -32px hsl(var(--foreground) / 0.28),
+    0 2px 6px -2px hsl(var(--foreground) / 0.04);
+}
+
+/* Subtle engraved inset — used for headings sitting on cream */
+.surface-inset {
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  box-shadow:
+    inset 0 1px 2px hsl(var(--foreground) / 0.03),
+    inset 0 -1px 0 hsl(var(--foreground) / 0.02);
+}
+
+/* =====================================================================
+   Ambient backdrop — slow-moving gradient wash behind the workspace
+   Reads as "expensive" without being loud.
+   ===================================================================== */
+.ambient-mesh {
+  position: relative;
+  isolation: isolate;
+}
+
+.ambient-mesh::before,
+.ambient-mesh::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity 600ms var(--ease-out-soft);
+}
+
+/* Light: warm cream with two soft amber highlights */
+.ambient-mesh::before {
+  background:
+    radial-gradient(60% 60% at 15% 5%, hsl(34 56% 49% / 0.10), transparent 60%),
+    radial-gradient(50% 50% at 100% 0%, hsl(151 35% 37% / 0.07), transparent 65%),
+    radial-gradient(70% 70% at 50% 110%, hsl(34 70% 70% / 0.10), transparent 65%);
+  animation: ambient-breath 22s ease-in-out infinite;
+}
+
+.ambient-mesh::after {
+  background:
+    linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.4) 100%);
+}
+
+/* Dark: cooler — bone + ember on ink */
+.dark .ambient-mesh::before {
+  background:
+    radial-gradient(60% 60% at 10% 0%, hsl(34 73% 66% / 0.10), transparent 60%),
+    radial-gradient(50% 50% at 100% 0%, hsl(220 50% 25% / 0.18), transparent 65%),
+    radial-gradient(80% 80% at 50% 110%, hsl(34 80% 50% / 0.06), transparent 70%);
+}
+
+.dark .ambient-mesh::after {
+  background:
+    linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.6) 100%);
+}
+
+/* Optional static grain is disabled — fractal-noise SVG costs too much per frame.
+   Ambient mesh theme swaps already deliver the "looks expensive" feel for less. */
+
+/* =====================================================================
+   Hairline rules — purer than border utilities when used for big rules
+   ===================================================================== */
+.rule {
+  height: 1px;
+  background-color: hsl(var(--border));
+}
+
+/* =====================================================================
+   Motion keyframes — fallback for browsers without IntersectionObserver
+   ===================================================================== */
+@keyframes ambient-breath {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  50%      { transform: translate3d(-1.5%, 1.5%, 0) scale(1.04); opacity: 0.85; }
+}
+
+@keyframes sheentrance {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translate3d(16px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shine {
+  0%   { background-position: -150% 0; }
+  100% { background-position:  250% 0; }
+}
+
+/* =====================================================================
+   Utility hooks used by older code (kept so we don't break pre-slice ws)
+   ===================================================================== */
+.animate-fade-in {
+  animation: fade-in 320ms var(--ease-out-soft) both;
+}
+.animate-slide-up {
+  animation: slide-up 380ms var(--ease-out-soft) both;
+}
+.animate-slide-in-right {
+  animation: slide-in-right 320ms var(--ease-out-soft) both;
+}
+
+/* =====================================================================
+   Reduced-motion respects users who don't want movement
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ambient-mesh::before,
+  .ambient-mesh::after {
+    animation: none !important;
+  }
+}
+
+/* =====================================================================
+   Cinematic gradient sweep used on primary CTAs
+   ===================================================================== */
+.btn-sheen {
+  background-image: linear-gradient(
+    110deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary)) 40%,
+    hsl(var(--accent) / 0.85) 50%,
+    hsl(var(--primary)) 60%,
+    hsl(var(--primary)) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 0%;
+  transition: background-position 600ms var(--ease-out-soft), transform 200ms var(--ease-out-soft), box-shadow 200ms var(--ease-out-soft);
+}
+
+.btn-sheen:hover {
+  background-position: 150% 0%;
+  box-shadow: 0 8px 32px -16px hsl(var(--accent) / 0.5);
+}
+
+/* =====================================================================
+   Aurora cursor — soft radial gradient that follows the pointer.
+   JS writes --mx/--my from a rAF loop; CSS handles blending.
+   Performance: layered radial gradients, transform-only.
+   ===================================================================== */
+.aurora-cursor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out-soft),
+              background-position 240ms var(--ease-out-soft);
+  background:
+    radial-gradient(
+      280px circle at var(--mx, 50%) var(--my, 50%),
+      hsl(34 73% 66% / 0.20) 0%,
+      hsl(34 73% 66% / 0.05) 35%,
+      transparent 60%
+    ),
+    radial-gradient(
+      460px circle at calc(var(--mx, 50%) + 6%) calc(var(--my, 50%) - 4%),
+      hsl(20 70% 55% / 0.12) 0%,
+      hsl(20 70% 55% / 0.03) 40%,
+      transparent 70%
+    );
+  mix-blend-mode: plus-lighter;
+}
+.aurora-cursor[data-on="true"] { opacity: 1; }
+
+.dark .aurora-cursor {
+  background:
+    radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      hsl(34 73% 66% / 0.25) 0%,
+      hsl(34 73% 66% / 0.05) 35%,
+      transparent 60%
+    ),
+    radial-gradient(
+      520px circle at calc(var(--mx, 50%) + 6%) calc(var(--my, 50%) - 4%),
+      hsl(220 60% 35% / 0.22) 0%,
+      hsl(220 60% 35% / 0.04) 45%,
+      transparent 75%
+    );
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .aurora-cursor { display: none; }
+}
+
+/* =====================================================================
+   Text reveal — used by SplitText primitive.
+   Per-character: translateY from below baseline + opacity.
+   ===================================================================== */
+.reveal-char {
+  display: inline-block;
+  transform: translate3d(0, 0.55em, 0);
+  opacity: 0;
+  white-space: pre;
+  will-change: transform, opacity;
+}
+.reveal-char[data-show="true"] {
+  animation: char-rise 760ms var(--ease-out-soft) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+@keyframes char-rise {
+  0%   { transform: translate3d(0, 0.55em, 0); opacity: 0; filter: blur(4px); }
+  60%  { filter: blur(0px); }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; filter: blur(0px); }
+}
+
+/* Word mask — clipping rises. */
+.reveal-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.1;
+}
+.reveal-word > .inner {
+  display: inline-block;
+  transform: translate3d(0, 110%, 0);
+  will-change: transform;
+}
+.reveal-word[data-show="true"] > .inner {
+  animation: word-rise 760ms var(--ease-out-soft) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+@keyframes word-rise {
+  0%   { transform: translate3d(0, 110%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* =====================================================================
+   Marquee — used for ticker / tech ribbon. Pure CSS through JS-supplied
+   tracks. Pause on hover.
+   ===================================================================== */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: marquee-scroll 38s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee-scroll {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+/* =====================================================================
+   Magnetic wrapper — JS normalizes pointer into --mx/--my (range -1..1),
+   transform shifts toward the cursor with --pull as the cap (px).
+   ===================================================================== */
+.magnetic {
+  display: inline-block;
+  transform: translate3d(calc(var(--mx, 0) * var(--pull, 6px)),
+                         calc(var(--my, 0) * var(--pull, 6px)), 0);
+  transition: transform 320ms var(--ease-out-soft);
+  will-change: transform;
+}
+
+/* =====================================================================
+   Scroll progress — JS writes --scroll (0..1) on the host; the bar
+   scales horizontally. Puny perf cost, big visual cue.
+   ===================================================================== */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 60;
+  pointer-events: none;
+  transform: scaleX(var(--scroll, 0));
+  transform-origin: 0 50%;
+  background: linear-gradient(
+    90deg,
+    hsl(var(--accent)) 0%,
+    hsl(34 80% 65%) 60%,
+    transparent 100%
+  );
+  transition: transform 80ms linear;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { transition: none; }
+}
+
+/* =====================================================================
+   Engraved numeral — sidebar index.
+   Big serif italic numeral, gray inset shadow, like a stamp press.
+   ===================================================================== */
+.numeral-engrave {
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 400;
+  color: hsl(var(--accent));
+  text-shadow:
+    0 1px 0 hsl(var(--background) / 0.8),
+    0 -1px 0 hsl(var(--foreground) / 0.06);
+  letter-spacing: -0.02em;
+  font-feature-settings: "ss01";
+}
+
+/* =====================================================================
+   Wordmark — Bricolage bold with a 3-stop sheen.
+   The hover variant is the still gradient; CSS animates a slow sheen.
+   ===================================================================== */
+.wordmark {
+  font-family: var(--font-display-sans);
+  font-weight: 800;
+  background: linear-gradient(
+    105deg,
+    hsl(var(--foreground)) 0%,
+    hsl(var(--foreground)) 35%,
+    hsl(34 73% 38%) 50%,
+    hsl(var(--foreground)) 65%,
+    hsl(var(--foreground)) 100%
+  );
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.035em;
+  animation: wordmark-sheen 14s var(--ease-in-out-soft) infinite;
+}
+.wordmark:hover { background-position: 100% 50%; }
+@keyframes wordmark-sheen {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+/* =====================================================================
+   Engraved serif — drop the heavy gradient on a number block
+   for sidebar index when at rest.
+   ===================================================================== */
+.kicker-italic {
+  font-family: var(--font-italic);
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+/* =====================================================================
+   Specular amber — bevel-square for the brand monogram
+   ===================================================================== */
+.specular-amber {
+  background: linear-gradient(135deg, hsl(34 73% 66%) 0%, hsl(20 60% 38%) 100%);
+  box-shadow:
+    inset 0 1px 0 hsl(34 90% 80% / 0.6),
+    inset 0 -1px 0 hsl(20 70% 25% / 0.4),
+    0 8px 24px -10px hsl(34 73% 55% / 0.55),
+    0 1px 1px hsl(var(--foreground) / 0.08);
+}
+
+/* =====================================================================
+   Specular link — inline link with a moving underline that gets letter-precise
+   on hover.  Tag with .link-rule.
+   ===================================================================== */
+.link-rule {
+  position: relative;
+  display: inline-block;
+  color: inherit;
+}
+.link-rule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 360ms var(--ease-out-soft);
+}
+.link-rule:hover::after { transform: scaleX(1); }
+
+/* =====================================================================
+   Hairline gradient rule — used under hero statements.
+   ===================================================================== */
+.rule-gradient {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--accent) / 0.55) 12%,
+    hsl(var(--accent) / 0.55) 88%,
+    transparent 100%
+  );
+}
+
+/* =====================================================================
+   Premium button base — used by ScanButton
+   ===================================================================== */
+.btn-premium {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: border-color 220ms var(--ease-out-soft),
+              background 220ms var(--ease-out-soft),
+              transform 220ms var(--ease-out-soft);
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.04),
+    0 6px 18px -10px hsl(var(--foreground) / 0.18);
+}
+.btn-premium:hover {
+  border-color: hsl(var(--accent) / 0.55);
+  background: hsl(var(--card));
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.05),
+    0 12px 28px -16px hsl(var(--accent) / 0.4);
+}
+
+/* =====================================================================
+   Empty-state breathing dot — used in headers or footers
+   ===================================================================== */
+@keyframes breathing {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.25); opacity: 1; }
+}
+.breathing {
+  animation: breathing 2400ms var(--ease-in-out-soft) infinite;
+}
+
+/* =====================================================================
+   Curtain reveal — boot screen that lifts to expose the app
+   ===================================================================== */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: hsl(var(--background));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.curtain-mask {
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--card));
+  transform-origin: 50% 0%;
+  will-change: transform, opacity;
+}
+.curtain[data-stage="up"] .curtain-mask {
+  animation: curtain-up 900ms var(--ease-in-out-soft) forwards;
+}
+.curtain[data-done="true"] { opacity: 0; transition: opacity 320ms var(--ease-out-soft); }
+@keyframes curtain-up {
+  0%   { transform: translateY(0%); opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0.6; }
+}
+
+/* =====================================================================
+   Premium transition tokens — used inline so consumers don't write a
+   different cubic-bezier everywhere. Use a single layer of motion so
+   the browser can promote the element to its own layer.
+   ===================================================================== */
+.transition-premium {
+  transition:
+    transform 320ms var(--ease-out-soft),
+    box-shadow 280ms var(--ease-out-soft),
+    border-color 280ms var(--ease-out-soft),
+    background-color 280ms var(--ease-out-soft),
+    color 220ms var(--ease-out-soft),
+    opacity 220ms var(--ease-out-soft);
+}
+
+.transition-fast {
+  transition:
+    transform 180ms var(--ease-out-soft),
+    box-shadow 180ms var(--ease-out-soft),
+    border-color 180ms var(--ease-out-soft),
+    background-color 180ms var(--ease-out-soft),
+    color 160ms var(--ease-out-soft),
+    opacity 160ms var(--ease-out-soft);
+}
+
+/* Hint the compositor. Apply on a parent so the inner elements can
+   animate without being clipped by scroll containers. */
+.gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* =====================================================================
+   TiltLift — parallax surface primitive. Mouse-tracked --rx/--ry/--hg/--vg
+   drive the inner transform; transitions smooth out the release.
+   ===================================================================== */
+.tilt-lift {
+  --rx: 0deg;
+  --ry: 0deg;
+  --hg: 0px;
+  --vg: 0px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 360ms var(--ease-out-soft);
+  will-change: transform;
+}
+.tilt-lift::before {
+  /* specular highlight that follows the pointer via horizontal/vertical
+     gradient offset. Always at full opacity so it looks like glass. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at calc(50% + var(--hg)) calc(50% + var(--vg)),
+    hsl(var(--accent) / 0.10) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 360ms var(--ease-out-soft);
+  transform: translate3d(0, 0, 0);
+}
+.tilt-lift[data-tilted="true"]::before { opacity: 1; }
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .tilt-lift { transform: none !important; }
+  .tilt-lift::before { display: none; }
+}
+
+/* Wraps the inner content so we can offset it on its own layer without
+   recomputing the parent transform each frame. */
+.tilt-lift > .tilt-inner {
+  transform:
+    perspective(900px)
+    rotateX(var(--rx))
+    rotateY(var(--ry))
+    translate3d(0, 0, 0);
+  transition: transform 360ms var(--ease-out-soft);
+  will-change: transform;
+}
+
+/* =====================================================================
+   Numeric ticker — used in stats. A subtle blur-in then settle.
+   ===================================================================== */
+.num-enter {
+  display: inline-block;
+  animation: num-enter 480ms var(--ease-out-soft) both;
+}
+@keyframes num-enter {
+  0%   { opacity: 0; filter: blur(6px); transform: translateY(4px); }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+}
+
+/* =====================================================================
+   Premium card — used by feature bento surfaces
+   ===================================================================== */
+.premium-card {
+  position: relative;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.04),
+    0 24px 48px -32px hsl(var(--foreground) / 0.28),
+    0 2px 6px -2px hsl(var(--foreground) / 0.04);
+  transition:
+    transform 320ms var(--ease-out-soft),
+    box-shadow 320ms var(--ease-out-soft),
+    border-color 320ms var(--ease-out-soft);
+}
+.premium-card:hover {
+  transform: translateY(-2px);
+  border-color: hsl(var(--accent) / 0.35);
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.05),
+    0 32px 64px -32px hsl(var(--accent) / 0.25),
+    0 4px 12px -2px hsl(var(--foreground) / 0.06);
+}
+
+/* =====================================================================
+   View transition — for any element that wants a soft "settling" look.
+   ===================================================================== */
+.view-settle {
+  transition:
+    transform 520ms var(--ease-out-soft),
+    opacity 360ms var(--ease-out-soft),
+    filter 520ms var(--ease-out-soft);
+}
+
+/* =====================================================================
+   Shader stage — Three.js WebGL canvas container. Fills its parent
+   (the shader-curtain wrapper) without imposing its own viewport.
+   ===================================================================== */
+.shader-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* =====================================================================
+   ShaderCurtain — boot reveal with a Three.js shader backdrop.
+   Sits at full opacity briefly, then translates out (whole curtain
+   moves so the shader + mark go together).
+   ===================================================================== */
+.shader-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.shader-curtain[data-stage="up"] {
+  animation: shader-curtain-up var(--curtain-duration, 1100ms)
+    var(--ease-in-out-soft) forwards;
+}
+.shader-curtain[data-done="true"] {
+  opacity: 0;
+}
+@keyframes shader-curtain-up {
+  0%   { transform: translateY(0%);    opacity: 1;   clip-path: inset(0 0 0 0); }
+  60%  { opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0.3; clip-path: inset(0 0 100% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shader-curtain { display: none; }
+}
+
+/* Vignette — softens the corners so the headline reads on bright frames. */
+.shader-curtain-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      80% 60% at 50% 50%,
+      transparent 30%,
+      hsl(0 0% 0% / 0.55) 100%
+    ),
+    linear-gradient(
+      180deg,
+      hsl(0 0% 0% / 0.30) 0%,
+      transparent 40%,
+      transparent 60%,
+      hsl(0 0% 0% / 0.45) 100%
+    );
+}
+
+/* Foreground slot for words over the shader. */
+.shader-curtain-mark {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  padding: 0 1.5rem;
+  text-align: center;
+  animation: shader-mark-enter 1200ms var(--ease-out-soft) 200ms both;
+}
+@keyframes shader-mark-enter {
+  0%   { opacity: 0; transform: translateY(8px); filter: blur(8px); }
+  60%  { filter: blur(0px); }
+  100% { opacity: 1; transform: translateY(0);    filter: blur(0px); }
+}
+
+/* Wordmark-on-dark — same bones as .wordmark, but adjusted for the
+   black backdrop. White core + amber midpoint + drop-shadow for legibility. */
+.wordmark-on-dark {
+  font-family: var(--font-display-sans);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  background: linear-gradient(
+    105deg,
+    hsl(36 38% 97%) 0%,
+    hsl(36 38% 97%) 35%,
+    hsl(34 73% 65%) 50%,
+    hsl(36 38% 97%) 65%,
+    hsl(36 38% 97%) 100%
+  );
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 1px 1px hsl(0 0% 0% / 0.6))
+    drop-shadow(0 12px 28px hsl(0 0% 0% / 0.45));
+  animation: wordmark-sheen 14s var(--ease-in-out-soft) infinite;
+}
+
+/* Italic kicker on the dark stage — bone tone with a soft amber glow */
+.kicker-on-dark {
+  font-family: var(--font-italic);
+  font-style: italic;
+  color: hsl(34 60% 80%);
+  letter-spacing: -0.01em;
+  text-shadow:
+    0 1px 0 hsl(0 0% 0% / 0.55),
+    0 0 24px hsl(34 73% 65% / 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark-on-dark { animation: none; }
+  .shader-curtain-mark { animation: none; }
 }
