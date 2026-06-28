@@ -443,12 +443,12 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   return (
     <div className="space-y-8 animate-fade-in p-1">
       {/* Header Info */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 pb-5 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 pb-5 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-outfit font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-display font-semibold text-foreground tracking-tight">
             Forensic Prompt Extraction
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl">
+          <p className="text-sm text-muted-foreground mt-1 max-w-xl">
             Extract physics data, lighting styles, color schemas, and camera angles to reconstruct prompts.
           </p>
         </div>
@@ -464,9 +464,9 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Side: Upload Control Panel */}
         <div className="lg:col-span-5 lg:sticky lg:top-6 space-y-6 self-start">
-          <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
+          <Card className="surface-card">
             <CardHeader className="pb-4">
-              <CardTitle className="text-base font-semibold">Image Source</CardTitle>
+              <CardTitle className="section-title">Image Source</CardTitle>
               <CardDescription>Drag and drop or search for a local master photograph.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -498,10 +498,10 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={triggerUpload}
-                  className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300 ${
+                  className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-premium ${
                     isDragging
-                      ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10"
-                      : "border-zinc-300 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/5"
+                      ? "border-accent bg-accent/5"
+                      : "border-border hover:border-accent/50 bg-muted/50"
                   }`}
                 >
                   <input
@@ -512,14 +512,14 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                     className="hidden"
                   />
                   <div className="space-y-4 py-4 flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 dark:text-zinc-400">
+                    <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-muted-foreground">
                       <Upload className="w-5.5 h-5.5" />
                     </div>
                     <div>
-                      <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">Click to upload</span>
-                      <span className="text-sm text-zinc-500 dark:text-zinc-400"> or drag and drop</span>
+                      <span className="text-sm font-semibold text-accent">Click to upload</span>
+                      <span className="text-sm text-muted-foreground"> or drag and drop</span>
                     </div>
-                    <span className="text-xs text-zinc-400 dark:text-zinc-500">Supports PNG, JPG, WEBP</span>
+                    <span className="caption-refined">Supports PNG, JPG, WEBP</span>
                   </div>
                 </div>
               )}
@@ -529,11 +529,12 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                 <Button
                   onClick={analyzeImage}
                   disabled={isLoading}
-                  className="w-full mt-5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md font-semibold h-10 gap-2"
+                  variant="accent"
+                  className="w-full mt-5 h-10 gap-2 font-semibold"
                 >
                   {isLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
                       Analyzing Physics & Prompting...
                     </>
                   ) : (
@@ -552,10 +553,10 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
         {/* Right Side: Results Terminal / Visualizer */}
         <div className="lg:col-span-7 space-y-6">
           {isLoading && (
-            <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 shadow-sm animate-pulse">
+            <Card className="surface-card animate-pulse">
               <CardContent className="py-20 flex flex-col items-center justify-center space-y-4">
-                <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm font-mono font-medium text-zinc-500 dark:text-zinc-400">
+                <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+                <span className="label-mono">
                   RUNNING computer-vision AUDITS & GENERATING PROMPT BLUEPRINTS...
                 </span>
               </CardContent>
@@ -563,13 +564,13 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
           )}
 
           {!isLoading && !analysisData && (
-            <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 shadow-sm">
+            <Card className="surface-card">
               <CardContent className="py-24 text-center flex flex-col items-center justify-center space-y-3">
-                <ImageIcon className="w-10 h-10 text-zinc-300 dark:text-zinc-700 animate-bounce" />
-                <span className="text-sm font-semibold text-zinc-400 dark:text-zinc-600">
+                <ImageIcon className="w-10 h-10 text-muted-foreground/30 animate-bounce" />
+                <span className="text-sm font-semibold text-muted-foreground">
                   Audit results will render here after processing.
                 </span>
-                <span className="text-xs text-zinc-400/80 dark:text-zinc-600/80 max-w-xs">
+                <span className="caption-refined max-w-xs">
                   Upload an image on the left and trigger a forensic scan to extract exact lighting, optics, and styles.
                 </span>
               </CardContent>
@@ -579,20 +580,20 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
           {!isLoading && analysisData && (
             <div className="space-y-6 animate-slide-up">
               {/* Tabs for Prompts */}
-              <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
-                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <Card className="surface-card">
+                <CardHeader className="pb-3 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="text-base font-semibold">Extracted Prompt Blueprint</CardTitle>
+                    <CardTitle className="section-title">Extracted Prompt Blueprint</CardTitle>
                     <CardDescription>Synthesized natural language representation of the master image.</CardDescription>
                   </div>
-                  <div className="flex gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg">
+                  <div className="flex gap-1.5 p-1 bg-secondary rounded-lg">
                     <Button
                       size="xs"
                       variant="ghost"
                       className={`h-7 px-3 text-xs font-semibold rounded-md ${
                         activeTab === "raw"
-                          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
-                          : "text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                       onClick={() => {
                         setActiveTab("raw");
@@ -606,8 +607,8 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                       variant="ghost"
                       className={`h-7 px-3 text-xs font-semibold rounded-md ${
                         activeTab === "anatomy"
-                          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
-                          : "text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                       onClick={() => setActiveTab("anatomy")}
                     >
@@ -617,31 +618,31 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                 </CardHeader>
                 <CardContent className="pt-5 space-y-5">
                   {/* Prompt Text Container */}
-                  <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 relative">
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border/50 relative">
                     {activeTab === "raw" && (
                       <div className="space-y-4">
                         {isEditingPrompt ? (
                           <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                              <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest">
+                              <span className="eyebrow">
                                 Edit Prompt Revision
                               </span>
                             </div>
                             <textarea
                               value={editedPromptText}
                               onChange={(e) => setEditedPromptText(e.target.value)}
-                              className="w-full min-h-[100px] p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                              className="w-full min-h-[100px] p-2.5 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
                               placeholder="Positive Prompt"
                             />
                             <div className="space-y-1">
-                              <label className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest block">
+                              <label className="eyebrow block">
                                 Commit Message
                               </label>
                               <input
                                 type="text"
                                 value={revisionCommitMsg}
                                 onChange={(e) => setRevisionCommitMsg(e.target.value)}
-                                className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                className="w-full p-2 rounded-lg border border-border bg-card text-xs focus:outline-none focus:ring-2 focus:ring-accent/50"
                                 placeholder="e.g. Tuned cinematic lighting, added film grain"
                               />
                             </div>
@@ -655,8 +656,9 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                               </Button>
                               <Button
                                 size="xs"
+                                variant="accent"
                                 onClick={commitRevision}
-                                className="bg-indigo-650 hover:bg-indigo-750 text-white animate-fade-in"
+                                className="animate-fade-in"
                               >
                                 <GitCommit className="w-3.5 h-3.5 mr-1" />
                                 Save Commit
@@ -668,7 +670,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                             {/* Positive Prompt Block */}
                             <div className="space-y-1">
                               <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">
+                                <span className="eyebrow">
                                   Prompt
                                 </span>
                                 <div className="flex items-center gap-1.5">
@@ -679,7 +681,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                                         setIsEditingPrompt(true);
                                         setRevisionCommitMsg("");
                                       }}
-                                      className="p-1 rounded text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-all"
+                                      className="p-1 rounded text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all"
                                       title="Edit Prompt Revision"
                                     >
                                       <Edit className="w-3.5 h-3.5" />
@@ -687,34 +689,34 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                                   )}
                                   <button
                                     onClick={copyToClipboard}
-                                    className="p-1 rounded text-zinc-400 hover:text-indigo-650 dark:hover:text-indigo-400 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-all"
+                                    className="p-1 rounded text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all"
                                     title="Copy Positive Prompt"
                                   >
                                     {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                                   </button>
                                 </div>
                               </div>
-                              <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed break-words whitespace-pre-wrap select-all">
+                              <p className="text-sm text-foreground leading-relaxed break-words whitespace-pre-wrap select-all font-medium">
                                 {analysisData.prompt}
                               </p>
                             </div>
 
                             {/* Negative Prompt Block */}
                             {analysisData.negative_prompt && (
-                              <div className="space-y-1 pt-3 border-t border-zinc-200/30 dark:border-zinc-800/30">
+                              <div className="space-y-1 pt-3 border-t border-border/50">
                                 <div className="flex justify-between items-center">
-                                  <span className="text-[10px] font-mono font-bold text-red-500 dark:text-red-400 uppercase tracking-widest">
+                                  <span className="eyebrow text-destructive">
                                     Negative Prompt
                                   </span>
                                   <button
                                     onClick={copyNegativeToClipboard}
-                                    className="p-1 rounded text-zinc-400 hover:text-red-500 dark:hover:text-red-450 hover:bg-red-500/10 transition-all"
+                                    className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                                     title="Copy Negative Prompt"
                                   >
                                     {copyNegativeSuccess ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                                   </button>
                                 </div>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed break-words whitespace-pre-wrap select-all">
+                                <p className="text-sm text-muted-foreground leading-relaxed break-words whitespace-pre-wrap select-all">
                                   {analysisData.negative_prompt}
                                 </p>
                               </div>
@@ -806,7 +808,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                       {copySuccess ? "Copied" : "Copy Blueprint"}
                     </Button>
                     <Button onClick={downloadPdfReport} size="sm" variant="outline" className="text-xs font-semibold gap-1.5 h-9">
-                      <FileDown className="w-3.5 h-3.5 text-indigo-500" />
+                      <FileDown className="w-3.5 h-3.5 text-accent" />
                       Export Forensic PDF
                     </Button>
                   </div>
@@ -818,12 +820,12 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                 const currentItem = history.find(h => h.id === activeHistoryId);
                 const revs = currentItem?.revisions || [];
                 return activeHistoryId && revs.length > 0 ? (
-                  <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm">
-                    <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
+                  <Card className="surface-card">
+                    <CardHeader className="pb-3 border-b border-border">
                       <div className="flex items-center justify-between">
                         <div>
-                          <CardTitle className="text-sm font-semibold flex items-center gap-1.5 text-zinc-955 dark:text-zinc-50">
-                            <GitBranch className="w-4 h-4 text-indigo-500 animate-pulse" />
+                          <CardTitle className="section-title flex items-center gap-1.5">
+                            <GitBranch className="w-4 h-4 text-accent animate-pulse" />
                             Prompt Version Control
                           </CardTitle>
                           <CardDescription>Track manual overrides and auto-generated iterations in browser storage.</CardDescription>
@@ -833,7 +835,7 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                     <CardContent className="pt-5 space-y-6">
                       {/* Revision timeline / list */}
                       <div className="space-y-2">
-                        <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest block">
+                        <span className="eyebrow block">
                           Revision Registry
                         </span>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -846,28 +848,28 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                                   setAnalysisData(prev => prev ? { ...prev, prompt: rev.prompt } : null);
                                   setIsEditingPrompt(false);
                                 }}
-                                className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 text-left relative flex flex-col justify-between ${
+                                className={`p-3 rounded-lg border cursor-pointer transition-premium text-left relative flex flex-col justify-between ${
                                   isActive
-                                    ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10 shadow-sm"
-                                    : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/5"
+                                    ? "border-accent bg-accent/5 shadow-sm"
+                                    : "border-border hover:border-accent/50 bg-muted/50"
                                 }`}
                               >
                                 <div>
                                   <div className="flex items-center justify-between">
-                                    <span className="text-xs font-mono font-bold text-indigo-650 dark:text-indigo-400">
+                                    <span className={`text-xs font-mono font-bold ${isActive ? 'text-accent' : 'text-muted-foreground'}`}>
                                       REV #{rev.rev}
                                     </span>
                                     {isActive && (
-                                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-indigo-500 text-white dark:bg-indigo-600 animate-fade-in">
+                                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-accent text-accent-foreground animate-fade-in">
                                         Active
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-xs font-semibold text-zinc-850 dark:text-zinc-200 mt-1.5 line-clamp-1">
+                                  <p className="text-xs font-semibold text-foreground mt-1.5 line-clamp-1">
                                     {rev.msg}
                                   </p>
                                 </div>
-                                <span className="text-[9px] text-zinc-400 dark:text-zinc-550 font-mono mt-3">
+                                <span className="text-[9px] text-muted-foreground font-mono mt-3">
                                   {new Date(rev.timestamp).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}
                                 </span>
                               </div>
@@ -878,20 +880,20 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
 
                       {/* Git Diff Comparison Tool */}
                       {revs.length >= 2 && (
-                        <div className="pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50 space-y-4">
+                        <div className="pt-4 border-t border-border/50 space-y-4">
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                              <span className="text-[10px] font-mono font-bold text-zinc-450 dark:text-zinc-550 uppercase tracking-widest block">
+                              <span className="eyebrow block">
                                 Visual Diff Inspector
                               </span>
-                              <p className="text-[10px] text-zinc-400 dark:text-zinc-550 mt-0.5 font-medium">Compare any two revisions word-by-word.</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5 font-medium">Compare any two revisions word-by-word.</p>
                             </div>
                             
                             <div className="flex items-center gap-2">
                               <select
                                 value={diffSelectRevA ?? revs[0]?.rev ?? ""}
                                 onChange={(e) => setDiffSelectRevA(Number(e.target.value))}
-                                className="p-1.5 rounded bg-zinc-150 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200"
+                                className="p-1.5 rounded bg-card border border-border text-xs font-medium text-foreground focus:ring-accent"
                               >
                                 {revs.map((rev) => (
                                   <option key={rev.rev} value={rev.rev}>
@@ -899,11 +901,11 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                                   </option>
                                 ))}
                               </select>
-                              <span className="text-xs text-zinc-400 font-medium">vs</span>
+                              <span className="text-xs text-muted-foreground font-medium">vs</span>
                               <select
                                 value={diffSelectRevB ?? revs[revs.length - 1]?.rev ?? ""}
                                 onChange={(e) => setDiffSelectRevB(Number(e.target.value))}
-                                className="p-1.5 rounded bg-zinc-150 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200"
+                                className="p-1.5 rounded bg-card border border-border text-xs font-medium text-foreground focus:ring-accent"
                               >
                                 {revs.map((rev) => (
                                   <option key={rev.rev} value={rev.rev}>
@@ -922,18 +924,18 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                             
                             const diffs = diffWords(revA.prompt, revB.prompt);
                             return (
-                              <div className="p-3.5 rounded-lg bg-zinc-900 text-zinc-100 dark:bg-zinc-950 font-mono text-xs leading-relaxed border border-zinc-850 dark:border-zinc-900 whitespace-pre-wrap select-text">
+                              <div className="p-3.5 rounded-lg bg-card/50 text-foreground font-mono text-xs leading-relaxed border border-border/50 whitespace-pre-wrap select-text">
                                 {diffs.map((part, index) => {
                                   if (part.type === "added") {
                                     return (
-                                      <span key={index} className="bg-emerald-500/25 text-emerald-300 px-1 py-0.5 rounded border border-emerald-500/20 font-bold mx-0.5 inline-block">
+                                      <span key={index} className="bg-emerald-500/25 text-emerald-600 dark:text-emerald-300 px-1 py-0.5 rounded border border-emerald-500/20 font-bold mx-0.5 inline-block">
                                         {part.value}
                                       </span>
                                     );
                                   }
                                   if (part.type === "removed") {
                                     return (
-                                      <span key={index} className="bg-red-500/25 text-red-300 line-through px-1 py-0.5 rounded border border-red-500/20 font-bold mx-0.5 inline-block">
+                                      <span key={index} className="bg-red-500/25 text-red-600 dark:text-red-300 line-through px-1 py-0.5 rounded border border-red-500/20 font-bold mx-0.5 inline-block">
                                         {part.value}
                                       </span>
                                     );
@@ -961,36 +963,36 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
             const exif = analysisData.stats.exif;
             const hasExif = exif && Object.values(exif).some(v => v !== undefined && v !== null && v !== "");
             return (
-              <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm animate-slide-up">
-                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
-                  <CardTitle className="text-base font-semibold">EXIF Camera Specifications</CardTitle>
+              <Card className="surface-card animate-slide-up">
+                <CardHeader className="pb-3 border-b border-border">
+                  <CardTitle className="section-title">EXIF Camera Specifications</CardTitle>
                   <CardDescription>Optics and camera settings extracted from the image file.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-5">
                   {hasExif && exif ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {exif.make && (
-                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
-                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Camera Maker</span>
-                          <span className="text-sm font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.make}</span>
+                        <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+                          <span className="eyebrow block">Camera Maker</span>
+                          <span className="text-sm font-semibold text-foreground mt-1 block">{exif.make}</span>
                         </div>
                       )}
                       {exif.model && (
-                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
-                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Camera Model</span>
-                          <span className="text-sm font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.model}</span>
+                        <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+                          <span className="eyebrow block">Camera Model</span>
+                          <span className="text-sm font-semibold text-foreground mt-1 block">{exif.model}</span>
                         </div>
                       )}
                       {exif.lens && (
-                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
-                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider">Lens Model</span>
-                          <span className="text-sm font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">{exif.lens}</span>
+                        <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+                          <span className="eyebrow block">Lens Model</span>
+                          <span className="text-sm font-semibold text-foreground mt-1 block">{exif.lens}</span>
                         </div>
                       )}
                       {exif.focal_length && (
-                        <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30">
-                          <span className="text-[10px] block font-semibold text-zinc-450 dark:text-zinc-555 uppercase tracking-wider">Focal Length</span>
-                          <span className="text-sm font-mono font-bold text-zinc-955 dark:text-zinc-100 mt-1 block">
+                        <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+                          <span className="eyebrow block">Focal Length</span>
+                          <span className="text-sm font-mono font-semibold text-foreground mt-1 block">
                             {typeof exif.focal_length === 'number' 
                               ? `${exif.focal_length}mm` 
                               : String(exif.focal_length).endsWith('mm') 
@@ -1025,8 +1027,8 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                       )}
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 p-3 bg-zinc-50/55 dark:bg-zinc-900/30 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-800 text-zinc-500 dark:text-zinc-450 text-xs font-semibold">
-                      <HelpCircle className="w-4 h-4 text-zinc-400" />
+                    <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed border-border text-muted-foreground text-xs font-semibold">
+                      <HelpCircle className="w-4 h-4 text-muted-foreground/50" />
                       <span>No EXIF Metadata embedded (estimates derived from CV physics)</span>
                     </div>
                   )}
@@ -1036,9 +1038,9 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
           })()}
 
           {/* Audited Physics Parameters Card */}
-          <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/30 overflow-hidden shadow-sm animate-slide-up">
-            <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
-              <CardTitle className="text-base font-semibold">Audited Physics Parameters</CardTitle>
+          <Card className="surface-card animate-slide-up">
+            <CardHeader className="pb-3 border-b border-border">
+              <CardTitle className="section-title">Audited Physics Parameters</CardTitle>
               <CardDescription>Direct pixel metrics calculated via computer vision.</CardDescription>
             </CardHeader>
             <CardContent className="pt-5">
@@ -1049,18 +1051,18 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                     if (key === "exif" || key === "dominant_hues" || typeof val === "object" || Array.isArray(val)) return null;
                     const isPercent = key === "brightness" || key === "mean_brightness_global" || key === "mean_brightness";
                     return (
-                      <div key={key} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-lg border border-zinc-200/50 dark:border-zinc-800/30 animate-fade-in overflow-hidden">
-                        <span className="text-[9px] block font-semibold text-zinc-450 dark:text-zinc-550 uppercase tracking-wide truncate leading-tight" title={getStatLabel(key as keyof AnalysisStats)}>
+                      <div key={key} className="p-3 bg-muted/50 rounded-lg border border-border/50 animate-fade-in overflow-hidden">
+                        <span className="eyebrow block truncate leading-tight" title={getStatLabel(key as keyof AnalysisStats)}>
                           {getStatLabel(key as keyof AnalysisStats)}
                         </span>
-                        <span className="text-base font-mono font-extrabold text-zinc-950 dark:text-zinc-100 mt-1 block truncate">
+                        <span className="text-base font-mono font-bold text-foreground mt-1 block truncate">
                           {typeof val === "number" ? (isPercent ? `${val.toFixed(1)}%` : val.toFixed(2)) : String(val)}
                         </span>
                       </div>
                     );
                   })
                 ) : (
-                  <div className="col-span-full py-6 text-center text-zinc-450 dark:text-zinc-550 text-xs italic">
+                  <div className="col-span-full py-6 text-center text-muted-foreground text-xs italic">
                     Physics metrics are unavailable for this legacy history record. Run a new scan to view real-time metrics.
                   </div>
                 )}
@@ -1072,18 +1074,18 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
 
       {/* History Grid (Only if has items) */}
       {history.length > 0 && (
-        <div className="space-y-4 pt-6 border-t border-zinc-200 dark:border-zinc-800 animate-slide-up">
+        <div className="space-y-4 pt-6 border-t border-border animate-slide-up">
           <div>
-            <h2 className="text-lg font-semibold text-zinc-950 dark:text-zinc-50">Local Analysis History</h2>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Quickly retrieve prompts from your recent five forensic scans.</p>
+            <h2 className="text-lg font-display font-semibold text-foreground">Local Analysis History</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Quickly retrieve prompts from your recent five forensic scans.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {history.map((item) => (
               <div
                 key={item.id}
-                className="group relative border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-950/20 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
+                className="group relative border border-border rounded-xl overflow-hidden bg-card shadow-sm hover:border-border/80 hover:shadow-md transition-premium flex flex-col"
               >
-                <div className="w-full h-32 overflow-hidden bg-zinc-100 dark:bg-zinc-900 relative">
+                <div className="w-full h-32 overflow-hidden bg-secondary relative">
                   <img src={item.img} alt="History scan" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-250">
                     <Button
@@ -1109,15 +1111,15 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
                   </div>
                 </div>
                 <div className="p-3 flex-1 flex flex-col justify-between">
-                  <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 line-clamp-3">
+                  <p className="text-[10px] font-mono text-muted-foreground line-clamp-3">
                     {item.prompt}
                   </p>
-                  <div className="flex justify-between items-center mt-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-900">
-                    <span className="text-[9px] text-zinc-400 font-mono">
+                  <div className="flex justify-between items-center mt-2.5 pt-2 border-t border-border/50">
+                    <span className="text-[9px] text-muted-foreground/70 font-mono">
                       {new Date(item.id).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
                     <button
-                      className="text-zinc-400 hover:text-red-500 p-1 rounded hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-colors"
+                      className="text-muted-foreground/70 hover:text-destructive p-1 rounded hover:bg-destructive/10 transition-colors"
                       title="Remove"
                       onClick={() => deleteFromHistory(item.id)}
                     >

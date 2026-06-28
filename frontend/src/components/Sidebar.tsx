@@ -2,10 +2,10 @@ import {
   Terminal,
   PenTool,
   Calendar,
-  BookOpen,
+  // BookOpen,
   Sparkles,
-  FileCode2,
-  Info,
+  // FileCode2,
+  // Info,
   X,
   RefreshCw,
   Layers,
@@ -27,9 +27,9 @@ const NAV_SECTIONS = [
   { id: "batch", label: "Batch Mode", icon: Layers, idx: "03" },
   { id: "practice", label: "Practice Mode", icon: PenTool, idx: "04" },
   { id: "daily", label: "Daily Challenge", icon: Calendar, idx: "05" },
-  { id: "learn", label: "Learn Academy", icon: BookOpen, idx: "06" },
-  { id: "docs", label: "API Docs", icon: FileCode2, idx: "07" },
-  { id: "about", label: "About Project", icon: Info, idx: "08" },
+  // { id: "learn", label: "Learn Academy", icon: BookOpen, idx: "06" },
+  // { id: "docs", label: "API Docs", icon: FileCode2, idx: "07" },
+  // { id: "about", label: "About Project", icon: Info, idx: "08" },
 ];
 
 export default function Sidebar({

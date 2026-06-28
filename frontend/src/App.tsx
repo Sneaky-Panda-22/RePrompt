@@ -6,9 +6,9 @@ import SimilarityLab from "./components/SimilarityLab";
 import BatchProcessor from "./components/BatchProcessor";
 import PracticeMode from "./components/PracticeMode";
 import DailyChallenge from "./components/DailyChallenge";
-import LearnCourse from "./components/LearnCourse";
-import ApiDocs from "./components/ApiDocs";
-import AboutProject from "./components/AboutProject";
+// import LearnCourse from "./components/LearnCourse";
+// import ApiDocs from "./components/ApiDocs";
+// import AboutProject from "./components/AboutProject";
 import {
   AmbientLattice,
   ScrollProgress,
@@ -32,9 +32,9 @@ const sectionTitle: Record<string, string> = {
   batch: "Batch Mode",
   practice: "Practice Sandbox",
   daily: "Daily Challenge",
-  learn: "Learn Academy",
-  docs: "API Docs",
-  about: "About",
+  // learn: "Learn Academy",
+  // docs: "API Docs",
+  // about: "About",
 };
 
 const sectionEyebrow: Record<string, string> = {
@@ -43,9 +43,9 @@ const sectionEyebrow: Record<string, string> = {
   batch: "03 — Multi-Asset Sweep",
   practice: "04 — Workshop",
   daily: "05 — Daily Brief",
-  learn: "06 — Academy",
-  docs: "07 — Developer Hub",
-  about: "08 — Project Notes",
+  // learn: "06 — Academy",
+  // docs: "07 — Developer Hub",
+  // about: "08 — Project Notes",
 };
 
 export default function App() {
@@ -106,12 +106,12 @@ export default function App() {
         return <PracticeMode showToast={showToast} />;
       case "daily":
         return <DailyChallenge showToast={showToast} />;
-      case "learn":
-        return <LearnCourse showToast={showToast} />;
-      case "docs":
-        return <ApiDocs showToast={showToast} />;
-      case "about":
-        return <AboutProject showToast={showToast} />;
+      // case "learn":
+      //   return <LearnCourse showToast={showToast} />;
+      // case "docs":
+      //   return <ApiDocs showToast={showToast} />;
+      // case "about":
+      //   return <AboutProject showToast={showToast} />;
       default:
         return <ForensicsApp showToast={showToast} />;
     }
@@ -163,25 +163,25 @@ export default function App() {
                 className="md:hidden h-10 w-10 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground border border-border transition-colors cursor-pointer"
               >
                 <Menu className="w-4 h-4" />
-          </button>
+              </button>
 
               {/* Editorial breadcrumb */}
-              <div className="flex items-baseline gap-3 min-w-0">
+              <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-baseline gap-3 min-w-0 pointer-events-none md:pointer-events-auto text-center md:text-left">
                 <span className="label-mono text-muted-foreground whitespace-nowrap hidden sm:inline">
                   {activeEyebrow}
-            </span>
+                </span>
                 <span className="hidden sm:inline-block w-px h-3 bg-border" />
                 <motion.h1
                   key={activeTitle}
                   initial={{ opacity: 0, y: 4, filter: "blur(4px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   transition={{ duration: motionTokens.micro * 1.6, ease: easeOutSoft }}
-                  className="font-display text-[1.55rem] md:text-2xl leading-none font-medium tracking-tight text-foreground truncate"
+                  className="font-display text-xl sm:text-[1.55rem] md:text-2xl leading-none font-medium tracking-tight text-foreground truncate"
                 >
                   {activeTitle}
-          </motion.h1>
-        </div>
-      </div>
+                </motion.h1>
+              </div>
+            </div>
 
             {/* Right-side status pill */}
             <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
