@@ -39,6 +39,13 @@ share/python-wheels/
 Icon
 ._*
 
+# Dependencies
+node_modules/
+
+# Agent/IDE artifacts
+.od-skills/
+technological-tower/
+
 # Project specific
 static/backup_v1/
 launch.py

@@ -176,7 +176,7 @@ export default function App() {
                   initial={{ opacity: 0, y: 4, filter: "blur(4px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   transition={{ duration: motionTokens.micro * 1.6, ease: easeOutSoft }}
-                  className="font-display text-xl sm:text-[1.55rem] md:text-2xl leading-none font-medium tracking-tight text-foreground truncate"
+                  className="font-sans text-xl sm:text-[1.55rem] md:text-2xl leading-none font-semibold tracking-tight text-foreground truncate"
                 >
                   {activeTitle}
                 </motion.h1>
@@ -194,7 +194,7 @@ export default function App() {
             </span>
           </div>
               <div className="flex md:hidden items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 breathing" />
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           </div>
         </div>
       </header>
@@ -227,7 +227,7 @@ export default function App() {
                 }`}
                 style={{
                   boxShadow:
-                    "0 1px 1px hsl(30 8% 7% / 0.04), 0 12px 32px -16px hsl(30 8% 7% / 0.22)",
+                    "0px 1px 1px hsl(0 0% 0% / 0.04), 0px 8px 16px -4px hsl(0 0% 0% / 0.08)",
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -258,8 +258,8 @@ export default function App() {
         duration={1800}
         mark={
           <span className="font-display-sans tracking-tight flex flex-col md:flex-row items-center md:items-baseline gap-2 md:gap-4 text-center">
-            <span className="wordmark-on-dark text-4xl md:text-6xl">RePrompt</span>
-            <span className="kicker-on-dark text-xl md:text-3xl">
+              <span className="font-display-sans font-extrabold tracking-tight text-white text-4xl md:text-6xl drop-shadow-lg">RePrompt</span>
+            <span className="font-sans font-light tracking-tight text-white/70 text-xl md:text-3xl">
               decoding images, line by line
         </span>
          </span>

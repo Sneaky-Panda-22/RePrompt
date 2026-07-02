@@ -8,7 +8,7 @@ import hashlib
 from datetime import date
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 from typing import Any, Optional
 from pathlib import Path
@@ -684,6 +684,29 @@ async def create_reprompt_batch(files: list[UploadFile] = File(...)):
             if os.path.exists(path):
                 os.remove(path)
 
+@app.get("/")
+async def redirect_root():
+    return RedirectResponse(url="/app/")
+
+@app.get("/app")
+async def redirect_app():
+    return RedirectResponse(url="/app/")
+
+@app.get("/batch")
+async def redirect_batch():
+    return RedirectResponse(url="/batch/")
+
+@app.get("/daily")
+async def redirect_daily():
+    return RedirectResponse(url="/daily/")
+
+@app.get("/practice")
+async def redirect_practice():
+    return RedirectResponse(url="/practice/")
+
+@app.get("/similarity")
+async def redirect_similarity():
+    return RedirectResponse(url="/similarity/")
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 

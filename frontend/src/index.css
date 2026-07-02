@@ -1,22 +1,15 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces/index.css";
+@source "./**/*.tsx";
+@source "./**/*.ts";
 @import "@fontsource-variable/geist/index.css";
 @import "@fontsource-variable/geist-mono/index.css";
 @import "@fontsource-variable/bricolage-grotesque/index.css";
-/* Luxury additions — Cormorant Garamond for editorial elegance and
-   Instrument Serif for refined italic accents. */
-@import "@fontsource/cormorant-garamond/500.css";
-@import "@fontsource/cormorant-garamond/600.css";
-@import "@fontsource/instrument-serif/400.css";
-@import "@fontsource/instrument-serif/400-italic.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* =====================================================================
-   Design tokens — warm editorial palette
-   light: warm ivory parchment + ink  ·  dark: deep onyx + amber brass
-   Resolved through hsl(var(--token)) to stay compatible with hundreds
-   of existing utility classes in older workspaces.
+   Design tokens — Vercel-inspired cold-ink system
+   light: near-white canvas-soft + ink-black  ·  dark: deep onyx
    ===================================================================== */
 @theme {
   --color-border: hsl(var(--border));
@@ -46,24 +39,18 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
-  /* Display serif — Cormorant Garamond for timeless elegance */
-  --font-display: "Cormorant Garamond", "Fraunces Variable", ui-serif, Georgia, serif;
   --font-sans: "Geist Variable", Geist, ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
-  /* Editorial italic — for accents, signature flourishes */
-  --font-italic: "Instrument Serif", "Cormorant Garamond", ui-serif, Georgia, serif;
-  /* Display sans — Bricolage Grotesque for the wordmark and bold statements */
   --font-display-sans: "Bricolage Grotesque Variable", "Bricolage Grotesque",
     "Geist Variable", ui-sans-serif, system-ui, sans-serif;
 
-  /* Spacing rhythm — more generous, luxurious breathing room */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  /* Motion language — slower, more languid for luxury feel */
   --ease-out-soft: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-soft: cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* =====================================================================
@@ -71,50 +58,51 @@
    ===================================================================== */
 @layer base {
   :root {
-    /* PARCHMENT — light theme: warm ivory like handmade cotton paper
-       with amber-copper accents that evoke a photography darkroom */
-    --background: 39 32% 97%;         /* warm ivory parchment */
-    --foreground: 30 8% 8%;           /* deep warm ink */
-    --card: 40 25% 99%;               /* soft cream white */
-    --card-foreground: 30 8% 8%;
-    --popover: 40 25% 99%;
-    --popover-foreground: 30 8% 8%;
-    --primary: 30 8% 8%;              /* warm charcoal ink */
-    --primary-foreground: 39 32% 97%;
-    --secondary: 38 20% 94%;          /* warm pearl surface */
-    --secondary-foreground: 30 8% 8%;
-    --muted: 38 18% 93%;              /* subtle warm surface */
-    --muted-foreground: 30 6% 42%;    /* refined warm gray */
-    --accent: 34 56% 49%;             /* warm amber-copper */
-    --accent-foreground: 39 32% 97%;
-    --destructive: 0 65% 48%;         /* refined crimson */
-    --destructive-foreground: 39 32% 97%;
-    --border: 38 18% 88%;             /* soft warm border */
-    --input: 38 18% 88%;
-    --ring: 34 56% 49%;               /* amber ring for focus */
-    --radius: 0.75rem;
+    /* VERCELL INSPIRED — cold-ink system
+       canvas-soft: #fafafa  |  ink: #171717  |  hairline: #ebebeb
+    */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 53%;
+    --accent: 217 100% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 47%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 92%;
+    --input: 0 0% 92%;
+    --ring: 217 100% 48%;
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 4%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 0 0% 4%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 0 0% 4%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 217 100% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 217 100% 55%;
   }
 }
 
@@ -123,9 +111,12 @@
    ===================================================================== */
 @layer base {
   :root {
-    /* iOS safe area support */
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-top: env(safe-area-inset-top, 0px);
+    --mesh-gradient: radial-gradient(60% 55% at 20% 10%, #007cf0 0%, transparent 55%),
+      radial-gradient(50% 50% at 80% 0%, #7928ca 0%, transparent 55%),
+      radial-gradient(40% 50% at 30% 100%, #ff4d4d 0%, transparent 50%),
+      radial-gradient(45% 40% at 75% 90%, #50e3c2 0%, transparent 50%);
   }
 
   * {
@@ -142,44 +133,29 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    /* Prevent elastic over-scroll on iOS from showing white gaps */
     overscroll-behavior: none;
-    font-weight: 420;
+    font-weight: 400;
     letter-spacing: -0.005em;
   }
 
-  /* Editorial display headings — h1 & h2 default to the serif */
-  h1, h2 {
-    font-family: var(--font-display);
-    font-feature-settings: "ss01", "ss02";
+  h1, h2, h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
     letter-spacing: -0.02em;
-    font-weight: 500;
   }
 
-  h3 {
-    font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  /* Selection — keep tasteful */
   ::selection {
-    background: hsl(var(--accent) / 0.18);
+    background: hsl(var(--primary) / 0.15);
     color: hsl(var(--foreground));
   }
 
-  /* Focus ring — must be visible everywhere */
   :focus-visible {
     outline: 2px solid hsl(var(--ring) / 0.6);
     outline-offset: 2px;
     border-radius: 4px;
   }
 
-  /* Tabular numbers for forensic metrics */
-  .num,
-  code,
-  kbd,
-  pre {
+  .num, code, kbd, pre {
     font-variant-numeric: tabular-nums;
   }
 }
@@ -187,30 +163,17 @@
 /* =====================================================================
    Safe-area utilities
    ===================================================================== */
-.pb-safe {
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
-}
-.min-h-dvh {
-  min-height: 100dvh;
-}
-.h-dvh {
-  height: 100dvh;
-}
+.pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+.min-h-dvh { min-height: 100dvh; }
+.h-dvh { height: 100dvh; }
 
 /* =====================================================================
    Display / label utilities
    ===================================================================== */
 .font-display {
-  font-family: var(--font-display);
-  font-weight: 500;
-}
-
-.font-italic {
-  font-family: var(--font-italic);
-  font-style: italic;
-  font-weight: 400;
-  /* Open the italic slightly — italic serifs always read tighter. */
-  letter-spacing: -0.005em;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .font-display-sans {
@@ -236,15 +199,15 @@
 }
 
 /* =====================================================================
-   Surface primitives — used by cards & sidebars
+   Surface primitives
    ===================================================================== */
 .surface-card {
   background-color: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.03),
-    0 12px 40px -16px hsl(var(--foreground) / 0.14);
+    0px 1px 1px hsl(0 0% 0% / 0.03),
+    0px 2px 2px hsl(0 0% 0% / 0.06);
   transition:
     transform 320ms var(--ease-out-soft),
     box-shadow 320ms var(--ease-out-soft),
@@ -253,12 +216,11 @@
 
 .surface-elevated {
   background-color: hsl(var(--card));
-  border: 1px solid hsl(var(--border) / 0.7);
+  border: 1px solid hsl(var(--border));
   border-radius: calc(var(--radius) + 4px);
   box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.04),
-    0 24px 48px -32px hsl(var(--foreground) / 0.22),
-    0 2px 6px -2px hsl(var(--foreground) / 0.04);
+    0px 2px 2px hsl(0 0% 0% / 0.06),
+    0px 8px 16px -4px hsl(0 0% 0% / 0.06);
   transition:
     transform 320ms var(--ease-out-soft),
     box-shadow 320ms var(--ease-out-soft),
@@ -271,86 +233,52 @@
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
   border: 1px solid hsl(var(--border) / 0.5);
   border-radius: calc(var(--radius) + 4px);
-  box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.03),
-    0 16px 40px -20px hsl(var(--foreground) / 0.15);
 }
 
-/* Subtle engraved inset — used for headings sitting on cream */
 .surface-inset {
-  background-color: hsl(var(--background));
+  background-color: hsl(var(--muted));
   border: 1px solid hsl(var(--border));
   box-shadow:
-    inset 0 1px 2px hsl(var(--foreground) / 0.03),
-    inset 0 -1px 0 hsl(var(--foreground) / 0.015);
+    inset 0 1px 2px hsl(0 0% 0% / 0.03);
 }
 
-/* Section title — editorial serif heading for content sections */
 .section-title {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.15;
 }
 
-/* Refined caption — small elegant text */
 .caption-refined {
   font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 420;
+  font-weight: 400;
   letter-spacing: -0.003em;
   color: hsl(var(--muted-foreground));
   line-height: 1.5;
 }
 
 /* =====================================================================
-   Ambient backdrop — slow-moving gradient wash behind the workspace
-   Reads as "expensive" without being loud.
+   Vercel mesh gradient — the single decorative element
+   Used as the hero atmospheric backdrop only.
    ===================================================================== */
-.ambient-mesh {
-  position: relative;
-  isolation: isolate;
-}
-
-.ambient-mesh::before,
-.ambient-mesh::after {
-  content: "";
-  position: fixed;
+.mesh-gradient {
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  transition: opacity 600ms var(--ease-out-soft);
+  background: var(--mesh-gradient);
+  opacity: 0.08;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 70%);
 }
 
-/* Light: warm amber and soft rose highlights on cream */
-.ambient-mesh::before {
-  background:
-    radial-gradient(60% 60% at 15% 5%, hsl(34 56% 49% / 0.09), transparent 60%),
-    radial-gradient(50% 50% at 100% 0%, hsl(151 35% 37% / 0.06), transparent 65%),
-    radial-gradient(70% 70% at 50% 110%, hsl(34 70% 70% / 0.08), transparent 65%);
-  animation: ambient-breath 24s ease-in-out infinite;
-}
-
-.ambient-mesh::after {
-  background:
-    linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.45) 100%);
-}
-
-/* Dark: amber + deep teal glow on onyx */
-.dark .ambient-mesh::before {
-  background:
-    radial-gradient(60% 60% at 10% 0%, hsl(34 73% 62% / 0.10), transparent 60%),
-    radial-gradient(50% 50% at 100% 0%, hsl(220 50% 25% / 0.16), transparent 65%),
-    radial-gradient(80% 80% at 50% 110%, hsl(34 80% 50% / 0.06), transparent 70%);
-}
-
-.dark .ambient-mesh::after {
-  background:
-    linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.65) 100%);
+.dark .mesh-gradient {
+  opacity: 0.12;
 }
 
 /* =====================================================================
-   Hairline rules — purer than border utilities when used for big rules
+   Hairline rules
    ===================================================================== */
 .rule {
   height: 1px;
@@ -362,21 +290,21 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    hsl(var(--accent) / 0.4) 15%,
-    hsl(var(--accent) / 0.4) 85%,
+    hsl(var(--border)) 15%,
+    hsl(var(--border)) 85%,
     transparent 100%
   );
 }
 
 /* =====================================================================
-   Motion keyframes — fallback for browsers without IntersectionObserver
+   Motion keyframes
    ===================================================================== */
-@keyframes ambient-breath {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
-  50%      { transform: translate3d(-1.2%, 1.2%, 0) scale(1.03); opacity: 0.8; }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-@keyframes sheentrance {
+@keyframes slide-up {
   from { opacity: 0; transform: translate3d(0, 10px, 0); }
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
@@ -386,18 +314,8 @@
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translate3d(0, 14px, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
 /* =====================================================================
-   Premium button base — used by ScanButton
+   Premium button base
    ===================================================================== */
 .btn-premium {
   position: relative;
@@ -418,20 +336,21 @@
               background 280ms var(--ease-out-soft),
               transform 280ms var(--ease-out-soft);
   box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.03),
-    0 8px 24px -12px hsl(var(--foreground) / 0.15);
+    0px 1px 1px hsl(0 0% 0% / 0.03),
+    0px 2px 2px hsl(0 0% 0% / 0.06);
 }
+
 .btn-premium:hover {
   border-color: hsl(var(--accent) / 0.5);
   background: hsl(var(--card));
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.04),
-    0 16px 32px -16px hsl(var(--accent) / 0.35);
+    0px 2px 2px hsl(0 0% 0% / 0.06),
+    0px 8px 16px -4px hsl(var(--accent) / 0.2);
 }
 
 /* =====================================================================
-   Reduced-motion respects users who don't want movement
+   Reduced-motion
    ===================================================================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -440,64 +359,10 @@
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
   }
-
-  .ambient-mesh::before,
-  .ambient-mesh::after {
-    animation: none !important;
-  }
 }
 
 /* =====================================================================
-   Aurora cursor — soft radial gradient that follows the pointer.
-   Deep ocean teal glow.
-   ===================================================================== */
-.aurora-cursor {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 600ms var(--ease-out-soft),
-              background-position 240ms var(--ease-out-soft);
-  background:
-    radial-gradient(
-      280px circle at var(--mx, 50%) var(--my, 50%),
-      hsl(34 73% 62% / 0.18) 0%,
-      hsl(34 73% 62% / 0.05) 35%,
-      transparent 60%
-    ),
-    radial-gradient(
-      460px circle at calc(var(--mx, 50%) + 6%) calc(var(--my, 50%) - 4%),
-      hsl(20 70% 55% / 0.10) 0%,
-      hsl(20 70% 55% / 0.03) 40%,
-      transparent 70%
-    );
-  mix-blend-mode: plus-lighter;
-}
-.aurora-cursor[data-on="true"] { opacity: 1; }
-.dark .aurora-cursor {
-  background:
-    radial-gradient(
-      320px circle at var(--mx, 50%) var(--my, 50%),
-      hsl(34 73% 62% / 0.22) 0%,
-      hsl(34 73% 62% / 0.05) 35%,
-      transparent 60%
-    ),
-    radial-gradient(
-      520px circle at calc(var(--mx, 50%) + 6%) calc(var(--my, 50%) - 4%),
-      hsl(220 60% 35% / 0.20) 0%,
-      hsl(220 60% 35% / 0.04) 45%,
-      transparent 75%
-    );
-}
-
-@media (pointer: coarse), (prefers-reduced-motion: reduce) {
-  .aurora-cursor { display: none; }
-}
-
-/* =====================================================================
-   Text reveal — used by SplitText primitive.
-   Per-character: translateY from below baseline + opacity.
+   Text reveal — used by SplitText primitive
    ===================================================================== */
 .reveal-char {
   display: inline-block;
@@ -506,45 +371,49 @@
   white-space: pre;
   will-change: transform, opacity;
 }
+
 .reveal-char[data-show="true"] {
   animation: char-rise 760ms var(--ease-out-soft) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
+
 @keyframes char-rise {
   0%   { transform: translate3d(0, 0.55em, 0); opacity: 0; filter: blur(4px); }
   60%  { filter: blur(0px); }
   100% { transform: translate3d(0, 0, 0); opacity: 1; filter: blur(0px); }
 }
 
-/* Word mask — clipping rises. */
 .reveal-word {
   display: inline-block;
   overflow: hidden;
   vertical-align: bottom;
   line-height: 1.1;
 }
+
 .reveal-word > .inner {
   display: inline-block;
   transform: translate3d(0, 110%, 0);
   will-change: transform;
 }
+
 .reveal-word[data-show="true"] > .inner {
   animation: word-rise 760ms var(--ease-out-soft) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
+
 @keyframes word-rise {
   0%   { transform: translate3d(0, 110%, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
 
 /* =====================================================================
-   Marquee — used for ticker / tech ribbon. Pure CSS through JS-supplied
-   tracks. Pause on hover.
+   Marquee
    ===================================================================== */
 .marquee {
   overflow: hidden;
   mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
 }
+
 .marquee-track {
   display: flex;
   gap: 3rem;
@@ -552,27 +421,16 @@
   animation: marquee-scroll 42s linear infinite;
   will-change: transform;
 }
+
 .marquee:hover .marquee-track { animation-play-state: paused; }
+
 @keyframes marquee-scroll {
   0%   { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-50%, 0, 0); }
 }
 
 /* =====================================================================
-   Magnetic wrapper — JS normalizes pointer into --mx/--my (range -1..1),
-   transform shifts toward the cursor.
-   ===================================================================== */
-.magnetic {
-  display: inline-block;
-  transform: translate3d(calc(var(--mx, 0) * var(--pull, 8px)),
-                         calc(var(--my, 0) * var(--pull, 8px)), 0);
-  transition: transform 360ms var(--ease-in-out-soft);
-  will-change: transform;
-}
-
-/* =====================================================================
-   Scroll progress — JS writes --scroll (0..1) on the host; the bar
-   scales horizontally.
+   Scroll progress
    ===================================================================== */
 .scroll-progress {
   position: fixed;
@@ -584,77 +442,17 @@
   pointer-events: none;
   transform: scaleX(var(--scroll, 0));
   transform-origin: 0 50%;
-  background: linear-gradient(
-    90deg,
-    hsl(var(--accent)) 0%,
-    hsl(34 56% 55%) 60%,
-    transparent 100%
-  );
+  background: hsl(var(--accent));
   transition: transform 80ms linear;
   will-change: transform;
 }
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-progress { transition: none; }
 }
 
 /* =====================================================================
-   Engraved numeral — sidebar index.
-   Big serif italic numeral, refined shadow.
-   ===================================================================== */
-.numeral-engrave {
-  font-family: var(--font-italic);
-  font-style: italic;
-  font-size: 17px;
-  line-height: 1;
-  font-weight: 400;
-  color: hsl(var(--accent) / 0.9);
-  text-shadow:
-    0 1px 0 hsl(var(--background) / 0.8),
-    0 -1px 0 hsl(var(--foreground) / 0.05);
-  letter-spacing: -0.02em;
-  font-feature-settings: "ss01";
-}
-
-/* =====================================================================
-   Wordmark — Geist with a sophisticated gradient.
-   Gold-teal sheen for light, pearl-brass for dark.
-   ===================================================================== */
-.wordmark {
-  font-family: var(--font-display-sans);
-  font-weight: 800;
-  background: linear-gradient(
-    105deg,
-    hsl(var(--foreground)) 0%,
-    hsl(var(--foreground)) 35%,
-    hsl(34 73% 62%) 50%,
-    hsl(var(--foreground)) 65%,
-    hsl(var(--foreground)) 100%
-  );
-  background-size: 220% 100%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  letter-spacing: -0.035em;
-  animation: wordmark-sheen 14s var(--ease-in-out-soft) infinite;
-}
-.wordmark:hover { background-position: 100% 50%; }
-@keyframes wordmark-sheen {
-  0%, 100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
-}
-
-/* =====================================================================
-   Kicker — refined serif italic for section titles.
-   ===================================================================== */
-.kicker-italic {
-  font-family: var(--font-italic);
-  font-style: italic;
-  letter-spacing: -0.01em;
-}
-
-/* =====================================================================
-   Premium transition tokens — consistent motion language
+   Premium transition tokens
    ===================================================================== */
 .transition-premium {
   transition:
@@ -683,7 +481,7 @@
 }
 
 /* =====================================================================
-   TiltLift — parallax surface primitive.
+   TiltLift — parallax surface primitive
    ===================================================================== */
 .tilt-lift {
   --rx: 0deg;
@@ -695,6 +493,7 @@
   transition: transform 400ms var(--ease-in-out-soft);
   will-change: transform;
 }
+
 .tilt-lift::before {
   content: "";
   position: absolute;
@@ -710,11 +509,14 @@
   transition: opacity 400ms var(--ease-in-out-soft);
   transform: translate3d(0, 0, 0);
 }
+
 .tilt-lift[data-tilted="true"]::before { opacity: 1; }
+
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
   .tilt-lift { transform: none !important; }
   .tilt-lift::before { display: none; }
 }
+
 .tilt-lift > .tilt-inner {
   transform:
     perspective(900px)
@@ -725,38 +527,42 @@
   will-change: transform;
 }
 
-/* Numeric ticker entry. */
+/* =====================================================================
+   Numeric ticker entry
+   ===================================================================== */
 .num-enter {
   display: inline-block;
   animation: num-enter 480ms var(--ease-out-soft) both;
 }
+
 @keyframes num-enter {
   0%   { opacity: 0; filter: blur(6px); transform: translateY(4px); }
   100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
 }
 
-/* Premium card. */
+/* =====================================================================
+   Premium card
+   ===================================================================== */
 .premium-card {
   position: relative;
   background-color: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: calc(var(--radius) + 6px);
   box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.03),
-    0 24px 48px -32px hsl(var(--foreground) / 0.2),
-    0 2px 6px -2px hsl(var(--foreground) / 0.04);
+    0px 1px 1px hsl(0 0% 0% / 0.03),
+    0px 2px 2px hsl(0 0% 0% / 0.06);
 }
+
 .premium-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   border-color: hsl(var(--accent) / 0.3);
   box-shadow:
-    0 1px 1px hsl(var(--foreground) / 0.04),
-    0 32px 64px -32px hsl(var(--accent) / 0.2),
-    0 4px 12px -2px hsl(var(--foreground) / 0.05);
+    0px 2px 2px hsl(0 0% 0% / 0.06),
+    0px 8px 16px -4px hsl(var(--accent) / 0.15);
 }
 
 /* =====================================================================
-   Shader stage — Three.js container.
+   Shader stage — Three.js container
    ===================================================================== */
 .shader-stage {
   position: absolute;
@@ -765,7 +571,6 @@
   height: 100%;
 }
 
-/* Shader curtain. */
 .shader-curtain {
   position: fixed;
   inset: 0;
@@ -775,23 +580,26 @@
   pointer-events: none;
   will-change: transform, opacity;
 }
+
 .shader-curtain[data-stage="up"] {
   animation: shader-curtain-up var(--curtain-duration, 1100ms)
     var(--ease-in-out-soft) forwards;
 }
+
 .shader-curtain[data-done="true"] {
   opacity: 0;
 }
+
 @keyframes shader-curtain-up {
   0%   { transform: translateY(0%);    opacity: 1;   clip-path: inset(0 0 0 0); }
   60%  { opacity: 1; }
   100% { transform: translateY(-100%); opacity: 0.3; clip-path: inset(0 0 100% 0); }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .shader-curtain { display: none; }
 }
 
-/* Vignette. */
 .shader-curtain-vignette {
   position: absolute;
   inset: 0;
@@ -812,41 +620,6 @@
     );
 }
 
-/* Wordmark on dark. */
-.wordmark-on-dark {
-  font-family: var(--font-display-sans);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  background: linear-gradient(
-    105deg,
-    hsl(36 38% 97%) 0%,
-    hsl(36 38% 97%) 35%,
-    hsl(34 73% 65%) 50%,
-    hsl(36 38% 97%) 65%,
-    hsl(36 38% 97%) 100%
-  );
-  background-size: 220% 100%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter:
-    drop-shadow(0 1px 1px hsl(0 0% 0% / 0.6))
-    drop-shadow(0 12px 28px hsl(0 0% 0% / 0.45));
-  animation: wordmark-sheen 14s var(--ease-in-out-soft) infinite;
-}
-
-.kicker-on-dark {
-  font-family: var(--font-italic);
-  font-style: italic;
-  color: hsl(34 60% 80%);
-  letter-spacing: -0.01em;
-  text-shadow:
-    0 1px 0 hsl(0 0% 0% / 0.55),
-    0 0 24px hsl(34 73% 65% / 0.25);
-}
-
-/* Foreground slot for words over the shader. */
 .shader-curtain-mark {
   position: absolute;
   inset: 0;
@@ -859,6 +632,7 @@
   text-align: center;
   animation: shader-mark-enter 1200ms var(--ease-out-soft) 200ms both;
 }
+
 @keyframes shader-mark-enter {
   0%   { opacity: 0; transform: translateY(8px); filter: blur(8px); }
   60%  { filter: blur(0px); }
@@ -866,12 +640,29 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wordmark-on-dark { animation: none; }
   .shader-curtain-mark { animation: none; }
 }
 
 /* =====================================================================
-   Curtain reveal.
+   Wordmark — pure ink, no sheen
+   ===================================================================== */
+.wordmark {
+  font-family: var(--font-display-sans);
+  font-weight: 800;
+  color: hsl(var(--foreground));
+  letter-spacing: -0.035em;
+}
+
+.wordmark-on-dark {
+  font-family: var(--font-display-sans);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: hsl(0 0% 98%);
+  filter: drop-shadow(0 1px 1px hsl(0 0% 0% / 0.6));
+}
+
+/* =====================================================================
+   Curtain reveal
    ===================================================================== */
 .curtain {
   position: fixed;
@@ -883,6 +674,7 @@
   justify-content: center;
   pointer-events: none;
 }
+
 .curtain-mask {
   position: absolute;
   inset: 0;
@@ -890,48 +682,39 @@
   transform-origin: 50% 0%;
   will-change: transform, opacity;
 }
+
 .curtain[data-stage="up"] .curtain-mask {
   animation: curtain-up 900ms var(--ease-in-out-soft) forwards;
 }
+
 .curtain[data-done="true"] { opacity: 0; transition: opacity 320ms var(--ease-out-soft); }
+
 @keyframes curtain-up {
   0%   { transform: translateY(0%); opacity: 1; }
   100% { transform: translateY(-100%); opacity: 0.6; }
 }
 
-/* Utility hooks. */
+/* =====================================================================
+   Utility hooks
+   ===================================================================== */
 .animate-fade-in {
   animation: fade-in 320ms var(--ease-out-soft) both;
 }
+
 .animate-slide-up {
   animation: slide-up 380ms var(--ease-out-soft) both;
 }
+
 .animate-slide-in-right {
   animation: slide-in-right 320ms var(--ease-out-soft) both;
 }
 
-/* View transition. */
+/* =====================================================================
+   View transition
+   ===================================================================== */
 .view-settle {
   transition:
     transform 520ms var(--ease-out-soft),
     opacity 360ms var(--ease-out-soft),
     filter 520ms var(--ease-out-soft);
-}
-
-/* Empty-state breathing dot. */
-@keyframes breathing {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50%      { transform: scale(1.25); opacity: 1; }
-}
-.breathing {
-  animation: breathing 2400ms var(--ease-in-out-soft) infinite;
-}
-
-.specular-amber {
-  background: linear-gradient(135deg, hsl(34 73% 66%) 0%, hsl(20 60% 38%) 100%);
-  box-shadow:
-    inset 0 1px 0 hsl(34 90% 80% / 0.6),
-    inset 0 -1px 0 hsl(20 70% 25% / 0.4),
-    0 8px 24px -10px hsl(34 73% 55% / 0.55),
-    0 1px 1px hsl(var(--foreground) / 0.08);
 }

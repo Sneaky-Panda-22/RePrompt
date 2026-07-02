@@ -1,0 +1,9 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import SimilarityPage from "../../../frontend/src/pages/SimilarityPage";
+import "../../../frontend/src/index.css";
+---
+
+<AppLayout currentPath="/similarity">
+  <SimilarityPage client:only="react" />
+</AppLayout>

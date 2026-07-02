@@ -1,0 +1,437 @@
+---
+const sections = [
+  { id: "about", num: "01", title: "About Us",
+    gradient: "linear-gradient(180deg, #1b1e3a 0%, #4a3956 28%, #6b5b8a 60%, #8888bb 100%)",
+    fig: "polygon",
+    content: "RePrompt is an AI Vision Forensics & Prompt Engineering dashboard. It extracts physics data, lighting styles, color schemas, and camera angles from images — giving you the reverse-engineered prompt behind any AI-generated visual. Built for forensic analysts, prompt engineers, and curious creators who want to understand how an image was made." },
+  { id: "faq", num: "02", title: "FAQ",
+    gradient: "linear-gradient(180deg, #1a2a3a 0%, #2a4a6a 35%, #5b8cb6 65%, #92aebd 100%)",
+    fig: "circle",
+    content: "What formats are supported? PNG, JPG, WebP, HEIC, and most common image formats. Is my data private? Yes — all processing happens client-side. No images are uploaded to any server. How accurate is the analysis? Accuracy depends on image quality. High-resolution, unmodified images yield the best results. Can I use this commercially? Yes, subject to our terms of service." },
+  { id: "privacy", num: "03", title: "Privacy Policy",
+    gradient: "linear-gradient(180deg, #1a2a28 0%, #2a4a48 35%, #4a7a76 65%, #7aaaa6 100%)",
+    fig: "shield",
+    content: "We collect no personal data. All analysis runs entirely in your browser — images you upload are never transmitted, stored, or logged. No cookies are used for tracking. We use Google Fonts for typography, which may log a request per our CDN's standard practices. We do not sell, share, or monetize your information in any way." },
+  { id: "terms", num: "04", title: "Terms & Conditions",
+    gradient: "linear-gradient(180deg, #2a2a1a 0%, #4a4a2a 35%, #7a7a4a 65%, #aaaa6a 100%)",
+    fig: "lines",
+    content: "RePrompt is provided 'as is' without warranty of any kind. You agree not to use the tool for illegal purposes or to reverse-engineer images you do not own. The output accuracy is not guaranteed and should be verified independently. We reserve the right to update these terms at any time. Continued use constitutes acceptance of any changes." },
+  { id: "contact", num: "05", title: "Contact Us",
+    gradient: "linear-gradient(180deg, #1a2a1a 0%, #2a4a2a 35%, #4a7a4a 65%, #6aaa7a 100%)",
+    fig: "diamond",
+    content: "Have a question, feature request, or just want to say hello? We'd love to hear from you. Reach out at hello@reprompt.app or find us on GitHub. For bug reports, please include your browser version and a description of the issue along with any relevant screenshots." }
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RePrompt — AI Vision Forensics & Prompt Engineering</title>
+  <meta name="description" content="Extract physics data, lighting styles, color schemas, and camera angles from AI-generated images. Reverse-engineer prompts with precision." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --stage: #0a0a0a;
+      --paper: #f4ede0;
+      --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,255,255,0.04), transparent 70%),
+        #0a0a0a;
+      color: var(--paper);
+      font: 14px/1.6 -apple-system, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .stage {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    /* ── Nav ── */
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 80px;
+    }
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .wordmark .logo-mark {
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--paper);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font: italic 700 13px/1 var(--serif);
+      color: var(--paper);
+      opacity: 0.8;
+    }
+    .wordmark .name {
+      font: italic 700 18px/1 var(--serif);
+      color: var(--paper);
+      letter-spacing: -0.01em;
+    }
+    .wordmark .name .dot { color: #a4a09a; }
+    .page-head .launch-link {
+      font: 11px/1 var(--mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border: 1px solid rgba(244,237,224,0.25);
+      border-radius: 999px;
+      color: rgba(244,237,224,0.7);
+      transition: all 0.3s ease;
+    }
+    .page-head .launch-link:hover {
+      border-color: var(--paper);
+      color: var(--paper);
+      background: rgba(244,237,224,0.06);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 780px;
+      margin-bottom: 80px;
+    }
+    .hero h1 {
+      font: italic 700 56px/1 var(--serif);
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+    .hero h1 em { font-style: italic; }
+    .hero h1 .dot { color: #a4a09a; }
+    .hero .sub {
+      font: 12px/1.7 var(--mono);
+      color: rgba(244,237,224,0.5);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      max-width: 72ch;
+      margin-bottom: 32px;
+    }
+    .hero .cta-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .hero .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font: italic 700 18px/1 var(--serif);
+      padding: 12px 28px;
+      background: #ffffff;
+      color: #0a0a0a;
+      border-radius: 999px;
+      transition: all 0.25s ease;
+    }
+    .hero .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .hero .cta-hint {
+      font: 10.5px/1 var(--mono);
+      color: rgba(244,237,224,0.35);
+      letter-spacing: 0.12em;
+    }
+
+    /* ── Label ── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .section-label span {
+      font: 10px/1 var(--mono);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(244,237,224,0.3);
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(244,237,224,0.08);
+    }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 24px;
+      max-width: 1116px;
+      margin: 0 auto;
+    }
+    .card {
+      grid-column: span 2;
+    }
+    .card:nth-child(4),
+    .card:nth-child(5) {
+      grid-column: span 3;
+    }
+    @media (max-width: 1100px) {
+      .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        max-width: none;
+      }
+      .card, .card:nth-child(4), .card:nth-child(5) {
+        grid-column: span 1;
+      }
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      cursor: default;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.55);
+    }
+    .card .scrim {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.40) 50%, rgba(0,0,0,0.65) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .card .texture {
+      position: absolute; inset: 0;
+      opacity: 0.06;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Figures */
+    .card .fig {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .card .fig-polygon {
+      right: -30px; bottom: -20px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+    }
+    .card .fig-circle {
+      right: -40px; top: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .card .fig-shield {
+      left: -20px; bottom: -20px;
+      width: 160px; height: 180px;
+      background: rgba(255,255,255,0.05);
+      clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 50% 100%, 0% 70%, 0% 35%, 20% 10%);
+    }
+    .card .fig-lines {
+      right: -10px; top: 20%;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.05);
+      clip-path: polygon(0% 15%, 100% 15%, 100% 25%, 0% 25%, 0% 40%, 100% 40%, 100% 50%, 0% 50%, 0% 65%, 100% 65%, 100% 75%, 0% 75%, 0% 90%, 100% 90%, 100% 100%, 0% 100%);
+    }
+    .card .fig-diamond {
+      left: 10%; top: -40px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,0.05);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      transform: rotate(30deg);
+    }
+
+    /* Card layout */
+    .card .top {
+      position: relative; z-index: 2;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 20px 22px 0;
+    }
+    .card .brand {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 999px;
+    }
+    .card .brand .dot {
+      width: 5px; height: 5px;
+      background: var(--paper);
+      border-radius: 50%;
+      opacity: 0.9;
+    }
+    .card .brand .name {
+      font: italic 700 13px/1 var(--serif);
+      color: #fff;
+    }
+    .card .index {
+      font: 10.5px/1.4 var(--mono);
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.16em;
+      padding: 6px 10px;
+      background: rgba(0,0,0,0.30);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 4px;
+    }
+
+    .card .lockup {
+      position: relative; z-index: 2;
+      padding: 60px 22px 0;
+    }
+    .card .lockup h2 {
+      font: 700 48px/1 var(--serif);
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+    .card .lockup h2 em { font-style: italic; }
+
+    .card .body {
+      position: relative; z-index: 2;
+      padding: 16px 22px 80px;
+      font: 14px/1.75 -apple-system, system-ui, sans-serif;
+      color: rgba(255,255,255,0.88);
+      max-width: 92%;
+    }
+
+    .card .footer {
+      position: absolute; z-index: 2;
+      left: 22px; right: 22px;
+      bottom: 18px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card .footer .caption {
+      font: 10.5px/1.4 var(--mono);
+      color: rgba(255,255,255,0.80);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      max-width: 70%;
+    }
+
+    /* ── Footer ── */
+    .page-foot {
+      margin-top: 80px;
+      border-top: 1px solid rgba(244,237,224,0.06);
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .page-foot .copy {
+      font: 10.5px/1.4 var(--mono);
+      color: rgba(244,237,224,0.25);
+      letter-spacing: 0.08em;
+    }
+    .page-foot .nav-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .page-foot .nav-links a {
+      font: 10.5px/1 var(--mono);
+      color: rgba(244,237,224,0.3);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      transition: color 0.2s ease;
+    }
+    .page-foot .nav-links a:hover { color: var(--paper); }
+
+    @media (max-width: 640px) {
+      .stage { padding: 24px 16px 48px; }
+      .page-head { margin-bottom: 40px; }
+      .hero h1 { font-size: 34px; }
+      .hero { margin-bottom: 48px; }
+      .card { min-height: auto; }
+      .card .lockup { padding-top: 40px; }
+      .card .lockup h2 { font-size: 34px; }
+      .card .body { font-size: 13px; padding-bottom: 64px; }
+      .card-grid { gap: 16px; }
+      .page-foot { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+
+    <!-- Top nav -->
+    <header class="page-head">
+      <a href="/" class="wordmark">
+        <span class="logo-mark">R</span>
+        <span class="name">RePrompt<span class="dot">.</span></span>
+      </a>
+      <a href="/app" class="launch-link">Launch App →</a>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Extract the prompt<br/>behind any <em>image<span class="dot">.</span></em></h1>
+      <p class="sub">AI Vision Forensics &amp; Prompt Engineering Dashboard — reverse-engineer physics data, lighting styles, color schemas, and camera angles from AI-generated visuals.</p>
+      <div class="cta-row">
+        <a href="/app" class="cta">Open Dashboard →</a>
+        <span class="cta-hint">no sign-up · free to use</span>
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="section-label"><span>Learn more</span></div>
+
+    <!-- Cards -->
+    <div class="card-grid" id="sections">
+      {sections.map(s => (
+        <article class="card" style={`background: ${s.gradient}`} id={s.id}>
+          <div class="texture"></div>
+          <div class={`fig fig-${s.fig}`}></div>
+          <div class="scrim"></div>
+          <div class="top">
+            <div class="brand"><span class="dot"></span><span class="name">RePrompt</span></div>
+            <div class="index">{s.num}</div>
+          </div>
+          <div class="lockup"><h2>{s.title}</h2></div>
+          <div class="body">{s.content}</div>
+          <div class="footer">
+            <div class="caption">{s.id === "about" ? "Forensic prompt engineering" : s.id === "faq" ? "Common questions" : s.id === "privacy" ? "Your data stays yours" : s.id === "terms" ? "Plain-language terms" : "Get in touch"}</div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-foot">
+      <span class="copy">&copy; {new Date().getFullYear()} RePrompt — forensic prompt engineering.</span>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#faq">FAQ</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#terms">Terms</a>
+        <a href="#contact">Contact</a>
+        <a href="/app">Dashboard</a>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

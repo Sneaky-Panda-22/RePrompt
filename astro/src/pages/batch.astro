@@ -1,0 +1,9 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import BatchPage from "../../../frontend/src/pages/BatchPage";
+import "../../../frontend/src/index.css";
+---
+
+<AppLayout currentPath="/batch">
+  <BatchPage client:only="react" />
+</AppLayout>

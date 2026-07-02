@@ -1,0 +1,9 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import DailyPage from "../../../frontend/src/pages/DailyPage";
+import "../../../frontend/src/index.css";
+---
+
+<AppLayout currentPath="/daily">
+  <DailyPage client:only="react" />
+</AppLayout>

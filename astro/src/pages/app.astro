@@ -1,0 +1,9 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import AppPage from "../../../frontend/src/pages/AppPage";
+import "../../../frontend/src/index.css";
+---
+
+<AppLayout currentPath="/app">
+  <AppPage client:only="react" />
+</AppLayout>

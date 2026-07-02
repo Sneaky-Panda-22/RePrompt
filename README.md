@@ -1,8 +1,8 @@
-# RePrompt — AI Vision Forensics & Prompt Engineering Dashboard
+# RePrompt • AI Vision Forensics & Prompt Engineering Dashboard
 
 RePrompt is an industry-ready, professional image forensics and prompt reverse-engineering workspace. By pairing **Computer Vision (OpenCV)** with **Vision-Language Models (Google Gemini)**, it parses the hidden physical properties of an image and generates highly descriptive, optimization-ready prompt blueprints for Midjourney, DALL-E 3, or Stable Diffusion.
 
-The system features a premium, responsive React-based dashboard supporting dynamic Light and Dark modes.
+The system features a premium, responsive **Astro-based dashboard** supporting dynamic Light and Dark modes.
 
 ---
 
@@ -37,8 +37,9 @@ The system features a premium, responsive React-based dashboard supporting dynam
 
 - **Backend Architecture:** FastAPI (Python), OpenCV, NumPy
 - **Generative AI Fallback Chain:** Google Gemini API (cascading fallback: `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite`, `gemini-2.5-flash`, `gemini-2.0-flash`)
-- **Frontend Dashboard:** React, TypeScript, Tailwind CSS v4, Lucide React, jsPDF
+- **Frontend Dashboard:** **Astro**, TypeScript, Tailwind CSS v4, Shadcn UI, jsPDF
 - **Layout & Responsiveness:** Flexbox/Grid-driven sliding sidebar navigation drawer with active overlay backdrops for mobile viewport compatibility.
+- **Performance:** Static Site Generation (SSG) with incremental static regeneration, client-side data fetching, image optimization, and caching.
 
 ---
 
@@ -46,19 +47,22 @@ The system features a premium, responsive React-based dashboard supporting dynam
 
 ```text
 RePrompt/
-├── frontend/               # React + Vite source code
-│   ├── src/
-│   │   ├── components/     # ForensicApp, LearnCourse, DailyChallenge, Sidebar, etc.
-│   │   ├── App.tsx         # Dashboard main shell & toast routing
-│   │   └── index.css       # Tailwind v4 class configuration
-│   └── vite.config.ts      # Directs production builds to ../static/
-├── static/                 # Served by FastAPI (Vite build outputs here)
-├── modules/                # Core Python processing engines
-│   ├── physics_analyzer.py # Computer vision (OpenCV) filters
-│   └── preprocessors.py    # Image normalization methods
-├── main.py                 # FastAPI endpoints & fallback router
-├── launch.py               # Local server configuration utility (ignored by Git)
-└── requirements.txt        # Backend dependencies
+├── backend/                   # Python processing engines (FastAPI)
+│   ├── modules/              # Computer vision & preprocessing
+│   ├── main.py              # API endpoints & fallback router
+│   └── requirements.txt     # Backend dependencies
+├── astro/                    # Astro-based frontend
+│   ├── src/                 # Source code
+│   │   ├── components/      # Reusable Astro components
+│   │   ├── pages/           # Astro pages (SSG + ISR)
+│   │   ├── lib/             # Utilities & client-side logic
+│   │   └── ui/              # Shadcn UI components (compiled)
+│   ├── public/              # Static assets
+│   ├── astro.config.mjs     # Astro configuration
+│   └── package.json         # Project dependencies
+├── static/                   # Frontend build outputs (for FastAPI serving)
+├── launch.py                 # Local server configuration utility (Git ignored)
+└── README.md                 # Documentation
 ```
 
 ---
@@ -71,12 +75,20 @@ git clone https://github.com/Sneaky-Panda-22/RePrompt.git
 cd RePrompt
 ```
 
-### 2. Install Python Dependencies
+### 2. Install Backend Dependencies
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
-### 3. Run the Development Server
+### 3. Install Frontend Dependencies & Build
+```bash
+cd astro
+npm install
+npm run build
+```
+
+### 4. Run the Development Server
 RePrompt provides a launcher script `launch.py` to securely store your credentials without risk of leaking them to git:
 
 Create `launch.py` in the root folder:
@@ -88,23 +100,15 @@ import uvicorn
 os.environ["GEMINI_API_KEY"] = "your_gemini_api_key_here"
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=False)
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8080, reload=True)
 ```
 
 Launch the server:
 ```bash
 python launch.py
 ```
-Open [http://localhost:8080](http://localhost:8080) to access the workspace.
 
-### 4. Customizing or Building the Frontend (Optional)
-If you make changes to the React files inside the `frontend/` directory, rebuild the project:
-```bash
-cd frontend
-npm install
-npm run build
-```
-Vite compiles and replaces the static assets in the root `/static/` folder automatically.
+Open [http://localhost:8080](http://localhost:8080) to access the workspace.
 
 ### 5. Pushing Updates to GitHub
 To commit and push your changes back to the GitHub repository, run:
@@ -116,7 +120,7 @@ git status
 git add .
 
 # Commit with a descriptive message
-git commit -m "Upgrade RePrompt to commercial workstation: add Similarity Lab, Batch Mode, EXIF parser, Prompt Git, and UI/UX refinements"
+git commit -m "Upgrade RePrompt to Astro-based enterprise dashboard: static generation for SEO, premium workspace architecture, and performance optimization"
 
 # Push changes to your branch/main repository
 git push origin main

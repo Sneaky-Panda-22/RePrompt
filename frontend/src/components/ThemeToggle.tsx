@@ -52,7 +52,7 @@ export default function ThemeToggle({ darkMode, setDarkMode }: ThemeToggleProps)
         <Sun
           className={`
             w-3.5 h-3.5 transition-all duration-300
-            ${!darkMode ? "rotate-0 scale-110 text-amber-500" : "rotate-90 scale-75 opacity-50"}
+            ${!darkMode ? "rotate-0 scale-110 text-accent" : "rotate-90 scale-75 opacity-50"}
           `}
           strokeWidth={2.2}
         />

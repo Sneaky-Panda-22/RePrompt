@@ -1,0 +1,9 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import PracticePage from "../../../frontend/src/pages/PracticePage";
+import "../../../frontend/src/index.css";
+---
+
+<AppLayout currentPath="/practice">
+  <PracticePage client:only="react" />
+</AppLayout>
