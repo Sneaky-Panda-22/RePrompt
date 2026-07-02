@@ -102,7 +102,7 @@ export default function DailyChallenge({ showToast }: DailyChallengeProps) {
 
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
-        throw new Error(err.detail || "Scoring process failed");
+        throw new Error(err.error || err.detail || "Scoring process failed");
       }
 
       const data = (await resp.json()) as EvaluationResponse;

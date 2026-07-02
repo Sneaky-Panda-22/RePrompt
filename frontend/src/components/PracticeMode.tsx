@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { Upload, HelpCircle, Activity, Sparkles, Check, Copy, Layers } from "lucide-react";
+import { Upload, Copy, RefreshCw, HelpCircle, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
+import { computeImageStats } from "../lib/image-stats";
 
 interface PracticeModeProps {
   showToast: (msg: string, type: "success" | "error") => void;
@@ -90,13 +91,14 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
     setIsWriteLoading(true);
     setWriteResult(null);
 
-    const formData = new FormData();
-    formData.append("file", writeFile);
-    formData.append("user_prompt", userPrompt);
-
     try {
-      const resp = await fetch("/api/evaluate", { method: "POST", body: formData });
-      if (!resp.ok) throw new Error((await resp.json().catch(() => ({}))).detail || "Evaluation failed");
+      const { stats, base64, mimeType } = await computeImageStats(writeFile);
+      const resp = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64, user_prompt: userPrompt, stats, mime_type: mimeType }),
+      });
+      if (!resp.ok) throw new Error(((await resp.json().catch(() => ({}))).error) || "Evaluation failed");
       const data = (await resp.json()) as EvaluationResponse;
       setWriteResult(data);
       showToast(`Prompt scored: ${data.score}/10!`, "success");
@@ -120,13 +122,14 @@ export default function PracticeMode({ showToast }: PracticeModeProps) {
     setIsDiffLoading(true);
     setDiffResult(null);
 
-    const formData = new FormData();
-    formData.append("file", diffFile);
-    formData.append("user_prompt", diffPrompt);
-
     try {
-      const resp = await fetch("/api/evaluate", { method: "POST", body: formData });
-      if (!resp.ok) throw new Error((await resp.json().catch(() => ({}))).detail || "Analysis failed");
+      const { stats, base64, mimeType } = await computeImageStats(diffFile);
+      const resp = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64, user_prompt: diffPrompt, stats, mime_type: mimeType }),
+      });
+      if (!resp.ok) throw new Error(((await resp.json().catch(() => ({}))).error) || "Analysis failed");
       const data = (await resp.json()) as EvaluationResponse;
       setDiffResult(data);
       showToast(`Improvement blueprint ready! Score: ${data.score}/10`, "success");

@@ -20,16 +20,20 @@ export default function AboutProject({ showToast }: AboutProjectProps) {
 
   const stackItems = [
     {
-      title: "FastAPI",
-      desc: "High-performance async Python backend orchestration, serving API pipelines.",
+      title: "Cloudflare Pages",
+      desc: "Global edge CDN serving the static Astro frontend with near-zero latency from 330+ locations.",
     },
     {
-      title: "OpenCV",
-      desc: "Computer vision engine calculating real-time brightness, shadows, contrast, and depth-of-field metrics.",
+      title: "Cloudflare Pages Functions",
+      desc: "Serverless API endpoints handling Gemini API orchestration — no backend server needed.",
     },
     {
       title: "Gemini Models",
       desc: "Google's powerful vision-language model family transforming pixel physics into highly accurate text blueprints.",
+    },
+    {
+      title: "Browser Computer Vision",
+      desc: "Client-side Canvas API pipeline computing brightness, shadows, contrast, depth-of-field, and edge density directly in your browser.",
     },
     {
       title: "React & Tailwind CSS v4",
@@ -39,24 +43,19 @@ export default function AboutProject({ showToast }: AboutProjectProps) {
 
   const installSteps = [
     {
-      id: "clone",
-      cmd: "git clone https://github.com/Sneaky-Panda-22/RePrompt.git",
-      desc: "Clone the open source repository.",
+      id: "visit",
+      cmd: "https://reprompt.pages.dev",
+      desc: "Open the dashboard in your browser — no installation needed.",
     },
     {
-      id: "pip",
-      cmd: "pip install -r requirements.txt",
-      desc: "Install backend computer vision and FastAPI server dependencies.",
+      id: "deploy",
+      cmd: "git push origin main",
+      desc: "Deploy your own fork to Cloudflare Pages — connects directly to your GitHub repo.",
     },
     {
       id: "env",
-      cmd: 'export GEMINI_API_KEY="your_api_key"',
-      desc: "Configure your secure Google AI credentials.",
-    },
-    {
-      id: "run",
-      cmd: "uvicorn main:app --host 0.0.0.0 --port 8080",
-      desc: "Launch the local development workspace.",
+      cmd: "GEMINI_API_KEY",
+      desc: "Set your Gemini API key as a Cloudflare Pages environment variable (Settings → Environment Variables).",
     },
   ];
 

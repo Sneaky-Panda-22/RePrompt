@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Copy, RefreshCw, AlertCircle, FileImage, Image as ImageIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { computeImageStats, computeCVSimilarity } from "../lib/image-stats";
 
 interface SimilarityLabProps {
   showToast: (msg: string, type?: "success" | "error") => void;
@@ -58,14 +59,23 @@ export default function SimilarityLab({ showToast }: SimilarityLabProps) {
     }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append("target", targetFile);
-    formData.append("generated", generatedFile);
 
     try {
+      const [targetResult, genResult] = await Promise.all([
+        computeImageStats(targetFile),
+        computeImageStats(generatedFile),
+      ]);
+      const cvMetrics = computeCVSimilarity(targetResult.stats, genResult.stats);
+
       const resp = await fetch("/api/evaluate-similarity", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: targetResult.base64,
+          generated: genResult.base64,
+          cv_metrics: cvMetrics,
+          mime_type: targetResult.mimeType,
+        }),
       });
 
       if (!resp.ok) {

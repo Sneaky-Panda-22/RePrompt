@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Upload, FileImage, Download, RefreshCw, X, AlertTriangle, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
+import { computeImageStats } from "../lib/image-stats";
 
 interface BatchProcessorProps {
   showToast: (msg: string, type?: "success" | "error") => void;
@@ -70,34 +71,51 @@ export default function BatchProcessor({ showToast }: BatchProcessorProps) {
     setProcessing(true);
     setZipBlob(null);
 
-    // Update statuses to processing
     setQueue((prev) =>
       prev.map((item) => ({ ...item, status: "processing" }))
     );
 
-    const formData = new FormData();
-    queue.forEach((item) => {
-      formData.append("files", item.file);
-    });
-
     try {
+      const items = await Promise.all(
+        queue.map(async (item) => {
+          const { stats, base64, mimeType } = await computeImageStats(item.file);
+          return { filename: item.name, image: base64, stats, mime_type: mimeType };
+        })
+      );
+
       const resp = await fetch("/api/reprompt/batch", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
       });
 
       if (!resp.ok) {
         throw new Error(await resp.text());
       }
 
-      const blob = await resp.blob();
+      const data = await resp.json();
+      const results = data.results || [];
+
+      setQueue((prev) =>
+        prev.map((item) => {
+          const result = results.find((r: any) => r.filename === item.name);
+          return {
+            ...item,
+            status: result?.success ? "success" : "error",
+            error: result?.success ? undefined : result?.error || "Failed",
+          };
+        })
+      );
+
+      const csvRows = ["Filename,Positive Prompt,Negative Prompt,Brightness,Depth of Field,Light Direction,Shadow Hardness,Contrast Ratio"];
+      results.filter((r: any) => r.success).forEach((r: any) => {
+        const s = r.stats || {};
+        csvRows.push(`"${r.filename}","${(r.reprompt || "").replace(/"/g, '""')}","${(r.negative_prompt || "").replace(/"/g, '""')}",${s.brightness_class || ""},${s.dof_class || ""},${s.light_direction || ""},${s.shadow_hardness || ""},${s.contrast_ratio || ""}`);
+      });
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
       setZipBlob(blob);
 
-      // Set all to success
-      setQueue((prev) =>
-        prev.map((item) => ({ ...item, status: "success" }))
-      );
-      showToast("Batch processed successfully!", "success");
+      showToast(`Batch processed ${results.filter((r: any) => r.success).length}/${queue.length} successfully!`, "success");
     } catch (e: any) {
       console.error(e);
       setQueue((prev) =>
@@ -118,12 +136,12 @@ export default function BatchProcessor({ showToast }: BatchProcessorProps) {
     const url = URL.createObjectURL(zipBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `reprompt_dataset_${Date.now()}.zip`;
+    a.download = `reprompt_dataset_${Date.now()}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast("Dataset zip downloaded successfully!", "success");
+    showToast("Dataset CSV downloaded successfully!", "success");
   };
 
   return (

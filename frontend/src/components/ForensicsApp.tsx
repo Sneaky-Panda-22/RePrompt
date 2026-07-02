@@ -3,6 +3,7 @@ import { Upload, Copy, FileDown, RotateCcw, Eye, Activity, Image as ImageIcon, C
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { jsPDF } from "jspdf";
+import { computeImageStats } from "../lib/image-stats";
 
 interface ExifData {
   make?: string;
@@ -252,24 +253,23 @@ export default function ForensicsApp({ showToast }: { showToast: (msg: string, t
   const analyzeImage = async () => {
     if (!file) return;
     setIsLoading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
+      const { stats, base64, mimeType } = await computeImageStats(file);
+
       const response = await fetch("/api/reprompt", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64, stats, mime_type: mimeType }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Server error occurred");
+        throw new Error(errorData.error || "Server error occurred");
       }
 
       const data = await response.json();
       const extractedPrompt = data.reprompt || data.prompt || "";
-      
-      // Dynamically fetch prompt anatomy from the backend
+
       let anatomyData: any[] = [];
       try {
         const anatomyResp = await fetch("/api/anatomy", {
