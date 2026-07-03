@@ -23,6 +23,7 @@ export default defineConfig({
       alias: {
         "@": path.resolve(__dirname, "../frontend/src"),
       },
+      dedupe: ['react', 'react-dom'],
     },
   },
 });
