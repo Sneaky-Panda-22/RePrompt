@@ -1,5 +1,5 @@
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const GEMINI_MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash"];
+const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash-lite"];
 
 const DAILY_CHALLENGES = [
   { id: "dc-01", image_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb", category: "Landscape", difficulty: 2 },
@@ -113,7 +113,7 @@ export default async function handler(request: Request): Promise<Response> {
       const stats = body.stats || {};
       const mimeType = body.mime_type || "image/png";
 
-      const sysPrompt = `You are an elite AI image prompt engineer. Your specialty is reconstructing the exact prompt used to generate an image, optimized for Midjourney v6 or Stable Diffusion XL.
+      const sysPrompt = `You are an elite AI image prompt engineer. Extract an exhaustively detailed prompt from the provided image for Midjourney v6 or Stable Diffusion XL. Detect every nuance, art style, lighting effect, and character detail. Format as flowing descriptive paragraphs.
 
 Below are verified physical measurements extracted from this image:
 - Brightness: ${stats.brightness_class || "mid-key"} (mean: ${stats.mean_brightness || "N/A"})
@@ -131,7 +131,7 @@ Use these measurements as VERIFIED constraints for your prompt reconstruction. O
 [negative prompt]`;
 
       const { text } = await geminiPost(
-        makePayload(sysPrompt, [{ inline_data: { mime_type: mimeType, data: imageBase64 } }], { temperature: 0.15, topP: 0.85, maxOutputTokens: 1500 }),
+        makePayload(sysPrompt, [{ inline_data: { mime_type: mimeType, data: imageBase64 } }], { temperature: 0.15, topP: 0.85, maxOutputTokens: 2048 }),
         apiKey
       );
 
@@ -255,7 +255,7 @@ Return ONLY valid JSON (no markdown, no backticks):
         try {
           const stats = item.stats || {};
           const mimeType = item.mime_type || "image/png";
-          const sysPrompt = `You are an elite AI image prompt engineer. Reconstruct the exact prompt used to generate this image.
+          const sysPrompt = `You are an elite AI image prompt engineer. Extract an exhaustively detailed prompt from this image for Midjourney v6 or Stable Diffusion XL. Detect every nuance, art style, lighting effect, and character detail. Format as flowing descriptive paragraphs.
 
 Physical measurements: brightness=${stats.brightness_class || "mid-key"}, DoF=${stats.dof_class || "moderate"}, shadows=${stats.shadow_hardness || "soft"}, light=${stats.light_direction || "flat"}, contrast=${stats.contrast_ratio || "N/A"}.
 
@@ -266,7 +266,7 @@ Output with markers:
 [negative prompt]`;
 
           const { text } = await geminiPost(
-            makePayload(sysPrompt, [{ inline_data: { mime_type: mimeType, data: item.image } }], { temperature: 0.15, topP: 0.85, maxOutputTokens: 1500 }),
+            makePayload(sysPrompt, [{ inline_data: { mime_type: mimeType, data: item.image } }], { temperature: 0.15, topP: 0.85, maxOutputTokens: 2048 }),
             apiKey
           );
 
