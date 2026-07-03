@@ -1,5 +1,5 @@
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash-lite"];
+const GEMINI_MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash"];
 
 const DAILY_CHALLENGES = [
   { id: "dc-01", image_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb", category: "Landscape", difficulty: 2 },
