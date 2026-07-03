@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ForensicsApp from "../components/ForensicsApp";
+import ErrorBoundary from "../components/ErrorBoundary";
 import { SlideIn } from "../lib/motion";
 
 interface Toast {
@@ -21,7 +22,9 @@ export default function AppPage() {
 
   return (
     <>
-      <ForensicsApp showToast={showToast} />
+      <ErrorBoundary>
+        <ForensicsApp showToast={showToast} />
+      </ErrorBoundary>
       <div className="fixed bottom-6 right-6 z-50 space-y-3 max-w-sm w-[calc(100%-3rem)] sm:w-full pointer-events-none">
         {toasts.map((t) => (
           <SlideIn key={t.id} show direction="right">
