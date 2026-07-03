@@ -49,3 +49,10 @@ technological-tower/
 # Project specific
 static/backup_v1/
 launch.py
+
+# Build output
+astro/dist/
+astro/.astro/
+
+# Vercel
+.vercel

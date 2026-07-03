@@ -18,11 +18,7 @@ const DAILY_CHALLENGES = [
   { id: "dc-14", image_url: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d", category: "Minimalist", difficulty: 1 },
 ];
 
-interface Env {
-  GEMINI_API_KEY: string;
-}
-
-async function geminiPost(payload: object, apiKey: string): Promise<any> {
+async function geminiPost(payload: object, apiKey: string): Promise<{ text: string; model: string }> {
   for (const model of GEMINI_MODELS) {
     const url = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`;
     try {
@@ -43,7 +39,7 @@ async function geminiPost(payload: object, apiKey: string): Promise<any> {
       }
       const data = await resp.json() as any;
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      return { text, model };
+      if (text) return { text, model };
     } catch (e) {
       console.error(`Gemini ${model} failed:`, e);
       continue;
@@ -76,19 +72,41 @@ function mimeFromExt(filename: string): string {
   return map[ext] || "image/png";
 }
 
-export async function onRequest(context: { request: Request; env: Env; params: { path?: string } }) {
-  const { request, env } = context;
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+export const config = {
+  runtime: "edge",
+};
+
+export default async function handler(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/$/, "");
   const method = request.method;
-  const apiKey = env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), { status: 500, headers: { "content-type": "application/json" } });
   }
 
+  const headers = {
+    "content-type": "application/json",
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "access-control-allow-headers": "Content-Type",
+  };
+
+  if (method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-methods": "GET, POST, OPTIONS", "access-control-allow-headers": "Content-Type" } });
+  }
+
   try {
-    // ── POST /api/reprompt ──
     if (method === "POST" && path === "/api/reprompt") {
       const body = await request.json() as any;
       const imageBase64 = body.image;
@@ -122,13 +140,12 @@ Use these measurements as VERIFIED constraints for your prompt reconstruction. O
       const reprompt = posMatch ? posMatch[1].trim() : text.trim();
       const negative_prompt = negMatch ? negMatch[1].trim() : "";
 
-      return new Response(JSON.stringify({ reprompt, negative_prompt, stats }), { headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ reprompt, negative_prompt, stats }), { status: 200, headers });
     }
 
-    // ── POST /api/anatomy ──
     if (method === "POST" && path === "/api/anatomy") {
       const { prompt } = await request.json() as any;
-      if (!prompt) return new Response(JSON.stringify({ segments: [{ text: "No prompt provided", category: "subject", tooltip: "N/A" }] }), { headers: { "content-type": "application/json" } });
+      if (!prompt) return new Response(JSON.stringify({ segments: [{ text: "No prompt provided", category: "subject", tooltip: "N/A" }] }), { status: 200, headers });
 
       const sysPrompt = `Parse the following image generation prompt into categorized segments. Return ONLY a JSON array (no markdown, no backticks): [{"text":"...","category":"subject|lighting|composition|style|mood|technical","tooltip":"..."}]`;
       const { text } = await geminiPost(
@@ -138,16 +155,15 @@ Use these measurements as VERIFIED constraints for your prompt reconstruction. O
 
       try {
         const segments = JSON.parse(stripMarkdown(text));
-        return new Response(JSON.stringify({ segments }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ segments }), { status: 200, headers });
       } catch {
-        return new Response(JSON.stringify({ segments: [{ text: prompt, category: "subject", tooltip: "Full prompt" }] }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ segments: [{ text: prompt, category: "subject", tooltip: "Full prompt" }] }), { status: 200, headers });
       }
     }
 
-    // ── POST /api/improve ──
     if (method === "POST" && path === "/api/improve") {
       const { text: inputText } = await request.json() as any;
-      if (!inputText) return new Response(JSON.stringify({ result: "", negative_prompt: "" }), { headers: { "content-type": "application/json" } });
+      if (!inputText) return new Response(JSON.stringify({ result: "", negative_prompt: "" }), { status: 200, headers });
 
       const sysPrompt = `You are an expert AI prompt engineer. Rewrite the following basic prompt into a richly detailed descriptive prompt optimized for Midjourney and Stable Diffusion. Also generate a negative prompt.
 
@@ -164,10 +180,9 @@ Output with these markers:
 
       const posMatch = text.match(/---POSITIVE PROMPT---\s*([\s\S]*?)(?:---NEGATIVE PROMPT---|$)/);
       const negMatch = text.match(/---NEGATIVE PROMPT---\s*([\s\S]*)/);
-      return new Response(JSON.stringify({ result: posMatch ? posMatch[1].trim() : text.trim(), negative_prompt: negMatch ? negMatch[1].trim() : "" }), { headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ result: posMatch ? posMatch[1].trim() : text.trim(), negative_prompt: negMatch ? negMatch[1].trim() : "" }), { status: 200, headers });
     }
 
-    // ── POST /api/evaluate ──
     if (method === "POST" && path === "/api/evaluate") {
       const body = await request.json() as any;
       const imageBase64 = body.image;
@@ -191,13 +206,12 @@ Score it 1-10. Return ONLY valid JSON (no markdown, no backticks):
 
       try {
         const data = JSON.parse(stripMarkdown(text));
-        return new Response(JSON.stringify({ ...data, stats }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ ...data, stats }), { status: 200, headers });
       } catch {
-        return new Response(JSON.stringify({ score: 5, feedback: "Could not parse evaluation", ideal_prompt: "", ideal_negative_prompt: "", breakdown: [], stats }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ score: 5, feedback: "Could not parse evaluation", ideal_prompt: "", ideal_negative_prompt: "", breakdown: [], stats }), { status: 200, headers });
       }
     }
 
-    // ── POST /api/evaluate-similarity ──
     if (method === "POST" && path === "/api/evaluate-similarity") {
       const body = await request.json() as any;
       const targetBase64 = body.target;
@@ -227,13 +241,12 @@ Return ONLY valid JSON (no markdown, no backticks):
 
       try {
         const data = JSON.parse(stripMarkdown(text));
-        return new Response(JSON.stringify({ ...data, cv_metrics: cvMetrics }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ ...data, cv_metrics: cvMetrics }), { status: 200, headers });
       } catch {
-        return new Response(JSON.stringify({ similarity_score: 50, critique: "Could not analyze similarity", adjustments: { add: [], remove: [] }, cv_metrics: cvMetrics }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ similarity_score: 50, critique: "Could not analyze similarity", adjustments: { add: [], remove: [] }, cv_metrics: cvMetrics }), { status: 200, headers });
       }
     }
 
-    // ── POST /api/reprompt/batch ──
     if (method === "POST" && path === "/api/reprompt/batch") {
       const body = await request.json() as any;
       const items = body.items || [];
@@ -271,18 +284,16 @@ Output with markers:
         }
       }));
 
-      return new Response(JSON.stringify({ results }), { headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ results }), { status: 200, headers });
     }
 
-    // ── GET /api/daily-challenge ──
     if (method === "GET" && path === "/api/daily-challenge") {
       const day = parseDailyDate();
       const challenge = DAILY_CHALLENGES[day % DAILY_CHALLENGES.length];
       const today = new Date().toISOString().split("T")[0];
-      return new Response(JSON.stringify({ id: `${today}-${challenge.id}`, image_url: challenge.image_url, category: challenge.category, difficulty: challenge.difficulty }), { headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ id: `${today}-${challenge.id}`, image_url: challenge.image_url, category: challenge.category, difficulty: challenge.difficulty }), { status: 200, headers });
     }
 
-    // ── POST /api/daily-evaluate ──
     if (method === "POST" && path === "/api/daily-evaluate") {
       const { challenge_id, user_prompt } = await request.json() as any;
       const day = parseDailyDate();
@@ -290,7 +301,7 @@ Output with markers:
 
       const imageResp = await fetch(challenge.image_url + "?w=1024");
       const imageBuffer = await imageResp.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+      const base64 = arrayBufferToBase64(imageBuffer);
 
       const sysPrompt = `You are an expert prompt engineering instructor. The student is describing this daily challenge image.
 
@@ -309,16 +320,14 @@ Score it 1-10. Return ONLY valid JSON (no markdown):
 
       try {
         const data = JSON.parse(stripMarkdown(text));
-        return new Response(JSON.stringify(data), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify(data), { status: 200, headers });
       } catch {
-        return new Response(JSON.stringify({ score: 5, feedback: "Evaluation failed", ideal_prompt: "", ideal_negative_prompt: "", breakdown: [] }), { headers: { "content-type": "application/json" } });
+        return new Response(JSON.stringify({ score: 5, feedback: "Evaluation failed", ideal_prompt: "", ideal_negative_prompt: "", breakdown: [] }), { status: 200, headers });
       }
     }
 
-    // ── 404 for unmatched API routes ──
-    return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: { "content-type": "application/json" } });
-
+    return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message || "Internal error" }), { status: 500, headers: { "content-type": "application/json" } });
+    return new Response(JSON.stringify({ error: e.message || "Internal error" }), { status: 500, headers });
   }
 }

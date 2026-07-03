@@ -11,25 +11,29 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@astrojs/react": "^3.6.0",
-    "@astrojs/tailwind": "^5.1.0",
+    "@astrojs/react": "^5.0.0",
+        "@base-ui/react": "^1.4.1",
     "@fontsource-variable/bricolage-grotesque": "^5.2.10",
     "@fontsource-variable/fraunces": "^5.2.9",
     "@fontsource-variable/geist": "^5.2.9",
     "@fontsource-variable/geist-mono": "^5.2.8",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^4.0.7",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.0",
     "jiti": "^1.21.6",
     "jspdf": "^2.5.1",
     "lucide-react": "^1.7.0",
+    "motion": "^12.40.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "tailwind-merge": "^2.2.0"
+    "tailwind-merge": "^2.2.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.184.1",
     "@vitejs/plugin-react": "^4.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",

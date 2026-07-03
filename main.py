@@ -8,7 +8,7 @@ import hashlib
 from datetime import date
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, FileResponse
 from pydantic import BaseModel
 from typing import Any, Optional
 from pathlib import Path
@@ -24,7 +24,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 # It's good practice to add a safeguard so the app fails loudly if the key is missing
 if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY environment variable is not set!")
+    raise ValueError("GEMINI_API_KEY environment variable is not set!\nSet it with: export GEMINI_API_KEY='your-key'")
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 # Ordered list of models to try (each has its own separate free-tier quota)
 GEMINI_MODELS = [
@@ -685,8 +685,8 @@ async def create_reprompt_batch(files: list[UploadFile] = File(...)):
                 os.remove(path)
 
 @app.get("/")
-async def redirect_root():
-    return RedirectResponse(url="/app/")
+async def serve_home():
+    return FileResponse("static/index.html")
 
 @app.get("/app")
 async def redirect_app():
