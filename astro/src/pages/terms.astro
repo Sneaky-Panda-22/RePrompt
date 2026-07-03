@@ -1,0 +1,74 @@
+---
+import InfoLayout from "../layouts/InfoLayout.astro";
+---
+
+<InfoLayout 
+  title="Terms & Conditions" 
+  description="Terms & Conditions of service for RePrompt - Open-source prompt reverse engineering and analytics workspace." 
+  activePath="/terms"
+>
+  <article class="prose dark:prose-invert max-w-none">
+    <div class="mb-12 border-b border-border/80 pb-6">
+      <span class="text-xs uppercase tracking-widest text-muted-foreground font-mono-custom">Agreement & Terms</span>
+      <h1 class="text-4xl md:text-5xl font-serif italic font-bold mt-2">Terms & Conditions</h1>
+      <p class="text-muted-foreground mt-2">Last Updated: July 3, 2026</p>
+    </div>
+
+    <div class="space-y-8 text-foreground/90 leading-relaxed">
+      <section>
+        <h2 class="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
+        <p class="mb-3">
+          By accessing or using the <strong>RePrompt</strong> website, application dashboard, or API endpoints (collectively, the "Service"), you agree to be bound by these Terms & Conditions. 
+        </p>
+        <p>
+          If you do not agree to all of the terms, you must immediately cease using the Service.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-bold mb-4">2. Permitted Use</h2>
+        <p class="mb-3">
+          RePrompt provides free, local-first image forensics and prompt reverse-engineering tools. You are granted a limited, non-exclusive, non-transferable license to access the site and its workspaces for personal or commercial development.
+        </p>
+        <p class="mb-3"><strong>Prohibited Activities:</strong> You agree not to:</p>
+        <ul class="list-disc pl-6 space-y-2 mb-4">
+          <li>Attempt to disrupt, overload, or compromise the server infrastructure or API services.</li>
+          <li>Submit images that violate intellectual property rights, contain explicit material, or infringe on personal safety.</li>
+          <li>Scrape or bulk extract data from our online servers in a manner that exceeds reasonable developer usage quotas.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-bold mb-4">3. AI Disclaimers & Accuracy</h2>
+        <p class="mb-3">
+          RePrompt utilizes computer vision techniques and Google Gemini Large Language Models (LLMs) to perform prompt reconstruction. 
+        </p>
+        <p class="mb-3">
+          Because generative AI outputs are statistical approximations:
+        </p>
+        <ul class="list-disc pl-6 space-y-2 mb-4">
+          <li>We cannot guarantee that the reconstructed prompt will perfectly match the original prompt used to create the image.</li>
+          <li>Resulting prompts and negative prompts are provided "as-is" without warranty of any kind, express or implied.</li>
+          <li>RePrompt is not affiliated with, sponsored by, or endorsed by Midjourney, DALL-E, Stable Diffusion, or any other commercial model provider.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-bold mb-4">4. Intellectual Property</h2>
+        <p class="mb-3">
+          The code behind the RePrompt platform is open-source. All branding, logo marks, and visual style guides are protected under copyright and trademark laws. 
+        </p>
+        <p>
+          RePrompt does not claim any ownership rights over the prompts you generate, the reports you export, or the content you upload for analysis.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-bold mb-4">5. Limitation of Liability</h2>
+        <p>
+          In no event shall RePrompt or its maintainers be liable for any direct, indirect, incidental, or consequential damages arising from your use or inability to use the Service, including but not limited to model service interruptions, quota limits, or API key exposures.
+        </p>
+      </section>
+    </div>
+  </article>
+</InfoLayout>

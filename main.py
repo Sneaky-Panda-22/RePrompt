@@ -708,6 +708,22 @@ async def redirect_practice():
 async def redirect_similarity():
     return RedirectResponse(url="/similarity/")
 
+@app.get("/about")
+async def redirect_about():
+    return RedirectResponse(url="/about/")
+
+@app.get("/privacy")
+async def redirect_privacy():
+    return RedirectResponse(url="/privacy/")
+
+@app.get("/terms")
+async def redirect_terms():
+    return RedirectResponse(url="/terms/")
+
+@app.get("/contact")
+async def redirect_contact():
+    return RedirectResponse(url="/contact/")
+
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":

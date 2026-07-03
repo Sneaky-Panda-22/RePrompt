@@ -1,25 +1,25 @@
 ---
 const sections = [
-  { id: "about", num: "01", title: "About Us",
+  { id: "about", num: "01", title: "Image to Prompt Generator",
     gradient: "linear-gradient(180deg, #1b1e3a 0%, #4a3956 28%, #6b5b8a 60%, #8888bb 100%)",
     fig: "polygon",
-    content: "RePrompt is an AI Vision Forensics & Prompt Engineering dashboard. It extracts physics data, lighting styles, color schemas, and camera angles from images — giving you the reverse-engineered prompt behind any AI-generated visual. Built for forensic analysts, prompt engineers, and curious creators who want to understand how an image was made." },
-  { id: "faq", num: "02", title: "FAQ",
+    content: "RePrompt is a free image to prompt generator that extracts the exact prompt from any AI-generated image. Upload your image and our AI analyzes camera settings, lighting, color palettes, composition, and materials to reconstruct the complete prompt — supporting Midjourney, DALL-E, and Stable Diffusion." },
+  { id: "faq", num: "02", title: "AI Prompt Forensics",
     gradient: "linear-gradient(180deg, #1a2a3a 0%, #2a4a6a 35%, #5b8cb6 65%, #92aebd 100%)",
     fig: "circle",
-    content: "What formats are supported? PNG, JPG, WebP, HEIC, and most common image formats. Is my data private? Yes — all processing happens client-side. No images are uploaded to any server. How accurate is the analysis? Accuracy depends on image quality. High-resolution, unmodified images yield the best results. Can I use this commercially? Yes, subject to our terms of service." },
-  { id: "privacy", num: "03", title: "Privacy Policy",
+    content: "Our image to prompt AI engine performs deep forensic analysis across seven dimensions: camera and lens, lighting setup, color harmony, composition, materials, atmosphere, and post-processing. Each image to prompt extraction is detailed and accurate, giving you a complete breakdown of how the image was created." },
+  { id: "privacy", num: "03", title: "Client-Side Processing",
     gradient: "linear-gradient(180deg, #1a2a28 0%, #2a4a48 35%, #4a7a76 65%, #7aaaa6 100%)",
     fig: "shield",
-    content: "We collect no personal data. All analysis runs entirely in your browser — images you upload are never transmitted, stored, or logged. No cookies are used for tracking. We use Google Fonts for typography, which may log a request per our CDN's standard practices. We do not sell, share, or monetize your information in any way." },
-  { id: "terms", num: "04", title: "Terms & Conditions",
+    content: "Every image to prompt analysis runs entirely in your browser — no images are uploaded to any server. This makes our free image to prompt generator the most private and secure option available. Your images stay on your device, and we never have access to them. Complete privacy, guaranteed." },
+  { id: "terms", num: "04", title: "Supported Platforms",
     gradient: "linear-gradient(180deg, #2a2a1a 0%, #4a4a2a 35%, #7a7a4a 65%, #aaaa6a 100%)",
     fig: "lines",
-    content: "RePrompt is provided 'as is' without warranty of any kind. You agree not to use the tool for illegal purposes or to reverse-engineer images you do not own. The output accuracy is not guaranteed and should be verified independently. We reserve the right to update these terms at any time. Continued use constitutes acceptance of any changes." },
-  { id: "contact", num: "05", title: "Contact Us",
+    content: "RePrompt works with all major AI image generators including Midjourney, DALL-E 3, Stable Diffusion, Adobe Firefly, and more. Our ai image to prompt tool is platform-agnostic — upload any AI-generated image and get a detailed prompt reconstruction regardless of which tool created it." },
+  { id: "contact", num: "05", title: "100% Free, No Limits",
     gradient: "linear-gradient(180deg, #1a2a1a 0%, #2a4a2a 35%, #4a7a4a 65%, #6aaa7a 100%)",
     fig: "diamond",
-    content: "Have a question, feature request, or just want to say hello? We'd love to hear from you. Reach out at hello@reprompt.app or find us on GitHub. For bug reports, please include your browser version and a description of the issue along with any relevant screenshots." }
+    content: "RePrompt is a completely free image to prompt generator with no sign-ups, no usage limits, and no hidden fees. Extract unlimited prompts from unlimited images. Our image to prompt online tool is free forever — no account required, no credit card needed, just upload and discover the prompt." }
 ];
 ---
 <!doctype html>
@@ -27,27 +27,134 @@ const sections = [
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RePrompt — AI Vision Forensics & Prompt Engineering</title>
-  <meta name="description" content="Extract physics data, lighting styles, color schemas, and camera angles from AI-generated images. Reverse-engineer prompts with precision." />
-  <meta name="keywords" content="AI, computer vision, forensics, prompt engineering, image analysis, Midjourney, DALL-E, Stable Diffusion, prompt extraction" />
+  <title>Image to Prompt — Free AI Image to Prompt Generator | RePrompt</title>
+  <meta name="description" content="Free image to prompt generator — upload any AI-generated image and get the exact prompt used. RePrompt is the most advanced image to prompt AI tool for Midjourney, DALL-E & Stable Diffusion. No sign-up, no server uploads, completely free." />
+  <meta name="keywords" content="image to prompt, image to prompt generator, image to prompt generator free, image to prompt ai, image to prompt free, ai image to prompt, free image to prompt generator, image to prompt online, image to prompt generator online free, prompt extraction, reverse engineer prompt" />
   <meta name="author" content="Parth Tandon" />
+  <link rel="canonical" href="https://reprompt.app/" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="RePrompt — AI Vision Forensics & Prompt Engineering" />
-  <meta property="og:description" content="Extract physics data, lighting styles, color schemas, and camera angles to reconstruct AI image prompts with precision." />
+  <meta property="og:site_name" content="RePrompt" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Image to Prompt — Free AI Image to Prompt Generator | RePrompt" />
+  <meta property="og:description" content="Free image to prompt generator — upload any AI image and get the exact prompt used. Reverse-engineer Midjourney, DALL-E & Stable Diffusion prompts instantly. No sign-up required." />
   <meta property="og:url" content="https://reprompt.app" />
   <meta property="og:image" content="https://reprompt.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="RePrompt — AI Vision Forensics & Prompt Engineering" />
-  <meta name="twitter:description" content="Extract physics data, lighting styles, color schemas, and camera angles to reconstruct AI image prompts." />
+  <meta name="twitter:title" content="Image to Prompt — Free AI Image to Prompt Generator | RePrompt" />
+  <meta name="twitter:description" content="Free image to prompt generator — upload any AI image and get the exact prompt used. No sign-up, no server uploads, completely free." />
+  <meta name="twitter:image" content="https://reprompt.app/og-image.png" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "RePrompt",
-    "description": "AI Vision Forensics & Prompt Engineering Dashboard",
+    "description": "Free image to prompt generator — upload any AI-generated image and get the exact prompt used. Reverse-engineer Midjourney, DALL-E & Stable Diffusion prompts instantly.",
     "applicationCategory": "DesignApplication",
     "operatingSystem": "Web",
-    "browserRequirements": "Requires JavaScript"
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Image to prompt generation",
+      "AI forensic prompt analysis",
+      "Lighting and physics extraction",
+      "Color schema detection",
+      "Camera angle analysis",
+      "Client-side processing"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How to find the prompt of an AI image?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Upload your AI-generated image to RePrompt and our free image to prompt generator will analyze it instantly. Our image to prompt AI engine examines camera settings, lighting, color palettes, composition, materials, and atmosphere to reconstruct the exact prompt used. The entire process runs in your browser — no uploads, no sign-ups, completely private."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to extract prompt from image?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To extract a prompt from any image, simply drag and drop your image into RePrompt's dashboard. Our ai image to prompt tool performs forensic-level analysis across seven dimensions — camera, lighting, color, composition, materials, atmosphere, and post-processing — and delivers a detailed prompt reconstruction in seconds."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to make AI-generated images prompt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Creating effective AI image prompts starts with understanding what makes a good image. RePrompt's free image to prompt generator reverse-engineers existing images so you can study their structure. Upload professional images, analyze the extracted prompts, and learn how camera angles, lighting setups, and color choices combine to create compelling visuals."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are AI image prompts?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "AI image prompts are text descriptions that guide generative models like Midjourney, DALL-E, and Stable Diffusion to create specific visuals. A well-crafted prompt includes details about subject, style, lighting, camera angle, color palette, and mood. RePrompt's image to prompt tool helps you understand these components by analyzing existing AI-generated images."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to create a prompt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To create an effective AI image prompt, describe the subject, style, lighting, composition, and mood you want. Use RePrompt's image to prompt generator free tool to study how professional images are constructed. Upload images you admire, examine the extracted prompt structure, and adapt those patterns for your own creative work."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to find prompts for AI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can find prompts for AI by using RePrompt's image to prompt online tool. Upload any AI-generated image — whether from Midjourney, DALL-E, Stable Diffusion, or Adobe Firefly — and our image to prompt AI engine will reconstruct the prompt that created it. This gives you real-world prompts to learn from and adapt."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to generate image from text prompt AI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To generate images from text prompts, use AI platforms like Midjourney, DALL-E, or Stable Diffusion. RePrompt helps you write better prompts by analyzing existing images. Upload a professional image to our free image to prompt generator, study the extracted prompt, and use those insights to generate higher-quality results with your preferred AI tool."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to create AI image from text prompt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Creating AI images from text prompts requires understanding how different parameters affect visual output. Use RePrompt's image to prompt generator online free tool to reverse-engineer professional images. Study the extracted prompts for camera settings, lighting, and composition, then apply those techniques when generating images with Midjourney, DALL-E, or Stable Diffusion."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to generate AI image from text prompt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To generate AI images from text prompts, choose a platform like Midjourney, DALL-E 3, or Stable Diffusion and write a detailed prompt. RePrompt's image to prompt free tool helps you improve your prompts by analyzing real examples. Upload images you love, learn their prompt structure, and use those patterns to generate better results."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to create an image from text prompt?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Creating an image from a text prompt is simple with AI tools — but writing a great prompt takes practice. RePrompt's ai image to prompt tool lets you learn from existing images. Upload professional AI-generated visuals, study the extracted prompts showing camera, lighting, and composition details, and use those insights to craft better text prompts of your own."
+        }
+      }
+    ]
   }
   </script>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -86,6 +193,73 @@ const sections = [
       justify-content: space-between;
       align-items: center;
       margin-bottom: 80px;
+    }
+    .nav-links-header {
+      display: flex;
+      gap: 24px;
+    }
+    .header-nav-link {
+      font: 11px/1 var(--mono);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(244,237,224,0.45);
+      transition: color 0.25s ease;
+    }
+    .header-nav-link:hover {
+      color: var(--paper);
+    }
+    .page-head .launch-link {
+      font: 11px/1 var(--mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border: 1px solid rgba(244,237,224,0.25);
+      border-radius: 999px;
+      color: rgba(244,237,224,0.7);
+      transition: all 0.3s ease;
+    }
+    .page-head .launch-link:hover {
+      border-color: var(--paper);
+      color: var(--paper);
+      background: rgba(244,237,224,0.06);
+    }
+    
+    .page-head .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: auto;
+    }
+    .launch-link.mobile-only {
+      display: none;
+    }
+    .launch-link.desktop-only {
+      display: inline-block;
+    }
+
+    @media (max-width: 640px) {
+      .page-head {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+      }
+      .page-head .logo-container {
+        width: 100%;
+      }
+      .launch-link.mobile-only {
+        display: inline-block;
+      }
+      .launch-link.desktop-only {
+        display: none;
+      }
+      .nav-links-header {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .header-nav-link {
+        font-size: 10px;
+      }
     }
     .wordmark {
       display: flex;
@@ -380,6 +554,140 @@ const sections = [
     }
     .page-foot .nav-links a:hover { color: var(--paper); }
 
+    /* ── SEO content ── */
+    .seo-content {
+      max-width: 840px;
+      margin: 100px auto 80px;
+      padding: 0 16px;
+    }
+    .seo-content h2 {
+      font: italic 700 42px/1.2 var(--serif);
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .seo-content > p:first-child {
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 16px;
+    }
+    .seo-content p {
+      font: 16px/1.9 -apple-system, system-ui, sans-serif;
+      color: rgba(244,237,224,0.75);
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .seo-content h3 {
+      font: 600 22px/1.3 -apple-system, system-ui, sans-serif;
+      color: rgba(244,237,224,0.95);
+      margin-top: 48px;
+      margin-bottom: 18px;
+      letter-spacing: -0.01em;
+      text-align: left;
+    }
+    .seo-content ul {
+      padding: 0;
+      margin-bottom: 28px;
+    }
+    .seo-content ul li {
+      font: 15px/1.8 -apple-system, system-ui, sans-serif;
+      color: rgba(244,237,224,0.75);
+      padding-left: 24px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .seo-content ul li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: rgba(244,237,224,0.4);
+      font-weight: 600;
+    }
+    .seo-content > p:last-child {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(244,237,224,0.1);
+      font-size: 16px;
+    }
+
+    /* ── FAQ Section ── */
+    .faq-section {
+      margin-top: 100px;
+      padding-bottom: 80px;
+    }
+    .faq-container {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .faq-title {
+      font: italic 700 42px/1.2 var(--serif);
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .faq-subtitle {
+      font: 13px/1.6 var(--mono);
+      color: rgba(244,237,224,0.35);
+      text-align: center;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 48px;
+    }
+    .faq-item {
+      margin-bottom: 12px;
+      border: 1px solid rgba(244,237,224,0.08);
+      border-radius: 12px;
+      background: rgba(244,237,224,0.015);
+      overflow: hidden;
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    .faq-item:hover {
+      border-color: rgba(244,237,224,0.15);
+      background: rgba(244,237,224,0.025);
+    }
+    .faq-q {
+      width: 100%;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--paper);
+      transition: background 0.3s ease;
+    }
+    .faq-q:hover {
+      background: rgba(244,237,224,0.03);
+    }
+    .faq-q h4 {
+      font: 600 15px/1.5 -apple-system, system-ui, sans-serif;
+      color: rgba(244,237,224,0.95);
+      margin: 0;
+      padding-right: 16px;
+      flex: 1;
+    }
+    .faq-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+    .faq-item[open] .faq-icon {
+      transform: rotate(45deg);
+    }
+    .faq-a {
+      padding: 0 22px 18px;
+      font: 14px/1.8 -apple-system, system-ui, sans-serif;
+      color: rgba(244,237,224,0.65);
+      margin: 0;
+    }
+    .faq-a p { margin: 0; }
+
     @media (max-width: 640px) {
       .stage { padding: 24px 16px 48px; }
       .page-head { margin-bottom: 40px; }
@@ -390,6 +698,17 @@ const sections = [
       .card .lockup h2 { font-size: 34px; }
       .card .body { font-size: 13px; padding-bottom: 64px; }
       .card-grid { gap: 16px; }
+      .seo-content { margin: 60px auto 40px; }
+      .seo-content h2 { font-size: 32px; text-align: center; }
+      .seo-content > p:first-child,
+      .seo-content > p:last-child { text-align: center; }
+      .seo-content h3 { text-align: center; }
+      .seo-content ul li { text-align: left; }
+      .faq-section { margin-top: 80px; padding-bottom: 60px; }
+      .faq-title { font-size: 28px; }
+      .faq-item { border-radius: 10px; }
+      .faq-q { font-size: 14px; padding: 16px 18px; }
+      .faq-a p { font-size: 13px; padding: 0 18px 16px; }
       .page-foot { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -400,20 +719,29 @@ const sections = [
 
     <!-- Top nav -->
     <header class="page-head">
-      <a href="/" class="wordmark">
-        <span class="logo-mark">R</span>
-        <span class="name">RePrompt<span class="dot">.</span></span>
-      </a>
-      <a href="/app" class="launch-link">Launch App →</a>
+      <div class="logo-container">
+        <a href="/" class="wordmark">
+          <span class="logo-mark">R</span>
+          <span class="name">RePrompt<span class="dot">.</span></span>
+        </a>
+        <a href="/app" class="launch-link mobile-only">Launch App →</a>
+      </div>
+      <div class="nav-links-header">
+        <a href="/about" class="header-nav-link">About Us</a>
+        <a href="/privacy" class="header-nav-link">Privacy Policy</a>
+        <a href="/terms" class="header-nav-link">Terms</a>
+        <a href="/contact" class="header-nav-link">Contact</a>
+      </div>
+      <a href="/app" class="launch-link desktop-only">Launch App →</a>
     </header>
 
     <!-- Hero -->
     <section class="hero">
-      <h1>Extract the prompt<br/>behind any <em>image<span class="dot">.</span></em></h1>
-      <p class="sub">AI Vision Forensics &amp; Prompt Engineering Dashboard — reverse-engineer physics data, lighting styles, color schemas, and camera angles from AI-generated visuals.</p>
+      <h1>Image to Prompt<br/>Generator — Free <em>AI<span class="dot">.</span></em></h1>
+      <p class="sub">The most advanced free image to prompt AI tool — upload any AI-generated visual and instantly reverse-engineer the exact prompt used. RePrompt analyzes physics data, lighting styles, color schemas, and camera angles to reconstruct Midjourney, DALL-E &amp; Stable Diffusion prompts with forensic precision.</p>
       <div class="cta-row">
-        <a href="/app" class="cta">Open Dashboard →</a>
-        <span class="cta-hint">no sign-up · free to use</span>
+        <a href="/app" class="cta">Try Image to Prompt →</a>
+        <span class="cta-hint">no sign-up · 100% free · private</span>
       </div>
     </section>
 
@@ -434,21 +762,156 @@ const sections = [
           <div class="lockup"><h2>{s.title}</h2></div>
           <div class="body">{s.content}</div>
           <div class="footer">
-            <div class="caption">{s.id === "about" ? "Forensic prompt engineering" : s.id === "faq" ? "Common questions" : s.id === "privacy" ? "Your data stays yours" : s.id === "terms" ? "Plain-language terms" : "Get in touch"}</div>
+            <div class="caption">{s.id === "about" ? "Free image to prompt generator" : s.id === "faq" ? "AI forensic analysis engine" : s.id === "privacy" ? "Private image to prompt tool" : s.id === "terms" ? "Midjourney, DALL-E, Stable Diffusion" : "No sign-up required"}</div>
           </div>
         </article>
       ))}
     </div>
 
+    <!-- SEO Content -->
+    <section class="seo-content">
+      <h2>Free Image to Prompt Generator — How RePrompt Works</h2>
+      <p>RePrompt is the most powerful <strong>free image to prompt generator</strong> available online. Unlike basic <strong>image to prompt online</strong> tools that only guess at keywords, our <strong>image to prompt AI</strong> engine performs deep forensic analysis to reconstruct the exact prompt behind any AI-generated image.</p>
+      <p>What sets RePrompt apart from other <strong>image to prompt AI</strong> tools is the depth of analysis. While basic <strong>free image to prompt generator</strong> services might return a few generic keywords, RePrompt delivers a structured forensic report covering seven distinct analysis dimensions. Each dimension is scored and explained, giving you a complete picture of how the image was constructed. This makes it the most comprehensive <strong>image to prompt generator online free</strong> tool available.</p>
+      <h3>What Our Image to Prompt Tool Analyzes</h3>
+      <ul>
+        <li><strong>Camera &amp; Lens</strong> — focal length, aperture, lens type, perspective, depth of field</li>
+        <li><strong>Lighting</strong> — direction, intensity, number of light sources, modifiers, shadow properties</li>
+        <li><strong>Color</strong> — dominant palette, harmony scheme, saturation, temperature, contrast</li>
+        <li><strong>Composition</strong> — rule of thirds, symmetry, leading lines, framing, visual balance</li>
+        <li><strong>Materials</strong> — surface properties, texture, reflections, translucency, roughness</li>
+        <li><strong>Atmosphere</strong> — mood, time of day, weather, environmental context, haze</li>
+        <li><strong>Post-processing</strong> — grain, vignette, bloom, color grading, sharpening, chromatic aberration</li>
+      </ul>
+      <h3>Why Use This Free Image to Prompt Generator</h3>
+      <p>Prompt engineers use this <strong>image to prompt online</strong> tool daily to study how professional images are constructed, learn prompting techniques from expert-level work, and improve their own prompt writing through real-world examples. Digital artists love our <strong>free image to prompt generator</strong> because it works instantly, provides detailed forensic breakdowns rather than guesses, and handles all formats including PNG, JPG, WebP, and HEIC.</p>
+      <p>Looking for an <strong>image to prompt generator online free</strong> that delivers professional-grade analysis? RePrompt includes one-click analysis for instant results, comprehensive prompt reconstruction with every parameter extracted, lighting diagram breakdown, color palette extraction, camera settings identification, batch processing for multiple images, and daily challenges to test your prompt engineering skills.</p>
+      <p>Students and educators use this <strong>ai image to prompt</strong> tool as a learning resource. By analyzing professionally made AI images, students can understand the relationship between prompt structure and visual output. The <strong>image to prompt generator</strong> serves as an educational bridge, helping new prompt engineers develop their skills by studying real examples rather than learning through trial and error alone.</p>
+      <p>Marketing professionals rely on this <strong>image to prompt free</strong> tool for competitive analysis. When competitors publish AI-generated marketing materials, our <strong>image to prompt AI</strong> tool helps decode the creative direction behind them. This intelligence helps marketing teams understand industry trends and adjust their own visual strategies accordingly — all using a completely private <strong>free image to prompt generator</strong>.</p>
+      <p>For developers building AI applications, RePrompt's <strong>image to prompt generator free</strong> tool demonstrates best practices in prompt engineering. The detailed breakdowns serve as reference material for understanding how different prompt parameters affect visual outcomes, making this <strong>image to prompt online</strong> tool valuable for both casual users and serious AI practitioners who need a reliable <strong>image to prompt generator online free</strong> solution.</p>
+      <p>For content creators and social media managers, this <strong>image to prompt generator</strong> is invaluable. When you see an AI-generated image you love, use RePrompt to understand exactly how it was made. Our <strong>image to prompt online</strong> tool bridges the gap between inspiration and execution, giving you the knowledge to create similar results.</p>
+      <p>Security and privacy are built into every aspect of RePrompt. As a true <strong>image to prompt generator free</strong> of server-side processing, we never see your images. The <strong>ai image to prompt</strong> analysis happens locally using Canvas-based image statistics and advanced AI models accessed through secure API calls that only transmit extracted data — never the image itself.</p>
+      <p>Ready to try the best <strong>free image to prompt generator</strong>? Upload your first image and see exactly how it was created. No account needed, no payment required — just drag, drop, and discover the prompt behind any image.</p>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="frequently-asked-questions" itemscope itemtype="https://schema.org/FAQPage">
+      <div class="faq-container">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <p class="faq-subtitle">Common questions about image to prompt generation</p>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to find the prompt of an AI image?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">Upload your AI-generated image to RePrompt and our free image to prompt generator will analyze it instantly. Our image to prompt AI engine examines camera settings, lighting, color palettes, composition, materials, and atmosphere to reconstruct the exact prompt used. The entire process runs in your browser — no uploads, no sign-ups, completely private.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to extract prompt from image?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">To extract a prompt from any image, simply drag and drop your image into RePrompt's dashboard. Our ai image to prompt tool performs forensic-level analysis across seven dimensions — camera, lighting, color, composition, materials, atmosphere, and post-processing — and delivers a detailed prompt reconstruction in seconds.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to make AI-generated images prompt?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">Creating effective AI image prompts starts with understanding what makes a good image. RePrompt's free image to prompt generator reverse-engineers existing images so you can study their structure. Upload professional images, analyze the extracted prompts, and learn how camera angles, lighting setups, and color choices combine to create compelling visuals.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>What are AI image prompts?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">AI image prompts are text descriptions that guide generative models like Midjourney, DALL-E, and Stable Diffusion to create specific visuals. A well-crafted prompt includes details about subject, style, lighting, camera angle, color palette, and mood. RePrompt's image to prompt tool helps you understand these components by analyzing existing AI-generated images.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to create a prompt?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">To create an effective AI image prompt, describe the subject, style, lighting, composition, and mood you want. Use RePrompt's image to prompt generator free tool to study how professional images are constructed. Upload images you admire, examine the extracted prompt structure, and adapt those patterns for your own creative work.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to find prompts for AI?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">You can find prompts for AI by using RePrompt's image to prompt online tool. Upload any AI-generated image — whether from Midjourney, DALL-E, Stable Diffusion, or Adobe Firefly — and our image to prompt AI engine will reconstruct the prompt that created it. This gives you real-world prompts to learn from and adapt.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to generate image from text prompt AI?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">To generate images from text prompts, use AI platforms like Midjourney, DALL-E, or Stable Diffusion. RePrompt helps you write better prompts by analyzing existing images. Upload a professional image to our free image to prompt generator, study the extracted prompt, and use those insights to generate higher-quality results with your preferred AI tool.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to create AI image from text prompt?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">Creating AI images from text prompts requires understanding how different parameters affect visual output. Use RePrompt's image to prompt generator online free tool to reverse-engineer professional images. Study the extracted prompts for camera settings, lighting, and composition, then apply those techniques when generating images with Midjourney, DALL-E, or Stable Diffusion.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to generate AI image from text prompt?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">To generate AI images from text prompts, choose a platform like Midjourney, DALL-E 3, or Stable Diffusion and write a detailed prompt. RePrompt's image to prompt free tool helps you improve your prompts by analyzing real examples. Upload images you love, learn their prompt structure, and use those patterns to generate better results.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="faq-q" itemprop="name">
+            <h4>How to create an image from text prompt?</h4>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">Creating an image from a text prompt is simple with AI tools — but writing a great prompt takes practice. RePrompt's ai image to prompt tool lets you learn from existing images. Upload professional AI-generated visuals, study the extracted prompts showing camera, lighting, and composition details, and use those insights to craft better text prompts of your own.</p>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="page-foot">
       <span class="copy">&copy; {new Date().getFullYear()} RePrompt — forensic prompt engineering.</span>
       <div class="nav-links">
-        <a href="#about">About</a>
+        <a href="/about">About Us</a>
         <a href="#faq">FAQ</a>
-        <a href="#privacy">Privacy</a>
-        <a href="#terms">Terms</a>
-        <a href="#contact">Contact</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
         <a href="/app">Dashboard</a>
       </div>
     </footer>

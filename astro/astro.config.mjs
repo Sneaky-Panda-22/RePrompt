@@ -25,5 +25,10 @@ export default defineConfig({
       },
       dedupe: ['react', 'react-dom'],
     },
+    server: {
+      fs: {
+        allow: [path.resolve(__dirname, "..")],
+      },
+    },
   },
 });

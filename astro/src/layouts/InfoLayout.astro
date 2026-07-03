@@ -1,0 +1,147 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  activePath: string;
+}
+
+const { title, description = "RePrompt informational page", activePath } = Astro.props;
+
+import "../../../frontend/src/index.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | RePrompt</title>
+    <meta name="description" content={description} />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function() {
+        var saved = localStorage.getItem('theme');
+        var prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefers)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+    <style>
+      :root {
+        --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+        --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      }
+      .font-serif {
+        font-family: var(--serif);
+      }
+      .font-mono-custom {
+        font-family: var(--mono);
+      }
+      
+      /* Elegant italic serif (cursive look) for content headings */
+      h1, h2, .prose h3 {
+        font-family: var(--serif) !important;
+        font-style: italic !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.01em !important;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-foreground antialiased font-sans min-h-screen flex flex-col selection:bg-accent/15">
+    
+    <!-- Header -->
+    <header class="border-b border-border/60 bg-card/50 backdrop-blur-md sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-6 py-4 md:py-0 md:h-16 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+        
+        <div class="flex justify-between items-center w-full md:w-auto">
+          <!-- Logo -->
+          <a href="/" class="flex items-center gap-2">
+            <span class="w-8 h-8 border border-foreground/30 rounded-md flex items-center justify-center font-serif italic font-bold text-sm">R</span>
+            <span class="font-serif italic font-bold text-lg tracking-tight">RePrompt<span class="text-muted-foreground/60">.</span></span>
+          </a>
+          <!-- Mobile CTAs -->
+          <div class="flex items-center gap-2 md:hidden">
+            <!-- Theme switch -->
+            <button 
+              onclick="toggleTheme()" 
+              class="p-1.5 border border-border bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer text-muted-foreground hover:text-foreground"
+              aria-label="Toggle Theme"
+            >
+              <svg class="w-3.5 h-3.5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+              </svg>
+              <svg class="w-3.5 h-3.5 dark:hidden block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+              </svg>
+            </button>
+            <a href="/app" class="text-[10px] tracking-wider uppercase font-mono-custom border border-foreground/20 rounded-full px-3 py-1.5 hover:bg-foreground hover:text-background transition-all duration-300">Launch App →</a>
+          </div>
+        </div>
+
+        <!-- Navigation (centered on mobile, left on desktop) -->
+        <nav class="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+          <a href="/about" class={`text-xs md:text-sm font-medium transition-colors hover:text-foreground ${activePath === "/about" ? "text-foreground" : "text-muted-foreground"}`}>About Us</a>
+          <a href="/privacy" class={`text-xs md:text-sm font-medium transition-colors hover:text-foreground ${activePath === "/privacy" ? "text-foreground" : "text-muted-foreground"}`}>Privacy Policy</a>
+          <a href="/terms" class={`text-xs md:text-sm font-medium transition-colors hover:text-foreground ${activePath === "/terms" ? "text-foreground" : "text-muted-foreground"}`}>Terms & Conditions</a>
+          <a href="/contact" class={`text-xs md:text-sm font-medium transition-colors hover:text-foreground ${activePath === "/contact" ? "text-foreground" : "text-muted-foreground"}`}>Contact Us</a>
+        </nav>
+
+        <!-- Desktop CTAs -->
+        <div class="hidden md:flex items-center gap-3">
+          <!-- Theme switch -->
+          <button 
+            onclick="toggleTheme()" 
+            class="p-2 border border-border bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer text-muted-foreground hover:text-foreground"
+            aria-label="Toggle Theme"
+          >
+            <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+            </svg>
+            <svg class="w-4 h-4 dark:hidden block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+            </svg>
+          </button>
+          
+          <a href="/app" class="text-xs tracking-wider uppercase font-mono-custom border border-foreground/20 rounded-full px-4 py-2 hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300">Launch App →</a>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl mx-auto px-6 py-16 w-full animate-slide-up">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-border/60 bg-card/30">
+      <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <span class="text-xs font-mono-custom text-muted-foreground">&copy; {new Date().getFullYear()} RePrompt &middot; Forensic Prompt Engineering.</span>
+        <div class="flex gap-6 flex-wrap justify-center">
+          <a href="/about" class="text-xs font-mono-custom text-muted-foreground hover:text-foreground transition-colors">About</a>
+          <a href="/privacy" class="text-xs font-mono-custom text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
+          <a href="/terms" class="text-xs font-mono-custom text-muted-foreground hover:text-foreground transition-colors">Terms</a>
+          <a href="/contact" class="text-xs font-mono-custom text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+          <a href="/app" class="text-xs font-mono-custom text-muted-foreground hover:text-foreground transition-colors">Dashboard</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Inline scripts for theme toggle -->
+    <script is:inline>
+      function toggleTheme() {
+        var html = document.documentElement;
+        var isDark = html.classList.contains('dark');
+        var newTheme = isDark ? 'light' : 'dark';
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', newTheme);
+      }
+    </script>
+  </body>
+</html>

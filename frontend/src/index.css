@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @source "./**/*.tsx";
 @source "./**/*.ts";
+@import "@fontsource-variable/inter/index.css";
 @import "@fontsource-variable/geist/index.css";
 @import "@fontsource-variable/geist-mono/index.css";
 @import "@fontsource-variable/bricolage-grotesque/index.css";
@@ -39,7 +40,7 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
-  --font-sans: "Geist Variable", Geist, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", Inter, "Geist Variable", Geist, ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
   --font-display-sans: "Bricolage Grotesque Variable", "Bricolage Grotesque",
     "Geist Variable", ui-sans-serif, system-ui, sans-serif;

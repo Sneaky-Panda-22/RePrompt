@@ -1,0 +1,70 @@
+---
+import InfoLayout from "../layouts/InfoLayout.astro";
+---
+
+<InfoLayout 
+  title="About Us" 
+  description="Learn about RePrompt - The leading AI-powered image forensics and prompt reverse-engineering dashboard." 
+  activePath="/about"
+>
+  <article class="prose dark:prose-invert max-w-none">
+    <div class="mb-12 border-b border-border/80 pb-6">
+      <span class="text-xs uppercase tracking-widest text-muted-foreground font-mono-custom">Our Mission</span>
+      <h1 class="text-4xl md:text-5xl font-serif italic font-bold mt-2">About RePrompt</h1>
+      <p class="text-muted-foreground mt-2">Empowering prompt engineers and creators with transparent forensic insights.</p>
+    </div>
+
+    <div class="space-y-8 text-foreground/90 leading-relaxed">
+      <section>
+        <h2 class="text-2xl font-bold mb-4">What is RePrompt?</h2>
+        <p class="mb-3">
+          <strong>RePrompt</strong> is a state-of-the-art workspace for prompt engineers, generative AI developers, and digital artists. 
+          By pairing advanced <strong>Computer Vision (CV)</strong> metrics with <strong>Vision-Language Models (VLMs)</strong>, RePrompt decompiles the visual elements of any image and reconstructs detailed, platform-ready prompt blueprints.
+        </p>
+        <p>
+          Whether you are targeting Midjourney v6, DALL-E 3, or Stable Diffusion, our system helps you identify the composition formulas, lighting direction, contrast balance, and styles needed to replicate complex images.
+        </p>
+      </section>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+        <div class="p-6 bg-card border border-border/60 rounded-2xl">
+          <h3 class="font-bold text-lg mb-2 text-accent">Computer Vision</h3>
+          <p class="text-sm text-muted-foreground">
+            We compute deterministic physics parameters from the image matrix, evaluating shadows, edges, brightness levels, depth-of-field, and aspect ratio metrics without heuristic guesswork.
+          </p>
+        </div>
+        <div class="p-6 bg-card border border-border/60 rounded-2xl">
+          <h3 class="font-bold text-lg mb-2 text-accent">Semantic Alignment</h3>
+          <p class="text-sm text-muted-foreground">
+            We leverage Google Gemini models to map these metrics to natural language descriptors, formatting them into structured prompt segment layouts (subject, lighting, composition).
+          </p>
+        </div>
+      </div>
+
+      <section>
+        <h2 class="text-2xl font-bold mb-4">Core Principles</h2>
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-lg font-bold mb-1">1. Educational Accessibility</h3>
+            <p class="text-muted-foreground">We believe prompt engineering should be an open discipline. We provide training sandboxes and gamified challenges to help designers learn the mechanics of visual prompts interactively.</p>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-1">2. Local-First Processing</h3>
+            <p class="text-muted-foreground">Your data is kept private. We build tools that do not harvest user artwork or log private images to remote storage servers.</p>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-1">3. Modular Integration</h3>
+            <p class="text-muted-foreground">Our API endpoints are designed to integrate seamlessly into developers' larger batch workflows, pipeline models, and test harnesses.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-t border-border/60 pt-8 mt-12">
+        <h2 class="text-2xl font-bold mb-4">Meet the Platform</h2>
+        <p>
+          RePrompt was built by <a href="https://github.com/Sneaky-Panda-22" class="underline hover:text-accent font-medium">Parth Tandon</a> as an open solution for creative professionals. If you would like to collaborate or report bugs, feel free to inspect the codebase or submit issues through our repository.
+        </p>
+      </section>
+    </div>
+  </article>
+</InfoLayout>
