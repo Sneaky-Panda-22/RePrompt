@@ -23,6 +23,10 @@ export default defineConfig({
       alias: {
         "@": path.resolve(__dirname, "../frontend/src"),
       },
+      modules: [
+        path.resolve(__dirname, "node_modules"),
+        "node_modules",
+      ],
     },
   },
 });
