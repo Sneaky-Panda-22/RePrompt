@@ -260,6 +260,32 @@ const pageEyebrow = sectionEyebrow[currentPath] ?? eyebrow;
       </main>
     </div>
 
+    <!-- Error diagnostics -->
+    <div id="diag-errors" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#111;color:#f44;padding:40px;overflow:auto;font-family:monospace;font-size:14px;white-space:pre-wrap"></div>
+    <script is:inline>
+      (function(){
+        var div = document.getElementById('diag-errors');
+        function show(e) {
+          div.style.display = 'block';
+          div.textContent += '[' + new Date().toISOString() + '] ' + (e && e.message ? e.message + '\n' + (e.stack || '') : String(e)) + '\n\n';
+        }
+        window.addEventListener('error', function(e) { show(e.error || e); });
+        window.addEventListener('unhandledrejection', function(e) { show(e.reason); });
+        var origSetTimeout = window.setTimeout;
+        window.setTimeout = function(fn, ms) {
+          return origSetTimeout(function() {
+            try { if (typeof fn === 'function') fn(); else fn[0](); } catch(e) { show(e); }
+          }, ms);
+        };
+        // Also intercept dynamic imports
+        var origFetch = window.fetch;
+        window.fetch = function() { return origFetch.apply(this, arguments).catch(function(e) { show(e); throw e; }); };
+        console.error = function() {
+          for (var i = 0; i < arguments.length; i++) show(arguments[i]);
+        };
+      })();
+    </script>
+
     <!-- Inline scripts -->
     <script is:inline>
       function toggleMobile() {
