@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>404 — Reverse Engineering the Visual</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --stage: #0a0a0a;
+      --paper: #f4ede0;
+      --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,255,255,0.04), transparent 70%),
+        #0a0a0a;
+      color: var(--paper);
+      font: 14px/1.6 -apple-system, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px;
+    }
+    a { color: inherit; text-decoration: none; }
+    .stage {
+      text-align: center;
+      max-width: 520px;
+    }
+    .code {
+      font: italic 700 8rem/1 var(--serif);
+      letter-spacing: -0.03em;
+      color: rgba(244,237,224,0.08);
+      user-select: none;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font: italic 700 1.75rem/1 var(--serif);
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    p {
+      font: 12px/1.7 var(--mono);
+      color: rgba(244,237,224,0.45);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font: italic 700 16px/1 var(--serif);
+      padding: 10px 24px;
+      background: #ffffff;
+      color: #0a0a0a;
+      border-radius: 999px;
+      transition: all 0.25s ease;
+    }
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .rule {
+      width: 2rem;
+      height: 1px;
+      background: rgba(244,237,224,0.1);
+      margin: 32px auto 0;
+    }
+    @media (max-width: 640px) {
+      .code { font-size: 5rem; }
+      h1 { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="code">404</div>
+    <h1>This page doesn't exist</h1>
+    <p>The route you're looking for was not found.</p>
+    <a href="/" class="cta">Back to home →</a>
+    <div class="rule"></div>
+  </div>
+</body>
+</html>
