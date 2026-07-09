@@ -1,87 +1,110 @@
 # RePrompt • AI Vision Forensics & Prompt Engineering Dashboard
 
-RePrompt is an industry-ready, professional image forensics and prompt reverse-engineering workspace. By pairing **Computer Vision (OpenCV)** with **Vision-Language Models (Google Gemini)**, it parses the hidden physical properties of an image and generates highly descriptive, optimization-ready prompt blueprints for Midjourney, DALL-E 3, or Stable Diffusion.
+Welcome to RePrompt, the professional tool for reverse-engineering AI-generated images and extracting their prompt formulas. This platform combines advanced computer vision techniques with cutting-edge AI analysis to help you understand exactly how any Midjourney, DALL-E, or Stable Diffusion image was created.
 
 The system features a premium, responsive **Astro-based dashboard** supporting dynamic Light and Dark modes.
 
 ---
 
-## 🚀 Key Workspaces & Features
+## Key Workspaces & Features
 
 ### 1. Forensic App Workspace
-- **Image Auditing:** Measures objective properties like Laplacian Variance (Sharpness), Sobel Gradients (Shadows), global contrast, light direction, and aspect ratio.
-- **Prompt Anatomy:** Parses prompt text into interactive color-coded segments (`subject`, `lighting`, `camera`, `style`, `mood`) with hover tooltips.
-- **Suggested Negative Prompts:** Automatically generates high-fidelity negative prompts suggesting tags and styles to avoid.
-- **Local History Registry:** Persists forensic reports (including positive prompt, negative prompt, and complete physics metrics) in your browser's local storage.
-- **Anatomy & Physics Restoration:** Restores full physics parameter values and interactive prompt anatomy segmentation when loaded back from the local history timeline.
-- **PDF Report Generation:** Compiles the scanned image, physics metadata, negative prompt parameters, and prompt blueprint into an instantly downloadable PDF document.
+This is where the magic happens. Upload any AI-generated image and get forensic analysis of its underlying physics and prompt structure:
+
+- **Image Auditing:** Measures objective properties like sharpness, shadows, contrast, lighting direction, and aspect ratio through advanced computer vision algorithms
+- **Prompt Anatomy:** Breaks down prompt text into interactive color-coded segments (subject, lighting, camera, style, mood) with helpful hover tooltips
+- **Suggested Negative Prompts:** Automatically generates high-fidelity negative prompts to help you avoid common pitfalls
+- **Local History Registry:** Saves all your forensic reports locally so you can reference them later (in your browser only)
+- **Anatomy & Physics Restoration:** Reconstructs complete physics parameter values and interactive prompt anatomy when you return to previous analyses
+- **PDF Report Generation:** Compiles the scanned image, physics metadata, negative prompt parameters, and prompt blueprint into an instantly downloadable PDF
 
 ### 2. Practice Sandbox
-- **Dual Training Modes:** Supporting *Write Your Own* (write a description from scratch) and *Fix My Prompt* (improve a draft prompt against a target image).
-- **Comparative Parameter Checklist:** Matches the user's text against the extracted image metadata to check for missing, partial, or conflicting parameters.
+Improve your prompt-writing skills with hands-on practice:
+
+- **Dual Training Modes:** Practice writing prompts from scratch or improving existing ones against target images
+- **Comparative Parameter Checklist:** Checks your prompts against extracted image metadata to reveal missing or conflicting elements
 
 ### 3. Daily Match Challenge
-- **Gamified Blueprints:** Compete daily to matching target images. Includes streak counters, detailed category evaluation cards, and local scoreboards.
+Test your forensic skills daily:
+
+- **Gamified Blueprints:** Compete to match target images. Track your streak, see detailed evaluation cards, and view local leaderboards
+- **Skill Building:** Each match teaches you how different prompt parameters affect visual outcomes
 
 ### 4. Learn Academy
-- **Interactive prompt engineering syllabus:** 5 progressive modules covering *Fundamentals*, *Subject & Style*, *Light & Shadow*, *Composition & Camera*, and *Model Mastery*.
-- **Quiz Engines:** Real-time knowledge checkpoints built into each lesson with immediate validation and explanations.
+Build expertise with structured learning:
+
+- **Interactive prompt engineering syllabus:** 5 progressive modules covering fundamentals, subjects and styles, light and shadow, composition and camera, and model mastery
+- **Quiz Engines:** Real-time quizzes after each lesson with instant feedback and explanations
 
 ### 5. Developer Hub & About Page
-- **API Playground:** Documentation for direct integration into outer scripts or workflows.
-- **Local Launcher Guide:** Quick command snippets for running the server on local configurations.
+Resources and information for advanced users:
+
+- **API Playground:** Documentation for direct integration into scripts or workflows
+- **Local Launcher Guide:** Quick commands for running the server locally
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-- **Backend Architecture:** FastAPI (Python), OpenCV, NumPy
-- **Generative AI Fallback Chain:** Google Gemini API (cascading fallback: `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite`, `gemini-2.5-flash`, `gemini-2.0-flash`)
-- **Frontend Dashboard:** **Astro**, TypeScript, Tailwind CSS v4, Shadcn UI, jsPDF
-- **Layout & Responsiveness:** Flexbox/Grid-driven sliding sidebar navigation drawer with active overlay backdrops for mobile viewport compatibility.
-- **Performance:** Static Site Generation (SSG) with incremental static regeneration, client-side data fetching, image optimization, and caching.
+This enterprise-grade system uses industry-leading technologies:
+
+- **Backend Architecture:** Built with FastAPI (Python) for high-performance processing, plus OpenCV and NumPy for computer vision
+- **Generative AI:** Google Gemini API with cascading fallback for reliable AI analysis
+- **Frontend Dashboard:** Modern **Astro** framework with TypeScript, Tailwind CSS v4, Shadcn UI, and jsPDF
+- **Performance:** Static Site Generation with incremental regeneration, client-side data fetching, image optimization, and intelligent caching
 
 ---
 
-## 📦 Project Directory Layout
+## Project Structure
 
-```text
+The project is organized into clear sections for easy navigation:
+
+```
 RePrompt/
-├── backend/                   # Python processing engines (FastAPI)
-│   ├── modules/              # Computer vision & preprocessing
-│   ├── main.py              # API endpoints & fallback router
-│   └── requirements.txt     # Backend dependencies
-├── astro/                    # Astro-based frontend
-│   ├── src/                 # Source code
-│   │   ├── components/      # Reusable Astro components
-│   │   ├── pages/           # Astro pages (SSG + ISR)
-│   │   ├── lib/             # Utilities & client-side logic
-│   │   └── ui/              # Shadcn UI components (compiled)
-│   ├── public/              # Static assets
-│   ├── astro.config.mjs     # Astro configuration
-│   └── package.json         # Project dependencies
-├── static/                   # Frontend build outputs (for FastAPI serving)
-├── launch.py                 # Local server configuration utility (Git ignored)
-└── README.md                 # Documentation
+├── backend/                           # Python processing engine (FastAPI)
+│   ├── modules/                      # Computer vision & preprocessing tools
+│   ├── main.py                       # API endpoints & fallback routing
+│   └── requirements.txt              # Backend dependencies
+├── astro/                           # Astro-based frontend dashboard
+│   ├── src/                        # Source code
+│   │   ├── components/             # Reusable Astro components
+│   │   ├── pages/                  # Astro pages (SSG + ISR)
+│   │   ├── lib/                     # Utilities & client-side logic
+│   │   └── ui/                      # Shadcn UI components
+│   ├── public/                     # Static assets
+│   ├── astro.config.mjs            # Astro configuration
+│   └── package.json                # Frontend dependencies
+├── static/                           # Pre-built frontend assets (for FastAPI serving)
+├── launch.py                         # Local server configuration utility (Git ignored)
+└── README.md                         # Project documentation
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
+
+Get started in just a few minutes:
+
 ```bash
 git clone https://github.com/Sneaky-Panda-22/RePrompt.git
 cd RePrompt
 ```
 
 ### 2. Install Backend Dependencies
+
+Set up the Python processing engine:
+
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
 ### 3. Install Frontend Dependencies & Build
+
+Install and build the Astro dashboard:
+
 ```bash
 cd astro
 npm install
@@ -89,9 +112,11 @@ npm run build
 ```
 
 ### 4. Run the Development Server
-RePrompt provides a launcher script `launch.py` to securely store your credentials without risk of leaking them to git:
 
-Create `launch.py` in the root folder:
+For local development with secure credential handling:
+
+Create a `launch.py` file in the root folder:
+
 ```python
 import os
 import uvicorn
@@ -104,49 +129,56 @@ if __name__ == "__main__":
 ```
 
 Launch the server:
+
 ```bash
 python launch.py
 ```
 
 Open [http://localhost:8080](http://localhost:8080) to access the workspace.
 
-### 5. Pushing Updates to GitHub
-To commit and push your changes back to the GitHub repository, run:
+### 5. Version Control Workflow
+
+Keep your changes organized and secure:
+
 ```bash
-# Verify modified and untracked files
+# Check what you've changed
 git status
 
-# Stage all updates (including built static assets)
+# Track all updates (including built static assets)
 git add .
 
 # Commit with a descriptive message
 git commit -m "Upgrade RePrompt to Astro-based enterprise dashboard: static generation for SEO, premium workspace architecture, and performance optimization"
 
-# Push changes to your branch/main repository
+# Push changes to GitHub
 git push origin main
 ```
 
 ---
 
-## 🔌 API Endpoints Reference
+## API Endpoints
 
-RePrompt exposes REST endpoints for modular integrations:
+RePrompt provides clean, well-documented REST endpoints for modular integrations:
 
-| Method | Endpoint | Request Payload | Return Model |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/reprompt` | `multipart/form-data` (file) | `{ reprompt: string, stats: dict }` |
+| HTTP Method | Endpoint | Request Body | Returns |
+|-------------|----------|--------------|---------|
+| **POST** | `/api/reprompt` | `multipart/form-data` (file upload) | `{ reprompt: string, stats: dict }` |
 | **POST** | `/api/improve` | `application/json` (`{ text: string }`) | `{ result: string }` |
 | **POST** | `/api/anatomy` | `application/json` (`{ prompt: string }`) | `{ segments: list }` |
-| **POST** | `/api/evaluate` | `multipart/form-data` (file, prompt) | `{ score: int, matches: list, explanation: string }` |
+| **POST** | `/api/evaluate` | `multipart/form-data` (file + prompt) | `{ score: int, matches: list, explanation: string }` |
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
-- **Stateless Analysis:** Scanned photographs are processed entirely in memory buffers or volatile temp files, and are **immediately discarded** from the server post-response.
-- **Client-side Persistence:** All workspace session history and streaking scores are saved locally inside the user's browser context (`localStorage`).
-- **Safety First:** The private key loader script `launch.py` is ignored in the root [`.gitignore`](.gitignore) pattern, ensuring your private AI developer tokens are never leaked to public version control.
+Your data is safe with us:
+
+- **Privacy First:** Scanned photographs are processed in memory and immediately discarded after response. Nothing is stored permanently.
+- **Client-side Storage:** All your session history and achievements are saved locally in your browser only.
+- **Security First:** The credential loader script remains Git-ignored to ensure your API keys are never exposed in version control.
 
 ---
 
-Developed with ❤️ by [Parth Tandon](https://github.com/Sneaky-Panda-22)
+## About
+
+RePrompt is developed with care by Parth Tandon. This platform transforms the way professionals analyze and learn from AI-generated imagery through forensic-level prompt engineering.
